@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Ảnh"
+        android:icon="@drawable/ic_baseline_image_24"
+        android:id="@+id/image_icon"/>
+    <item android:title="Albums"
+        android:icon="@drawable/ic_baseline_photo_album_24"
+        android:id="@+id/album_icon"/>
+    <item android:title="Tìm kiếm"
+        android:icon="@drawable/ic_baseline_image_search_24"
+        android:id="@+id/image_search_icon"/>
+</menu>
