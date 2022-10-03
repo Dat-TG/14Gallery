@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:text="Hiện album ở đây"
+        android:text="Hiện album ở đây"
         android:gravity="center"
         android:textSize="30sp"/>
 

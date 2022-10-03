@@ -25,4 +25,6 @@
     <string name="add_title">Thêm album</string>
     <string name="view_mode_day">Xếp theo ngày</string>
     <string name="view_mode_month">Xếp theo tháng</string>
+    <string name="navigation_drawer_open">Drawer Open</string>
+    <string name="navigation_drawer_close">Drawer Closed</string>
 </resources>

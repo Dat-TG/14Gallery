@@ -9,8 +9,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -22,16 +24,17 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityMainBinding.inflate(getLayoutInflater());
-        Objects.requireNonNull(getSupportActionBar()).hide();
         setContentView(binding.getRoot());
         replaceFragment(new ImageFragment());
-
-//        Toolbar actionBarToolBar = findViewById(R.id.app_bar_layout);
-//        setSupportActionBar(actionBarToolBar);
+        toolbar = (Toolbar) findViewById(R.id.topAppBar);
+        setSupportActionBar(toolbar);
+        //toolbar.setSubtitle("Test Subtitle");
+        toolbar.inflateMenu(R.menu.top_bar_menu_image);
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -55,14 +58,11 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout,fragment);
         fragmentTransaction.commit();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.top_bar_menu_image, menu);
-
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
         return true;
     }
-
 }
 
