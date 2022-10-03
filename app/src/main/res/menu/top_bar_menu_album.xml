@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/alb_add"
-        app:showAsAction="ifRoom"
         android:contentDescription="@string/add_description"
         android:icon="@drawable/ic_baseline_add_24"
-        android:title="@string/add_title" />
+        android:title="@string/add_title"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/alb_camera"
         android:contentDescription="@string/icon_camera_description"
@@ -64,6 +64,5 @@
                 android:id="@+id/alb_setting"
                 android:title="@string/setting_title" />
         </menu>
-
     </item>
 </menu>

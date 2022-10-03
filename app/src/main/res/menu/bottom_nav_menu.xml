@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:title="Ảnh"
+        android:id="@+id/image_icon"
         android:icon="@drawable/ic_baseline_image_24"
-        android:id="@+id/image_icon" />
+        android:title="@string/nav_image_title" />
     <item
-        android:title="Albums"
+        android:id="@+id/album_icon"
         android:icon="@drawable/ic_baseline_photo_album_24"
-        android:id="@+id/album_icon" />
+        android:title="@string/nav_album_title" />
     <item
-        android:title="Tìm kiếm"
+        android:id="@+id/image_search_icon"
         android:icon="@drawable/ic_baseline_image_search_24"
-        android:id="@+id/image_search_icon" />
+        android:title="@string/nav_search_title" />
 </menu>

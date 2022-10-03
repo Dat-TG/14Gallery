@@ -3,7 +3,6 @@ package com.example.a14gallery_photoandalbumgallery;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -12,18 +11,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.appcompat.widget.Toolbar;
 
 public class ImageFragment extends Fragment {
-
     public ImageFragment() {
 
     }
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
-        super.onViewCreated(view, savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -43,8 +36,6 @@ public class ImageFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_image, container, false);
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -52,7 +43,7 @@ public class ImageFragment extends Fragment {
                 // Click camera
                 return true;
             case R.id.img_choose:
-                // Click choose(Lựa chọn)
+                // Click choose
                 return true;
             case R.id.img_grid_col_2:
                 // Click grid_col_2
@@ -67,16 +58,16 @@ public class ImageFragment extends Fragment {
                 // Click cgrid_col_5
                 return true;
             case R.id.img_view_mode_normal:
-                // Click Lên rồi xuống
+                // Click: sort UP-TO-DOWN
                 return true;
             case R.id.img_view_mode_convert:
-                // Click Đảo ngược
+                // Click: sort DOWN-TO-UP
                 return true;
             case R.id.img_view_mode_day:
-                // Click Xếp theo ngày
+                // Click Sort by day
                 return true;
             case R.id.img_view_mode_month:
-                // Click Xếp theo tháng
+                // Click Sort by month
                 return true;
             case R.id.img_setting:
                 // Click Setting

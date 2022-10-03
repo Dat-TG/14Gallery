@@ -5,12 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".ImageSearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Tìm kiếm ở đây"
         android:gravity="center"
+        android:text="Tìm kiếm ở đây"
         android:textSize="30sp" />
 
 </FrameLayout>
