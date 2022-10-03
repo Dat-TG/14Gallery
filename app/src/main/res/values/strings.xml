@@ -1,5 +1,28 @@
 <resources>
-    <string name="app_name">14Gallery - Photo and Album Gallery</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="app_name">14Gallery</string>
+
+    <!-- Top bar menu-->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="icon_search_description">Icon search</string>
+    <string name="search_title">Search</string>
+    <string name="icon_camera_description">Icon camera</string>
+    <string name="camera_title">Camera</string>
+    <string name="icon_menu_description">Icon menu</string>
+    <string name="more_title">More</string>
+    <string name="grid_column_2">Column 2</string>
+    <string name="grid_column_3">Column 3</string>
+    <string name="grid_column_4">Column 4</string>
+    <string name="grid_column_5">Column 5</string>
+    <string name="grid_columns">Columns</string>
+    <string name="view_mode">Xem dưới dạng</string>
+    <string name="view_mode_normal">Lên rồi xuống</string>
+    <string name="view_mode_convert">Đảo ngược</string>
+    <string name="setting_description">Setting</string>
+    <string name="setting_title">Cài đặt</string>
+    <string name="choose_description">Lựa chọn</string>
+    <string name="choose_title">Lựa chọn</string>
+    <string name="add_description">Thêm album</string>
+    <string name="add_title">Thêm album</string>
+    <string name="view_mode_day">Xếp theo ngày</string>
+    <string name="view_mode_month">Xếp theo tháng</string>
 </resources>

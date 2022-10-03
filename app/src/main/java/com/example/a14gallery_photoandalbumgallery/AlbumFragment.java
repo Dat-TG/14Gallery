@@ -5,57 +5,77 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toolbar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AlbumFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AlbumFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    public AlbumFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AlbumFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AlbumFragment newInstance(String param1, String param2) {
-        AlbumFragment fragment = new AlbumFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            // TODO: Rename and change types of parameters
-            String mParam1 = getArguments().getString(ARG_PARAM1);
-            String mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_album, container, false);
+        View v = inflater.inflate(R.layout.fragment_album, container, false);
+        setHasOptionsMenu(true);
+        return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.top_bar_menu_album, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.alb_add:
+                // Click add ablum
+                return true;
+            case R.id.alb_camera:
+                // Click camera
+                return true;
+            case R.id.alb_choose:
+                // Click choose(Lựa chọn)
+                return true;
+            case R.id.alb_grid_col_2:
+                // Click grid_col_2
+                return true;
+            case R.id.alb_grid_col_3:
+                // Click grid_col_3
+                return true;
+            case R.id.alb_grid_col_4:
+                // Click grid_col_4
+                return true;
+            case R.id.alb_grid_col_5:
+                // Click cgrid_col_5
+                return true;
+            case R.id.alb_view_mode_normal:
+                // Click Lên rồi xuống
+                return true;
+            case R.id.alb_view_mode_convert:
+                // Click Đảo ngược
+                return true;
+            case R.id.alb_view_mode_day:
+                // Click Xếp theo ngày
+                return true;
+            case R.id.alb_view_mode_month:
+                // Click Xếp theo tháng
+                return true;
+            case R.id.alb_setting:
+                // Click Setting
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
