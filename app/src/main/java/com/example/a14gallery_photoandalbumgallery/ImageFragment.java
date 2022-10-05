@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+
 public class ImageFragment extends Fragment {
     public ImageFragment() {
 
