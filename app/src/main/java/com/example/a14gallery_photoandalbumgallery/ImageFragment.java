@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -11,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 public class ImageFragment extends Fragment {
     public ImageFragment() {
@@ -36,11 +39,14 @@ public class ImageFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_image, container, false);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.img_camera:
                 // Click camera
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
                 return true;
             case R.id.img_choose:
                 // Click choose
