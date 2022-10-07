@@ -1,10 +1,18 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,6 +20,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+    private final int STORAGE_PERMISSION_CODE = 1;
+
     ActivityMainBinding binding;
     Toolbar toolbar;
 
@@ -28,21 +38,59 @@ public class MainActivity extends AppCompatActivity {
 
         // Handle bottom navigation
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.image_icon:
+            if (item.getItemId() == R.id.image_icon)
                     replaceFragment(new ImageFragment());
-                    break;
-                case R.id.album_icon:
+            else if (item.getItemId() == R.id.album_icon)
                     replaceFragment(new AlbumFragment());
-                    break;
-                case R.id.image_search_icon:
+            else if (item.getItemId() == R.id.image_search_icon)
                     replaceFragment(new ImageSearchFragment());
-                    break;
-            }
+
             return true;
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check if permission to read external storage is granted, if not, request permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestStoragePermission();
+        }
+    }
+
+    // Request storage permission by showing AlertDialog
+    private void requestStoragePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed because the app needs to read your storage to show images from your phone." +
+                            "If permission is not granted, the app will be forced to close.")
+                    .setPositiveButton("ok", (dialogInterface, i) -> ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE))
+                    .setNegativeButton("cancel", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission GRANTED", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Clear permission if SDK >= 33
+                    revokeSelfPermissionOnKill(Manifest.permission.READ_EXTERNAL_STORAGE);
+                }
+                finishAffinity();
+            }
+        }
+    }
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
