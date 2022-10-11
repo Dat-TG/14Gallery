@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -46,6 +47,8 @@ public class AlbumFragment extends Fragment {
                 return true;
             case R.id.alb_camera:
                 // Click camera
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
                 return true;
             case R.id.alb_choose:
                 // Click choose(Lựa chọn)
