@@ -19,12 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFragment extends Fragment {
     FragmentImageBinding binding;
 
     List<String> images;
+    ArrayList<Photo> photos;
+    private ImageFragmentAdapter imageAdapter;
+    private int numImagesChecked;
 
     public ImageFragment() {
 
@@ -51,8 +55,37 @@ public class ImageFragment extends Fragment {
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        images = ImageGallery.listOfImages(requireContext());
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), images));
+        photos = ImageGallery.listOfImages(requireContext());
+        imageAdapter = new ImageFragmentAdapter(getContext(), photos);
+        binding.imageFragmentRecycleView.setAdapter(imageAdapter);
+        imageAdapter.setACTION_MODE(0);
+        imageAdapter.setOnItemLongClickListener(new ImageFragmentAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position, View view) {
+                imageAdapter.setACTION_MODE(1);
+                getActivity().invalidateOptionsMenu();
+                imageAdapter.notifyDataSetChanged();
+            }
+        });
+        imageAdapter.setOnItemClickListener(new ImageFragmentAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View view) {
+                if (imageAdapter.getACTION_MODE() == 1) {
+                    if (!photos.get(position).isChecked()) {
+                        photos.get(position).setChecked(true);
+                        numImagesChecked++;
+                        getActivity().setTitle(String.valueOf(numImagesChecked));
+                    }
+                    else {
+                        photos.get(position).setChecked(false);
+                        numImagesChecked--;
+                        getActivity().setTitle(String.valueOf(numImagesChecked));
+                    }
+                    imageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
 
         return binding.getRoot();
     }
@@ -73,19 +106,29 @@ public class ImageFragment extends Fragment {
         }
         if (item.getItemId() == R.id.img_grid_col_2) {
             // Click grid_col_2
+            binding.imageFragmentRecycleView.setLayoutManager(new GridLayoutManager(getContext(), 2));
             return true;
         }
         if (item.getItemId() == R.id.img_grid_col_3) {
             // Click grid_col_3
+            binding.imageFragmentRecycleView.setLayoutManager(new GridLayoutManager(getContext(), 3));
             return true;
         }
         if (item.getItemId() == R.id.img_grid_col_4) {
             // Click grid_col_4
+            binding.imageFragmentRecycleView.setLayoutManager(new GridLayoutManager(getContext(), 4));
             return true;
         }
         if (item.getItemId() == R.id.img_grid_col_5) {
             // Click grid_col_5
+            binding.imageFragmentRecycleView.setLayoutManager(new GridLayoutManager(getContext(), 5));
             return true;
+        }
+        if (item.getItemId() == R.id.clear_choose) {
+            imageAdapter.setACTION_MODE(0);
+            imageAdapter.notifyDataSetChanged();
+            numImagesChecked = 0;
+            getActivity().invalidateOptionsMenu();
         }
         if (item.getItemId() == R.id.img_view_mode_normal) {
             // Click { sort UP-TO-DOWN
