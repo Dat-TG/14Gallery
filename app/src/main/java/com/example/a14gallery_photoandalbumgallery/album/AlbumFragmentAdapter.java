@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
 import com.example.a14gallery_photoandalbumgallery.photo.Photo;
 
@@ -35,9 +36,13 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         String albumTitle = _album.second.elementAt(position);
         Vector<Photo> albumPhotos = _album.first.get(position).getAlbumPhotos();
         int albumsCount = albumPhotos.size();
-        Glide.with(_context)
-                .load(albumPhotos.get(albumsCount - 2).getPhotoUri())
-                .into(holder.binding.albumImg);
+        if(albumsCount > 0){
+            Glide.with(_context)
+                    .load(albumPhotos.get(albumsCount - 1).getPhotoUri())
+                    .into(holder.binding.albumImg);
+        }else{
+            holder.binding.albumImg.setImageResource(R.drawable.album_empty);
+        }
 
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
