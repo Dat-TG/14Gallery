@@ -3,16 +3,16 @@ package com.example.a14gallery_photoandalbumgallery.album;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Pair;
 
 import com.example.a14gallery_photoandalbumgallery.photo.Photo;
 
+import java.io.File;
 import java.util.Vector;
 
 public class AlbumGallery {
-    Vector<Album> Albums;
-    Vector<String> albumsNames;
 
     public static Pair<Vector<Album>, Vector<String>> getPhoneAlbums(Context context) {
         // Creating vectors to hold the final albums objects and albums names
@@ -84,6 +84,21 @@ public class AlbumGallery {
             }
 
             cur.close();
+        }
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/");
+        File[] allFiles = folder.listFiles();
+        for (int i=0;i<allFiles.length;i++) {
+            File[]content=allFiles[i].listFiles();
+            if (content.length==0) {
+                Album album = new Album();
+                //album.setId(Photo.getId());
+                album.setName(allFiles[i].getName());
+                //album.setCoverUri(Photo.getPhotoUri());
+                //album.getAlbumPhotos().add(Photo);
+
+                Albums.add(album);
+                albumsNames.add(allFiles[i].getName());
+            }
         }
         return new Pair(Albums, albumsNames);
     }

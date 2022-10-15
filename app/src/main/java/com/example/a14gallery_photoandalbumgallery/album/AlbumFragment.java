@@ -1,13 +1,27 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
+import static android.app.Activity.RESULT_OK;
+import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
+
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.Settings;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,14 +29,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a14gallery_photoandalbumgallery.BuildConfig;
+import com.example.a14gallery_photoandalbumgallery.MainActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.Vector;
 
 public class AlbumFragment extends Fragment {
+    private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
     Pair<Vector<Album>, Vector<String>> album;
 
@@ -61,7 +82,75 @@ public class AlbumFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.alb_add:
-                // Click add ablum
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (!Environment.isExternalStorageManager()) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                        alert.setTitle("PERMISSION NEEDED");
+                        alert.setMessage("This app need mange your storage to be able to create album folder");
+
+// Set an EditText view to get user input
+
+                        alert.setPositiveButton("ALLOW", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                                startActivityForResult(intent, APP_STORAGE_ACCESS_REQUEST_CODE);
+                            }
+                        });
+
+                        alert.setNegativeButton("DENY", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // Canceled.
+                            }
+                        });
+
+                        alert.show();
+                    } else {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                        alert.setTitle("Tạo album mới");
+                        alert.setMessage("Tên album");
+
+// Set an EditText view to get user input
+                        final EditText input = new EditText(getContext());
+                        alert.setView(input);
+
+                        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String value = input.getText().toString();
+
+                                // Do something with value!
+                                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
+                                Log.e("DIR", Environment.getExternalStorageDirectory().toString());
+
+                                if (!file.exists()) {
+
+                                    Boolean success = file.mkdirs();
+                                    if (success) {
+                                        Log.e("RES", "Success");
+                                    } else {
+                                        Log.e("RES", "Failed");
+                                    }
+
+                                    Toast.makeText(getActivity(), "Successful", Toast.LENGTH_SHORT).show();
+                                } else {
+
+                                    Toast.makeText(getActivity(), "Folder Already Exists", Toast.LENGTH_SHORT).show();
+
+                                }
+                                //This is where you would put your make directory code
+                            }
+                        });
+
+                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // Canceled.
+                            }
+                        });
+
+                        alert.show();
+                    }
+                }
                 return true;
             case R.id.alb_camera:
                 // Click camera
