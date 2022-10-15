@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new AlbumFragment());
             else if (item.getItemId() == R.id.image_search_icon)
                     replaceFragment(new ImageSearchFragment());
-
             return true;
         });
     }

@@ -1,11 +1,14 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.album;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,9 +16,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
+import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
+
+import java.util.Vector;
 
 public class AlbumFragment extends Fragment {
+    FragmentAlbumBinding binding;
+    Pair<Vector<Album>, Vector<String>> album;
+
     public AlbumFragment() {
         // Required empty public constructor
     }
@@ -36,7 +46,15 @@ public class AlbumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_album, container, false);
+        binding = FragmentAlbumBinding.inflate(inflater, container, false);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        binding.albumFragmentRecycleView.setHasFixedSize(true);
+        binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
+        binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
+        album = AlbumGallery.getPhoneAlbums(requireContext());
+        binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), album));
+
+        return binding.getRoot();
     }
 
     @Override
