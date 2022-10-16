@@ -1,26 +1,22 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
-import static android.app.Activity.RESULT_OK;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -30,26 +26,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
-import com.example.a14gallery_photoandalbumgallery.MainActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.a14gallery_photoandalbumgallery.detailAlbum.RecyclerViewInterface;
 
 import java.io.File;
 import java.util.Vector;
 
-public class AlbumFragment extends Fragment {
+public class AlbumFragment extends Fragment implements RecyclerViewInterface {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
     Pair<Vector<Album>, Vector<String>> album;
-
-    public AlbumFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,10 +64,10 @@ public class AlbumFragment extends Fragment {
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
         album = AlbumGallery.getPhoneAlbums(requireContext());
         binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), album));
-
         return binding.getRoot();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -190,5 +180,14 @@ public class AlbumFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(int pos) {
+        Toast.makeText(getContext(), pos, Toast.LENGTH_LONG).show();
+//        Intent intent = new Intent(getContext(), DetailAlbumFragment.class);
+//        intent.putExtra("ALBUM_CHILDREN", album.first.get(pos).getAlbumChildren());
+//        intent.putExtra("ALBUM_PHOTOS", album.first.get(pos).getAlbumPhotos());
+//        startActivity(intent);
     }
 }

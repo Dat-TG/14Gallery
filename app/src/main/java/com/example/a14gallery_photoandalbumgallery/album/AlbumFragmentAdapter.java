@@ -1,16 +1,26 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
+import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.photo.Photo;
 
 import java.util.Vector;
@@ -46,7 +56,16 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
 
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
-
+        holder.binding.albumImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(_context, DetailAlbumFragment.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("ALBUM_PHOTOS", albumPhotos);
+                intent.putExtras(bundle);
+                // Navigation to Detail Album 
+            }
+        });
     }
 
     @Override
@@ -61,4 +80,6 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
             binding = b;
         }
     }
+
+
 }

@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     Toolbar toolbar;
+
+    NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new ImageSearchFragment());
             return true;
         });
+        // navigation controller
+//        NavHostFragment navHostFragment =
+//                (NavHostFragment) getSupportFragmentManager()
+//                        .findFragmentById(R.id.navigation);
+//        navController = navHostFragment.getNavController();
+
+//        setupActionBarWithNavController(navController, );
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
     @Override
