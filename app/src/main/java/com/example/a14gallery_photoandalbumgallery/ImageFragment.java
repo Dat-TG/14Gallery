@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -8,23 +9,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFragment extends Fragment {
     FragmentImageBinding binding;
 
-    List<String> images;
+    List<Image> images;
+    List<ClassifyDate> classifyDateList;
+    ClassifyDateAdapter classifyDateAdapter;
 
     public ImageFragment() {
 
@@ -44,16 +47,22 @@ public class ImageFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container ,
                              Bundle savedInstanceState) {
         binding = FragmentImageBinding.inflate(inflater, container, false);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        binding.imageFragmentRecycleView.setHasFixedSize(true);
-        binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
-        binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        images = ImageGallery.listOfImages(requireContext());
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), images));
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        binding.imageFragmentRecycleView.setHasFixedSize(true);
+        binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
+        binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
+
+
+        images = ImageGallery.listOfImages(requireContext());
+        classifyDateList = ImageGallery.getListClassifyDate(images);
+
+        classifyDateAdapter = new ClassifyDateAdapter(getContext());
+        classifyDateAdapter.setData(classifyDateList);
+        binding.imageFragmentRecycleView.setAdapter(classifyDateAdapter);
         return binding.getRoot();
     }
 
@@ -62,7 +71,6 @@ public class ImageFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.img_camera) {
             // Click camera
-
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
             return true;
@@ -109,4 +117,5 @@ public class ImageFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
