@@ -6,9 +6,40 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import java.util.ArrayList;
+import java.util.List;
 
+// Singleton Pattern
 public class ImageGallery {
-    public static ArrayList<String> listOfImages(Context context) {
+    boolean loaded = false;
+    public List<String> images;
+    private static ImageGallery INSTANCE;
+
+    // Constructor
+    private ImageGallery() { }
+
+    public static ImageGallery getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ImageGallery();
+        }
+        return INSTANCE;
+    }
+
+    public void load(Context context)  {
+        if (!loaded) {
+            images = listOfImages(context);
+            loaded = true;
+        }
+    }
+
+    public void update(Context context) {
+        if (!loaded)
+            load(context);
+        else {
+            images = listOfImages(context);
+        }
+    }
+
+    private static ArrayList<String> listOfImages(Context context) {
         Uri uri;
         Cursor cursor;
         int column_index_data;
