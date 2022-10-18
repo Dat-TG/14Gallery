@@ -4,15 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import java.util.List;
+import java.util.Locale;
 
 // Singleton Pattern
 public class ImageGallery {
@@ -52,7 +49,7 @@ public class ImageGallery {
         // int column_index_folder_name;
         ArrayList<Image> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
-        Long dateTaken = null;
+        long dateTaken;
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String[] projection = {MediaStore.MediaColumns.DATA,
@@ -67,7 +64,7 @@ public class ImageGallery {
 
         dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
         Calendar myCal = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
         // Get folder name
         // column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 

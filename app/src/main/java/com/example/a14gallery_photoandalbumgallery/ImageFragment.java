@@ -1,8 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,17 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFragment extends Fragment implements MenuProvider {
@@ -46,21 +42,19 @@ public class ImageFragment extends Fragment implements MenuProvider {
         ImageGallery.getInstance().update(requireContext());
         images = ImageGallery.getInstance().images;
 
-       RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
-//<<<<<<< HEAD
 
 
         images = ImageGallery.listOfImages(requireContext());
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
-//=======
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
         binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), images));
-        // Set on item click
+        // Set on item click (Click and long click)
         binding.imageFragmentRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), binding.imageFragmentRecycleView,
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -79,7 +73,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-//>>>>>>> origin/CVJV-9-Image-click
 
         classifyDateAdapter = new ClassifyDateAdapter(getContext());
         classifyDateAdapter.setData(classifyDateList);
@@ -89,6 +82,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menu.clear();
         if (!menu.hasVisibleItems()) {
             menuInflater.inflate(R.menu.top_bar_menu_image, menu);
         }
