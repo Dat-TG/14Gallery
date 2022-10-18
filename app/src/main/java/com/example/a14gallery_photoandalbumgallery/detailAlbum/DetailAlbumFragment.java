@@ -68,7 +68,7 @@ public class DetailAlbumFragment extends Fragment {
         binding.albumDetail.setNestedScrollingEnabled(false);
 //        albumChildren =  getIntent().getExtras().getSerializable("ALBUM_CHILDREN");
 
-        binding.albumDetail.setAdapter(new ImageFragmentAdapter(getContext(), albumUri));
+//        binding.albumDetail.setAdapter(new ImageFragmentAdapter(getContext(), albumUri));
         return binding.getRoot();
     }
 

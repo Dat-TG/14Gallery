@@ -11,9 +11,40 @@ import androidx.annotation.NonNull;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import java.util.List;
 
+// Singleton Pattern
 public class ImageGallery {
+    boolean loaded = false;
+    public List<Image> images;
+    private static ImageGallery INSTANCE;
+
+    // Constructor
+    private ImageGallery() { }
+
+    public static ImageGallery getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ImageGallery();
+        }
+        return INSTANCE;
+    }
+
+    public void load(Context context)  {
+        if (!loaded) {
+            images = listOfImages(context);
+            loaded = true;
+        }
+    }
+
+    public void update(Context context) {
+        if (!loaded)
+            load(context);
+        else {
+            images = listOfImages(context);
+        }
+    }
+
     public static ArrayList<Image> listOfImages(Context context) {
         Uri uri;
         Cursor cursor;

@@ -14,10 +14,10 @@ import java.util.List;
 
 public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdapter.ImageFragmentViewHolder> {
     Context _context;
-    List<String> _images;
+    List<Image> _images;
 
 
-    public ImageFragmentAdapter(Context context, List<String> images) {
+    public ImageFragmentAdapter(Context context, List<Image> images) {
         _context = context;
         _images = images;
     }
@@ -39,15 +39,12 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
 
     @Override
     public void onBindViewHolder(@NonNull ImageFragmentViewHolder holder, int position) {
-        String image = _images.get(position);
-        // holder.binding.image.setImageResource(_images[position]);
+        Image image = _images.get(position);
         Glide.with(_context)
-                .load(image)
+                .load(image.getPath())
                 .centerCrop()
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .into(holder.binding.image);
-
-        /*TO DO: Implement onClickListener on this method*/
     }
 
     @Override

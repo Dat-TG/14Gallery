@@ -7,11 +7,19 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
+<<<<<<< HEAD
             <value value="C:\Users\Admin\.android\avd\Pixel_5_API_31_2.avd" />
+=======
+            <value value="C:\Users\HUUTHANH\.android\avd\Pixel_5_API_31.avd" />
+>>>>>>> origin/CVJV-9-Image-click
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
+<<<<<<< HEAD
     <timeTargetWasSelectedWithDropDown value="2022-10-17T05:52:54.827201300Z" />
+=======
+    <timeTargetWasSelectedWithDropDown value="2022-10-17T07:04:00.107431200Z" />
+>>>>>>> origin/CVJV-9-Image-click
   </component>
 </project>
