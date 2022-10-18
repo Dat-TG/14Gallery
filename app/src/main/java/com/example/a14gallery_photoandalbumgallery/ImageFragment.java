@@ -46,7 +46,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         ImageGallery.getInstance().update(requireContext());
         images = ImageGallery.getInstance().images;
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+       RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
