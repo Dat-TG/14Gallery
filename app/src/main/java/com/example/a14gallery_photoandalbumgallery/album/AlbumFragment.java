@@ -4,6 +4,7 @@ import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMI
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -112,9 +113,7 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface {
                                 // Do something with value!
                                 File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
                                 Log.e("DIR", Environment.getExternalStorageDirectory().toString());
-
                                 if (!file.exists()) {
-
                                     Boolean success = file.mkdirs();
                                     if (success) {
                                         Log.e("RES", "Success");
@@ -129,6 +128,7 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface {
 
                                 }
                                 //This is where you would put your make directory code
+
                             }
                         });
 
@@ -190,4 +190,5 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface {
 //        intent.putExtra("ALBUM_PHOTOS", album.first.get(pos).getAlbumPhotos());
 //        startActivity(intent);
     }
+
 }
