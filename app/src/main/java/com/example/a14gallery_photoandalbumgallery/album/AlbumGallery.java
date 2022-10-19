@@ -5,19 +5,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Pair;
 
-import com.example.a14gallery_photoandalbumgallery.photo.Photo;
+import com.example.a14gallery_photoandalbumgallery.Image;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlbumGallery {
 
-    public static Pair<Vector<Album>, Vector<String>> getPhoneAlbums(Context context) {
-        // Creating vectors to hold the final albums objects and albums names
-        Vector<Album> Albums = new Vector<>();
-        Vector<String> albumsNames = new Vector<>();
+    public static List<Album> getPhoneAlbums(Context context) {
+        List<Album> albums = new ArrayList<>();
+        List<String> albumsNames = new ArrayList<>();
 
         // which image properties are we querying
         String[] projection = new String[]{
@@ -25,10 +24,8 @@ public class AlbumGallery {
                 MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media._ID
         };
-        // content: style URI for the "primary" external storage volume
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        // Make the query.
         Cursor cur = context.getContentResolver().query(images,
                 projection, // Which columns to return
                 null,       // Which rows to return (all rows)
@@ -56,27 +53,26 @@ public class AlbumGallery {
                     data = cur.getString(imageUriColumn);
                     imageId = cur.getString(imageIdColumn);
 
-                    // Adding a new Photo object to Photos vector
-                    Photo Photo = new Photo();
-                    Photo.setAlbumName(bucketName);
-                    Photo.setPhotoUri(data);
-                    Photo.setId(Integer.parseInt(imageId));
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
 
                     if (albumsNames.contains(bucketName)) {
-                        for (Album album : Albums) {
+                        for (Album album : albums) {
                             if (album.getName().equals(bucketName)) {
-                                album.getAlbumPhotos().add(Photo);
+                                album.getAlbumImages().add(image);
                                 break;
                             }
                         }
                     } else {
                         Album album = new Album();
-                        album.setId(Photo.getId());
+                        album.setId(image.getId());
                         album.setName(bucketName);
-                        album.setCoverUri(Photo.getPhotoUri());
-                        album.getAlbumPhotos().add(Photo);
+                        album.setCoverUri(image.getPath());
+                        album.getAlbumImages().add(image);
 
-                        Albums.add(album);
+                        albums.add(album);
                         albumsNames.add(bucketName);
                     }
 
@@ -88,20 +84,20 @@ public class AlbumGallery {
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/");
         File[] allFiles = folder.listFiles();
         if (folder.exists()) {
-            for (int i = 0; i < allFiles.length; i++) {
-                File[] content = allFiles[i].listFiles();
+            for (File allFile : allFiles) {
+                File[] content = allFile.listFiles();
                 if (content.length == 0) {
                     Album album = new Album();
-                    //album.setId(Photo.getId());
-                    album.setName(allFiles[i].getName());
-                    //album.setCoverUri(Photo.getPhotoUri());
-                    //album.getAlbumPhotos().add(Photo);
+                    //album.setId(image.getId());
+                    album.setName(allFile.getName());
+                    //album.setCoverUri(image.getimageUri());
+                    //album.getAlbumimages().add(image);
 
-                    Albums.add(album);
-                    albumsNames.add(allFiles[i].getName());
+                    albums.add(album);
+                    albumsNames.add(allFile.getName());
                 }
             }
         }
-        return new Pair(Albums, albumsNames);
+        return albums;
     }
 }

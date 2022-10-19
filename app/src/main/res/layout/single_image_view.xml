@@ -12,5 +12,3 @@
 
             tools:ignore="ContentDescription" />
 </LinearLayout>
-
-<!--    android:scaleType="centerCrop"-->

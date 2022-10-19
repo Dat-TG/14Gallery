@@ -46,7 +46,6 @@ public class ImageGallery {
         Uri uri;
         Cursor cursor;
         int column_index_data, dateIndex;
-        // int column_index_folder_name;
         ArrayList<Image> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
         long dateTaken;
@@ -65,8 +64,6 @@ public class ImageGallery {
         dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
         Calendar myCal = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
-        // Get folder name
-        // column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);

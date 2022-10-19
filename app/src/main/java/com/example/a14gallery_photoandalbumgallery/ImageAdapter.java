@@ -14,10 +14,11 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
     private List<Image> listImages;
     private Context context;
+
     public ImageAdapter(Context context) {
         this.context = context;
     }
@@ -64,7 +65,6 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
     }
 
 
-
     public class ImageViewHolder extends RecyclerView.ViewHolder {
         private ImageView image;
 
@@ -73,7 +73,6 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             image = itemView.findViewById(R.id.image);
         }
     }
-
 
 
 }

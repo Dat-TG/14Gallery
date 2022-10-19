@@ -51,13 +51,6 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new ImageSearchFragment());
             return true;
         });
-        // navigation controller
-//        NavHostFragment navHostFragment =
-//                (NavHostFragment) getSupportFragmentManager()
-//                        .findFragmentById(R.id.navigation);
-//        navController = navHostFragment.getNavController();
-
-//        setupActionBarWithNavController(navController, );
     }
 
     @Override

@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,13 +32,13 @@ import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBind
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.RecyclerViewInterface;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.List;
 
 public class AlbumFragment extends Fragment implements RecyclerViewInterface, MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
-    Pair<Vector<Album>, Vector<String>> album;
 
+    List<Album> albums;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,8 +47,8 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
         binding.albumFragmentRecycleView.setHasFixedSize(true);
         binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
-        album = AlbumGallery.getPhoneAlbums(requireContext());
-        binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), album));
+        albums = AlbumGallery.getPhoneAlbums(requireContext());
+        binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), albums));
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -80,17 +79,13 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (!Environment.isExternalStorageManager()) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-
                     alert.setTitle("PERMISSION NEEDED");
                     alert.setMessage("This app need mange your storage to be able to create album folder");
-
                     // Set an EditText view to get user input
-
                     alert.setPositiveButton("ALLOW", (dialog, whichButton) -> {
                         Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                         startActivityForResult(intent, APP_STORAGE_ACCESS_REQUEST_CODE);
                     });
-
                     alert.setNegativeButton("DENY", (dialog, whichButton) -> {
                         // Canceled.
                     });
@@ -98,17 +93,14 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
                     alert.show();
                 } else {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-
                     alert.setTitle("Tạo album mới");
                     alert.setMessage("Tên album");
 
                     // Set an EditText view to get user input
                     final EditText input = new EditText(getContext());
                     alert.setView(input);
-
                     alert.setPositiveButton("Ok", (dialog, whichButton) -> {
                         String value = input.getText().toString();
-
                         // Do something with value!
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
                         Log.e("DIR", Environment.getExternalStorageDirectory().toString());
@@ -119,17 +111,12 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
                             } else {
                                 Log.e("RES", "Failed");
                             }
-
                             Toast.makeText(getActivity(), "Successful", Toast.LENGTH_SHORT).show();
                         } else {
-
                             Toast.makeText(getActivity(), "Folder Already Exists", Toast.LENGTH_SHORT).show();
-
                         }
                         //This is where you would put your make directory code
-
                     });
-
                     alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
                         // Canceled.
                     });
