@@ -33,13 +33,18 @@ import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBind
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.RecyclerViewInterface;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class AlbumFragment extends Fragment implements RecyclerViewInterface, MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
-
     List<Album> albums;
+    String rootFolder="/14Gallery/";
+    String favoriteAlbumFolderName="FavoriteAlbum";
+    String privateAlbumFolderName="PrivateAlbum";
+    String recycleBinFolderName="RecycleBin";
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +62,54 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
         ImageView favoriteAlbum=(ImageView)binding.getRoot().findViewById(R.id.favoriteAlbum);
         ImageView privateAlbum=(ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
         ImageView recycleBin=(ImageView) binding.getRoot().findViewById(R.id.recycleBin);
+
+        //Tạo album Ưa thích nếu chưa tạo
+        File favoriteAlbumFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+favoriteAlbumFolderName);
+        if (!favoriteAlbumFolder.exists()) {
+            favoriteAlbumFolder.mkdirs();
+        }
+        File hiddenFavoriteAlbum=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+favoriteAlbumFolderName+"/"+".nomedia");
+        if (!hiddenFavoriteAlbum.exists()) {
+            try {
+                hiddenFavoriteAlbum.createNewFile();
+                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("CREATE FILE ERROR", "Cannot create new file");
+            }
+        }
+
+        //Tạo album Riêng tư nếu chưa tạo
+        File privateAlbumFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+privateAlbumFolderName);
+        if (!privateAlbumFolder.exists()) {
+            privateAlbumFolder.mkdirs();
+        }
+        File hiddenPrivateAlbum=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+privateAlbumFolderName+"/"+".nomedia");
+        if (!hiddenPrivateAlbum.exists()) {
+            try {
+                hiddenPrivateAlbum.createNewFile();
+                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("CREATE FILE ERROR", "Cannot create new file");
+            }
+        }
+
+        //Tạo Thùng rác nếu chưa tạo
+        File recycleBinFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+recycleBinFolderName);
+        if (!recycleBinFolder.exists()) {
+            recycleBinFolder.mkdirs();
+        }
+        File hiddenRecycleBin=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+recycleBinFolderName+"/"+".nomedia");
+        if (!hiddenRecycleBin.exists()) {
+            try {
+                hiddenRecycleBin.createNewFile();
+                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("CREATE FILE ERROR", "Cannot create new file");
+            }
+        }
 
         favoriteAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +152,7 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.alb_add) {
+            //Kiểm tra và thiết lập quyền quản lý bộ nhớ
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (!Environment.isExternalStorageManager()) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
@@ -115,6 +169,7 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
 
                     alert.show();
                 } else {
+                    //Tạo Dialog tạo Album mới
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle("Tạo album mới");
                     alert.setMessage("Tên album");
@@ -125,7 +180,7 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
                     alert.setPositiveButton("Ok", (dialog, whichButton) -> {
                         String value = input.getText().toString();
                         // Do something with value!
-                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
+                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + value);
                         Log.e("DIR", Environment.getExternalStorageDirectory().toString());
                         if (!file.exists()) {
                             boolean success = file.mkdirs();
