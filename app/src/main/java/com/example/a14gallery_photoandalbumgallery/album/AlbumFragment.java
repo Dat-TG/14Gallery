@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,6 +54,28 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        ImageView favoriteAlbum=(ImageView)binding.getRoot().findViewById(R.id.favoriteAlbum);
+        ImageView privateAlbum=(ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
+        ImageView recycleBin=(ImageView) binding.getRoot().findViewById(R.id.recycleBin);
+
+        favoriteAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        privateAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        recycleBin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"RecycleBin clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
         return binding.getRoot();
     }
 
