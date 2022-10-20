@@ -41,4 +41,7 @@
     <string name="delete_title">Delete</string>
     <string name="delete_description">Delete image</string>
     <string name="more_description">More option</string>
+    <string name="rename_title">Rename</string>
+    <string name="add_to_album_title">Add to album</string>
+    <string name="details_title">Details</string>
 </resources>

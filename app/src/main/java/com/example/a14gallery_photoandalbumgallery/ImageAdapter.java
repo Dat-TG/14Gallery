@@ -1,80 +1,76 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.databinding.SingleImageViewBinding;
 
 import java.util.List;
 
 public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-    private List<Image> listImages;
-    private Context context;
-    public ImageAdapter(Context context) {
-        this.context = context;
+    public interface OnItemClickListener {
+        void onItemClick(Image image);
     }
 
+    private List<Image> _listImages;
+    private final OnItemClickListener _listener;
 
-    public ImageAdapter() {
+    public ImageAdapter(List<Image> listImage, OnItemClickListener listener) {
+        _listImages = listImage;
+        _listener = listener;
     }
-
 
     public void setData(List<Image> listImages) {
-        this.listImages = listImages;
+        _listImages = listImages;
         notifyDataSetChanged();
+    }
+
+    public static class ImageViewHolder extends RecyclerView.ViewHolder {
+        SingleImageViewBinding binding;
+
+        public ImageViewHolder(SingleImageViewBinding b) {
+            super(b.getRoot());
+            binding = b;
+        }
+
+        public void bind(final Image image, final OnItemClickListener listener) {
+            Glide.with(binding.getRoot().getContext())
+                    .load(image.getPath())
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(binding.image);
+            binding.image.setOnClickListener(view -> listener.onItemClick(image));
+        }
     }
 
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_image_view, parent, false);
-
-        return new ImageViewHolder(view);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        return new ImageViewHolder(SingleImageViewBinding.inflate(inflater, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Image image_pos = listImages.get(position);
-        if (image_pos == null) {
+        Image image = _listImages.get(position);
+        if (image == null) {
             return;
         }
 
-        Glide.with(context)
-                .load(image_pos.getPath())
-                .centerCrop()
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .into(holder.image);
-
+        holder.bind(image, _listener);
     }
 
     @Override
     public int getItemCount() {
-        if (listImages != null)
-            return listImages.size();
+        if (_listImages != null)
+            return _listImages.size();
         return 0;
     }
-
-
-
-    public class ImageViewHolder extends RecyclerView.ViewHolder {
-        private ImageView image;
-
-        public ImageViewHolder(@NonNull View itemView) {
-            super(itemView);
-            image = itemView.findViewById(R.id.image);
-        }
-    }
-
-
-
 }
 

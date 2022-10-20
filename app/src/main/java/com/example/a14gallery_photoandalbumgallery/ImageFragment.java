@@ -26,7 +26,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     List<Image> images;
     List<ClassifyDate> classifyDateList;
-    ClassifyDateAdapter classifyDateAdapter;
 
     public ImageFragment() {
 
@@ -48,35 +47,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
 
-
-        images = ImageGallery.listOfImages(requireContext());
+        images = ImageGallery.getInstance().getListOfImages(getContext());
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), images));
-        // Set on item click (Click and long click)
-        binding.imageFragmentRecycleView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), binding.imageFragmentRecycleView,
-                new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(getActivity(), FullscreenImageActivity.class);
-                        intent.putExtra("position", position);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-
-                    }
-                }));
+        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList));
 
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-
-        classifyDateAdapter = new ClassifyDateAdapter(getContext());
-        classifyDateAdapter.setData(classifyDateList);
-        binding.imageFragmentRecycleView.setAdapter(classifyDateAdapter);
         return binding.getRoot();
     }
 

@@ -27,6 +27,11 @@ public class ImageGallery {
         return INSTANCE;
     }
 
+    public List<Image> getListOfImages(Context context) {
+        if (!loaded) load(context);
+        return images;
+    }
+
     public void load(Context context)  {
         if (!loaded) {
             images = listOfImages(context);
