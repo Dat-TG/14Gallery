@@ -13,6 +13,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumGallery {
+    private static AlbumGallery INSTANCE = null;
+    private boolean loaded = false;
+    public List<Album> albums;
+
+    public static AlbumGallery getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new AlbumGallery();
+        }
+        return INSTANCE;
+    }
+
+    public void load(Context context) {
+        if (!loaded) {
+            albums = getPhoneAlbums(context);
+            loaded = true;
+        }
+    }
+
+    public void update(Context context) {
+        if (!loaded)
+            load(context);
+        else {
+            albums = getPhoneAlbums(context);
+        }
+    }
 
     public static List<Album> getPhoneAlbums(Context context) {
         List<Album> albums = new ArrayList<>();
@@ -81,7 +106,7 @@ public class AlbumGallery {
 
             cur.close();
         }
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/");
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/");
         File[] allFiles = folder.listFiles();
         if (folder.exists()) {
             for (File allFile : allFiles) {

@@ -48,8 +48,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
 
-
-        images = ImageGallery.listOfImages(requireContext());
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);

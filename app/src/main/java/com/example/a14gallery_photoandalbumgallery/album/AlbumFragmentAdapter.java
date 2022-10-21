@@ -1,9 +1,11 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,16 +14,17 @@ import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
-
+import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import java.util.List;
 
 public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {
     Context _context;
     List<Album> _album;
+    Album album;
 
-    public AlbumFragmentAdapter(Context context, List<Album> album) {
+    public AlbumFragmentAdapter(Context context, List<Album> albums) {
         this._context = context;
-        this._album = album;
+        this._album = albums;
     }
 
     @NonNull
@@ -31,6 +34,7 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         return new AlbumFragmentViewHolder(SingleAlbumViewBinding.inflate(inflater, parent, false));
     }
 
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(@NonNull AlbumFragmentAdapter.AlbumFragmentViewHolder holder, int position) {
         String albumTitle = _album.get(position).getName();
@@ -47,15 +51,12 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
 
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
-        holder.binding.albumImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent intent = new Intent(_context, DetailAlbumFragment.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("ALBUM_PHOTOS", albumImages);
-//                intent.putExtras(bundle);
-                // Navigation to Detail Album 
-            }
+        holder.binding.albumImg.setOnClickListener(view -> {
+            album = _album.get(position);
+            Intent intent = new Intent(_context, DetailAlbumActivity.class);
+            intent.putExtra("ALBUM", album.getAlbumImages().get(0).getPath());
+            Toast.makeText(_context, album.getName() , Toast.LENGTH_SHORT).show();
+            _context.startActivity(intent);
         });
     }
 

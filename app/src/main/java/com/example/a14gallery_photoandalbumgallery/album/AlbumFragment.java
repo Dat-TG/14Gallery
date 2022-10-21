@@ -29,16 +29,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
-import com.example.a14gallery_photoandalbumgallery.detailAlbum.RecyclerViewInterface;
 
 import java.io.File;
 import java.util.List;
 
-public class AlbumFragment extends Fragment implements RecyclerViewInterface, MenuProvider {
+public class AlbumFragment extends Fragment implements MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
-
     List<Album> albums;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,22 +46,16 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
         binding.albumFragmentRecycleView.setHasFixedSize(true);
         binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
-        albums = AlbumGallery.getPhoneAlbums(requireContext());
+
+        AlbumGallery.getInstance().load(getContext());
+        albums = AlbumGallery.getInstance().albums;
+
         binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), albums));
 
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
         return binding.getRoot();
-    }
-
-    @Override
-    public void onItemClick(int pos) {
-        Toast.makeText(getContext(), pos, Toast.LENGTH_LONG).show();
-//        Intent intent = new Intent(getContext(), DetailAlbumFragment.class);
-//        intent.putExtra("ALBUM_CHILDREN", album.first.get(pos).getAlbumChildren());
-//        intent.putExtra("ALBUM_PHOTOS", album.first.get(pos).getAlbumPhotos());
-//        startActivity(intent);
     }
 
     @Override

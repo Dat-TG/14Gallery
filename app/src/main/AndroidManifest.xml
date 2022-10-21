@@ -19,6 +19,13 @@
         android:theme="@style/Theme.14GalleryPhotoAndAlbumGallery.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".DetailAlbumActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".FullscreenImageActivity"
             android:exported="false">
             <meta-data
@@ -34,9 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".detailAlbum.DetailAlbumFragment"/>
-        <activity android:name=".album.AlbumFragment"/>
-
+        <activity android:name=".album.AlbumFragment" />
     </application>
 
 </manifest>

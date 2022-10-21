@@ -1,61 +1,53 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
-import com.example.a14gallery_photoandalbumgallery.databinding.FragmentDetailAlbumBinding;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 
-public class DetailAlbumFragment extends Fragment implements MenuProvider {
-    Context _context;
-    FragmentDetailAlbumBinding binding;
-    List<Image> albumPhotos;
-    List<Album> albumChildren;
-    List<String> albumUri;
+public class DetailAlbumActivity extends AppCompatActivity implements MenuProvider {
+    ActivityDetailAlbumBinding binding;
+    List<Album> albums;
+    String name;
+    Album album;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = requireActivity().getIntent();
-        Bundle bundle = intent.getExtras();
-//        albumPhotos = (List<Image>) bundle.getSerializable("ALBUM_PHOTOS");
-//        for (int i = 0; i < albumPhotos.size(); i++) {
-//            albumUri.add(albumPhotos.get(i).getPath());
-//        }
-    }
+        binding = ActivityDetailAlbumBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentDetailAlbumBinding.inflate(inflater, container, false);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        binding.albumDetail.setHasFixedSize(true);
-        binding.albumDetail.setLayoutManager(layoutManager);
-        binding.albumDetail.setNestedScrollingEnabled(false);
-//        albumChildren =  getIntent().getExtras().getSerializable("ALBUM_CHILDREN");
-//        binding.albumDetail.setAdapter(new ImageFragmentAdapter(getContext(), albumUri));
-        return binding.getRoot();
-    }
+        Intent intent = getIntent();
+        name = intent.getStringExtra("ALBUM");
 
+        albums = AlbumGallery.getInstance().albums;
+        Log.d("Activity", "onCreate: " + name);
+        Glide.with(this)
+                .load(name)
+                .fitCenter()
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .into(binding.imageView);
+    }
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
