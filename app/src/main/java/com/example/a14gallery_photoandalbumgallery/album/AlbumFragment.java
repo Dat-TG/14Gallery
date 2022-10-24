@@ -37,6 +37,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
     List<Album> albums;
+    AlbumFragmentAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -49,8 +50,8 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
         AlbumGallery.getInstance().load(getContext());
         albums = AlbumGallery.getInstance().albums;
-
-        binding.albumFragmentRecycleView.setAdapter(new AlbumFragmentAdapter(getContext(), albums));
+        adapter = new AlbumFragmentAdapter(getContext(), albums);
+        binding.albumFragmentRecycleView.setAdapter(adapter);
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -74,27 +75,20 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle("PERMISSION NEEDED");
                     alert.setMessage("This app need mange your storage to be able to create album folder");
-                    // Set an EditText view to get user input
-                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> {
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
                         Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                         startActivityForResult(intent, APP_STORAGE_ACCESS_REQUEST_CODE);
                     });
-                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {
-                        // Canceled.
-                    });
-
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
                     alert.show();
                 } else {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle("Tạo album mới");
                     alert.setMessage("Tên album");
-
-                    // Set an EditText view to get user input
-                    final EditText input = new EditText(getContext());
+                    final EditText input = new EditText(getContext()); // Set an EditText view to get user input
                     alert.setView(input);
                     alert.setPositiveButton("Ok", (dialog, whichButton) -> {
                         String value = input.getText().toString();
-                        // Do something with value!
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
                         Log.e("DIR", Environment.getExternalStorageDirectory().toString());
                         if (!file.exists()) {
@@ -105,22 +99,21 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                                 Log.e("RES", "Failed");
                             }
                             Toast.makeText(getActivity(), "Successful", Toast.LENGTH_SHORT).show();
+                            AlbumGallery.getInstance().update(getContext());
+                            albums = AlbumGallery.getInstance().albums;
+                            adapter = new AlbumFragmentAdapter(getContext(), albums);
+                            binding.albumFragmentRecycleView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getActivity(), "Folder Already Exists", Toast.LENGTH_SHORT).show();
                         }
-                        //This is where you would put your make directory code
                     });
-                    alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
-                        // Canceled.
-                    });
-
+                    alert.setNegativeButton("Cancel", (dialog, whichButton) -> {/* Canceled.*/});
                     alert.show();
                 }
             }
             return true;
         }
-        if (menuItem.getItemId() == R.id.alb_camera) {
-            // Click camera
+        if (menuItem.getItemId() == R.id.alb_camera) {  // Click camera
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
             return true;

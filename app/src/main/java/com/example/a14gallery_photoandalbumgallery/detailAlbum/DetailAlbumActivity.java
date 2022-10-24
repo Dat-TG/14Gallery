@@ -31,8 +31,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
     ActivityDetailAlbumBinding binding;
     Toolbar toolbar;
 
-    NavController navController;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +40,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
-        //button Back
+        // Button back
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -53,15 +51,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
         binding.appBarDetail.setTitle(album.getName());
         if(size != 0){
             List<Image> images = album.getAlbumImages();
-
+            List<ClassifyDate> classifyDateList = ImageGallery.getListClassifyDate(images);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
 
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             binding.recyclerDetailView.setLayoutManager(layoutManager);
-
-            List<ClassifyDate> classifyDateList = ImageGallery.getListClassifyDate(images);
-
             binding.recyclerDetailView.setNestedScrollingEnabled(false);
             binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList));
             binding.textNotFound.setVisibility(View.GONE);
@@ -69,14 +64,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.textNotFound.setText(R.string.no_image_found);
             binding.recyclerDetailView.setVisibility(View.GONE);
         }
-
         setContentView(binding.getRoot());
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        return navController.navigateUp() || super.onSupportNavigateUp();
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
@@ -87,14 +77,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
         super.onOptionsItemSelected(menuItem);
-        if(menuItem.getItemId() == android.R.id.home) {
+        if(menuItem.getItemId() == android.R.id.home) { // Click back button
             finish();
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_camera) {
+        if (menuItem.getItemId() == R.id.img_camera) { // Click Camera
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
-//            Toast.makeText(this, "Click camera", Toast.LENGTH_SHORT).show();
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
@@ -139,5 +128,4 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         return false;
     }
-
 }
