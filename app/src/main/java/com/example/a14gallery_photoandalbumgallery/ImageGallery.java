@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class ImageGallery {
 
         dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
         Calendar myCal = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
         // Get folder name
         // column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
@@ -101,6 +102,30 @@ public class ImageGallery {
             for (int i = 1; i < images.size(); i++) {
                 if (!images.get(i).getDateTaken().equals(images.get(i - 1).getDateTaken())) {
                     ClassifyDateList.add(new ClassifyDate(images.get(i).getDateTaken(), new ArrayList<>()));
+                    ClassifyDateCount++;
+                }
+                ClassifyDateList.get(ClassifyDateCount).addListImage(images.get(i));
+            }
+            return ClassifyDateList;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static List<ClassifyDate> getListClassifyMonth(List<Image> images) {
+        List<ClassifyDate> ClassifyDateList = new ArrayList<>();
+        int ClassifyDateCount = 0;
+        int beg = 3, end = 5;
+        String nameClassify;
+        try {
+            ClassifyDateList.add(new ClassifyDate(images.get(0).getDateTaken().substring(beg), new ArrayList<>()));
+            ClassifyDateList.get(ClassifyDateCount).addListImage(images.get(0));
+            for (int i = 1; i < images.size(); i++) {
+                if (!images.get(i).getDateTaken().substring(beg)
+                        .equals(images.get(i - 1).getDateTaken().substring(beg))) {
+                    nameClassify = images.get(i).getDateTaken().substring(beg);
+//                    Log.d("Name: ", nameClassify);
+                    ClassifyDateList.add(new ClassifyDate(nameClassify, new ArrayList<>()));
                     ClassifyDateCount++;
                 }
                 ClassifyDateList.get(ClassifyDateCount).addListImage(images.get(i));
