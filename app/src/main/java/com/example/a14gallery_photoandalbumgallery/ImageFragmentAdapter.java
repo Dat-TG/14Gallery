@@ -64,12 +64,12 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
         );
         imageAdapter.setACTION_MODE(0);
         imageAdapter.setData(classifyDate.getListImage());
-        imageAdapter.set_listeners(image->{
+        imageAdapter.setOnLongClickListener(image->{
             imageAdapter.setACTION_MODE(1);
             imageAdapter.notifyDataSetChanged();
             return false;
         });
-        imageAdapter.set_listener(image -> {
+        imageAdapter.setOnClickListener(image -> {
             if (imageAdapter.getACTION_MODE() == 1) {
                 if (!listImage.get(holder.getAdapterPosition()).isChecked()) {
                     listImage.get(holder.getAdapterPosition()).setChecked(true);

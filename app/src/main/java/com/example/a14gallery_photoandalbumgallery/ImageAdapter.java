@@ -38,11 +38,11 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         notifyDataSetChanged();
     }
 
-    public void set_listeners(OnItemLongClickListener listeners){
+    public void setOnLongClickListener(OnItemLongClickListener listeners){
         _listeners=listeners;
     }
 
-    public void set_listener(OnItemClickListener listener){
+    public void setOnClickListener(OnItemClickListener listener){
         _listener=listener;
     }
 
