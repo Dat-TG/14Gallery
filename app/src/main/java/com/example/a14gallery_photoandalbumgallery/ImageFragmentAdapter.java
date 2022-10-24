@@ -1,30 +1,36 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.a14gallery_photoandalbumgallery.databinding.SingleImageViewBinding;
+import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateBinding;
 
 import java.util.List;
 
 public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdapter.ImageFragmentViewHolder> {
-    Context _context;
-    List<Image> _images;
+    private final Context _context;
+    private List<ClassifyDate> _listClassifyDate;
 
 
-    public ImageFragmentAdapter(Context context, List<Image> images) {
+    public ImageFragmentAdapter(Context context, List<ClassifyDate> listClassifyDate) {
         _context = context;
-        _images = images;
+        _listClassifyDate = listClassifyDate;
+    }
+
+    public void setData(List<ClassifyDate> listClassifyDate){
+        this._listClassifyDate = listClassifyDate;
+        notifyDataSetChanged();
     }
 
     public static class ImageFragmentViewHolder extends RecyclerView.ViewHolder {
-        SingleImageViewBinding binding;
-        public ImageFragmentViewHolder(SingleImageViewBinding b) {
+        ItemClassifyDateBinding binding;
+        public ImageFragmentViewHolder(ItemClassifyDateBinding b) {
             super(b.getRoot());
             binding = b;
         }
@@ -34,21 +40,31 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
     @Override
     public ImageFragmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ImageFragmentViewHolder(SingleImageViewBinding.inflate(inflater, parent, false));
+        return new ImageFragmentViewHolder(ItemClassifyDateBinding.inflate(inflater, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImageFragmentViewHolder holder, int position) {
-        Image image = _images.get(position);
-        Glide.with(_context)
-                .load(image.getPath())
-                .centerCrop()
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .into(holder.binding.image);
+        ClassifyDate classifyDate = _listClassifyDate.get(position);
+
+        holder.binding.txtNameClassifyDate.setText(classifyDate.getNameClassifyDate());
+        holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, 4));
+
+        ImageAdapter imageAdapter = new ImageAdapter(classifyDate.getListImage(),
+                image -> {
+                    Intent intent = new Intent(_context, FullscreenImageActivity.class);
+                    intent.putExtra("path", image.getPath());
+                    _context.startActivity(intent);
+                });
+        imageAdapter.setData(classifyDate.getListImage());
+        holder.binding.rcvImages.setAdapter(imageAdapter);
     }
 
     @Override
     public int getItemCount() {
-        return _images.size();
+        if (_listClassifyDate != null){
+            return _listClassifyDate.size();
+        }
+        return 0;
     }
 }

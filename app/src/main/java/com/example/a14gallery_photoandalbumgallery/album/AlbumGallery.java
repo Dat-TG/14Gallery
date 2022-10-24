@@ -9,8 +9,11 @@ import android.provider.MediaStore;
 import com.example.a14gallery_photoandalbumgallery.Image;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class AlbumGallery {
     private static AlbumGallery INSTANCE = null;
@@ -47,7 +50,8 @@ public class AlbumGallery {
         String[] projection = new String[]{
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media._ID
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
         };
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
@@ -63,6 +67,7 @@ public class AlbumGallery {
                 String bucketName;
                 String data;
                 String imageId;
+                long dateTaken;
                 int bucketNameColumn = cur.getColumnIndex(
                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
@@ -72,16 +77,24 @@ public class AlbumGallery {
                 int imageIdColumn = cur.getColumnIndex(
                         MediaStore.Images.Media._ID);
 
+                int dateTakenColumn = cur.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
                 do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
                     // Get the field values
                     bucketName = cur.getString(bucketNameColumn);
                     data = cur.getString(imageUriColumn);
                     imageId = cur.getString(imageIdColumn);
+                    dateTaken = cur.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
                     image.setAlbumName(bucketName);
                     image.setPath(data);
                     image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
 
                     if (albumsNames.contains(bucketName)) {
                         for (Album album : albums) {

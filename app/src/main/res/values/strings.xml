@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">14Gallery</string>
-
-    <!-- Top bar menu-->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="icon_search_description">Icon search</string>
     <string name="search_title">Search</string>
@@ -25,8 +23,6 @@
     <string name="add_title">Thêm album</string>
     <string name="view_mode_day">Xếp theo ngày</string>
     <string name="view_mode_month">Xếp theo tháng</string>
-
-    <!--  Bottom Navigation-->
     <string name="navigation_drawer_open">Drawer Open</string>
     <string name="navigation_drawer_close">Drawer Closed</string>
     <string name="nav_image_title">Ảnh</string>
@@ -41,4 +37,9 @@
     <string name="delete_title">Delete</string>
     <string name="delete_description">Delete image</string>
     <string name="more_description">More option</string>
+    <string name="rename_title">Rename</string>
+    <string name="add_to_album_title">Add to album</string>
+    <string name="details_title">Details</string>
+    <string name="no_image_found"><b>Không có ảnh hoặc album</b>\n\nBạn có thể chụp ảnh hoặc tạo album bằng cách thao tác ở trên</string>
+
 </resources>

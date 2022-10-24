@@ -15,6 +15,9 @@ import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
+import com.google.gson.Gson;
+
+import java.io.Serializable;
 import java.util.List;
 
 public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {
@@ -54,8 +57,9 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         holder.binding.albumImg.setOnClickListener(view -> {
             album = _album.get(position);
             Intent intent = new Intent(_context, DetailAlbumActivity.class);
-            intent.putExtra("ALBUM", album.getAlbumImages().get(0).getPath());
-            Toast.makeText(_context, album.getName() , Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            String imagesObj = gson.toJson(album);
+            intent.putExtra("ALBUM", imagesObj);
             _context.startActivity(intent);
         });
     }

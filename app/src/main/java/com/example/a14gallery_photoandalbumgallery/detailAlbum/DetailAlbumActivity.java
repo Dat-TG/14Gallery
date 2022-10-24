@@ -1,66 +1,100 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuProvider;
+import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
-import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
-import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
+import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.Objects;
 
 
-public class DetailAlbumActivity extends AppCompatActivity implements MenuProvider {
+public class DetailAlbumActivity extends AppCompatActivity {
     ActivityDetailAlbumBinding binding;
-    List<Album> albums;
-    String name;
-    Album album;
+    Toolbar toolbar;
+
+    NavController navController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailAlbumBinding.inflate(getLayoutInflater());
+
+        toolbar = binding.appBarDetail;
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        //button Back
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Gson gson = new Gson();
+        Album album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        int size = album.getAlbumImages().size();
+
+        binding.appBarDetail.setTitle(album.getName());
+        if(size != 0){
+            List<Image> images = album.getAlbumImages();
+
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+
+            binding.recyclerDetailView.setHasFixedSize(true);
+            binding.recyclerDetailView.setNestedScrollingEnabled(true);
+            binding.recyclerDetailView.setLayoutManager(layoutManager);
+
+            List<ClassifyDate> classifyDateList = ImageGallery.getListClassifyDate(images);
+
+            binding.recyclerDetailView.setNestedScrollingEnabled(false);
+            binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList));
+            binding.textNotFound.setVisibility(View.GONE);
+        }else {
+            binding.textNotFound.setText(R.string.no_image_found);
+            binding.recyclerDetailView.setVisibility(View.GONE);
+        }
+
         setContentView(binding.getRoot());
-
-        Intent intent = getIntent();
-        name = intent.getStringExtra("ALBUM");
-
-        albums = AlbumGallery.getInstance().albums;
-        Log.d("Activity", "onCreate: " + name);
-        Glide.with(this)
-                .load(name)
-                .fitCenter()
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .into(binding.imageView);
     }
 
     @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+    public boolean onSupportNavigateUp() {
+        return navController.navigateUp() || super.onSupportNavigateUp();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
-        menuInflater.inflate(R.menu.top_bar_menu_image, menu);
+        getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
+        return true;
     }
 
     @Override
-    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+        super.onOptionsItemSelected(menuItem);
+        if(menuItem.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
         if (menuItem.getItemId() == R.id.img_camera) {
-            // Click camera
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
+//            Toast.makeText(this, "Click camera", Toast.LENGTH_SHORT).show();
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
