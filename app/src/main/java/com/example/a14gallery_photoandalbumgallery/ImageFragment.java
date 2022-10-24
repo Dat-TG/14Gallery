@@ -27,7 +27,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     List<Image> images;
     List<ClassifyDate> classifyDateList;
-
+    public int typeView=4;
     public ImageFragment() {
 
     }
@@ -52,7 +52,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
         binding.rcvImages.setNestedScrollingEnabled(false);
-        binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,4));
+        binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -77,23 +77,31 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
-            // Click choose
+
+            return true;
+        }
+        if (menuItem.getItemId() == R.id.clear_choose) {
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,2));
+            typeView=2;
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_3) {
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,3));
+            typeView=3;
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_4) {
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,4));
+            typeView=4;
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_5) {
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,5));
+            typeView=5;
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_normal) {

@@ -1,8 +1,11 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.annotation.SuppressLint;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,18 +15,22 @@ import com.example.a14gallery_photoandalbumgallery.databinding.SingleImageViewBi
 
 import java.util.List;
 
-public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
-
+public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder>{
     public interface OnItemClickListener {
         void onItemClick(Image image);
     }
+    public interface OnItemLongClickListener {
+        boolean onItemLongClick(Image image);
+    }
 
     private List<Image> _listImages;
-    private final OnItemClickListener _listener;
+    private OnItemClickListener _listener;
+    private OnItemLongClickListener _listeners;
 
-    public ImageAdapter(List<Image> listImage, OnItemClickListener listener) {
+    public ImageAdapter(List<Image> listImage, OnItemClickListener listener,OnItemLongClickListener listeners) {
         _listImages = listImage;
         _listener = listener;
+        _listeners=listeners;
     }
 
     public void setData(List<Image> listImages) {
@@ -31,21 +38,34 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         notifyDataSetChanged();
     }
 
+    public void set_listeners(OnItemLongClickListener listeners){
+        _listeners=listeners;
+    }
+
+    public void set_listener(OnItemClickListener listener){
+        _listener=listener;
+    }
+
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         SingleImageViewBinding binding;
+        public View scrim;
+        public CheckBox checkBox;
 
         public ImageViewHolder(SingleImageViewBinding b) {
             super(b.getRoot());
             binding = b;
+            scrim = (View) itemView.findViewById(R.id.pictureItemScrim);
+            checkBox = (CheckBox) itemView.findViewById(R.id.pictureItemCheck);
         }
 
-        public void bind(final Image image, final OnItemClickListener listener) {
+        public void bind(final Image image, final OnItemClickListener listener,final OnItemLongClickListener listeners) {
             Glide.with(binding.getRoot().getContext())
                     .load(image.getPath())
                     .centerCrop()
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(binding.image);
             binding.image.setOnClickListener(view -> listener.onItemClick(image));
+            binding.image.setOnLongClickListener(view->listeners.onItemLongClick(image));
         }
     }
 
@@ -56,6 +76,7 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         return new ImageViewHolder(SingleImageViewBinding.inflate(inflater, parent, false));
     }
 
+    public int ACTION_MODE = 0;
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = _listImages.get(position);
@@ -63,7 +84,33 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             return;
         }
 
-        holder.bind(image, _listener);
+        holder.bind(image, _listener,_listeners);
+        if (ACTION_MODE == 0) {
+            holder.scrim.setVisibility(View.GONE);
+            holder.checkBox.setVisibility(View.GONE);
+            image.setChecked(false);
+        } else if (ACTION_MODE==1) {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.scrim.setVisibility(View.VISIBLE);
+            if (image.isChecked()) {
+                holder.checkBox.setChecked(true);
+            } else {
+                holder.checkBox.setChecked(false);
+            }
+        }
+        else{
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.scrim.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(true);
+        }
+    }
+
+    public int getACTION_MODE() {
+        return ACTION_MODE;
+    }
+
+    public void setACTION_MODE(int ACTION_MODE) {
+        this.ACTION_MODE = ACTION_MODE;
     }
 
     @Override
