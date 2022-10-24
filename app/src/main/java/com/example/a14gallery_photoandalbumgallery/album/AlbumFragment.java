@@ -4,10 +4,12 @@ import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMI
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +33,8 @@ import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.RecyclerViewInterface;
+import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
+import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,6 +125,25 @@ public class AlbumFragment extends Fragment implements RecyclerViewInterface, Me
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(),"PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // loading is given
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREFS", 0);
+                        if (sharedPreferences.getString("password", "0").equals("0")) {
+                            // Intent to navigate to Create Password Screen
+                            Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
+                            startActivity(intent)
+             ;              getActivity().finish();
+                        } else {
+                            //Intent to navigate to Input Password Screen
+                            Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    }
+                }, 2000);
             }
         });
         recycleBin.setOnClickListener(new View.OnClickListener() {
