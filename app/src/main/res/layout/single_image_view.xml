@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin = "3dp">
+    android:layout_margin="1dp" >
+
         <ImageView
             android:id="@+id/image"
-            android:src="@drawable/pic02"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="0dp"
+            android:src="@drawable/pic02"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1"
+            tools:ignore="MissingConstraints" />
 
-            tools:ignore="ContentDescription" />
-</LinearLayout>
-
-<!--    android:scaleType="centerCrop"-->
+</androidx.constraintlayout.widget.ConstraintLayout>

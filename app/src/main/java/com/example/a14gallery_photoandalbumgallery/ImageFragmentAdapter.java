@@ -16,11 +16,13 @@ import java.util.List;
 public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdapter.ImageFragmentViewHolder> {
     private final Context _context;
     private List<ClassifyDate> _listClassifyDate;
+    private int typeView;
 
 
-    public ImageFragmentAdapter(Context context, List<ClassifyDate> listClassifyDate) {
+    public ImageFragmentAdapter(Context context, List<ClassifyDate> listClassifyDate,int typeView) {
         _context = context;
         _listClassifyDate = listClassifyDate;
+        this.typeView=typeView;
     }
 
     public void setData(List<ClassifyDate> listClassifyDate){
@@ -48,7 +50,7 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
         ClassifyDate classifyDate = _listClassifyDate.get(position);
 
         holder.binding.txtNameClassifyDate.setText(classifyDate.getNameClassifyDate());
-        holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, 4));
+        holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, typeView));
 
         ImageAdapter imageAdapter = new ImageAdapter(classifyDate.getListImage(),
                 image -> {

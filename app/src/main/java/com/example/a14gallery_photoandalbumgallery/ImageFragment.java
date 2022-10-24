@@ -18,11 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateBinding;
 
 import java.util.List;
 
 public class ImageFragment extends Fragment implements MenuProvider {
-    FragmentImageBinding binding;
+    ItemClassifyDateBinding binding;
 
     List<Image> images;
     List<ClassifyDate> classifyDateList;
@@ -35,7 +36,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentImageBinding.inflate(inflater, container, false);
+        binding = ItemClassifyDateBinding.inflate(inflater, container, false);
 
         // Get images from gallery
         ImageGallery.getInstance().update(requireContext());
@@ -43,15 +44,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
-        binding.imageFragmentRecycleView.setHasFixedSize(true);
-        binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
-        binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
+        binding.rcvImages.setHasFixedSize(true);
+        binding.rcvImages.setNestedScrollingEnabled(true);
+        binding.rcvImages.setLayoutManager(layoutManager);
 
         images = ImageGallery.getInstance().getListOfImages(getContext());
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
-        binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList));
+        binding.rcvImages.setNestedScrollingEnabled(false);
+        binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,4));
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -80,19 +81,19 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
-            // Click grid_col_2
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,2));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_3) {
-            // Click grid_col_3
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,3));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_4) {
-            // Click grid_col_4
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,4));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_5) {
-            // Click grid_col_5
+            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,5));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_normal) {
