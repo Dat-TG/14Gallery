@@ -52,7 +52,6 @@ public class ImageGallery {
         Uri uri;
         Cursor cursor;
         int column_index_data, dateIndex;
-        // int column_index_folder_name;
         ArrayList<Image> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
         long dateTaken;

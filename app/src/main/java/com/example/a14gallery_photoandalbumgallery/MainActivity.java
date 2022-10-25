@@ -2,9 +2,12 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.widget.Toast;
 
@@ -20,6 +23,8 @@ import androidx.navigation.NavController;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
+import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
+import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 
 public class MainActivity extends AppCompatActivity {
     private final int STORAGE_PERMISSION_CODE = 1;
@@ -50,13 +55,6 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new ImageSearchFragment());
             return true;
         });
-        // navigation controller
-//        NavHostFragment navHostFragment =
-//                (NavHostFragment) getSupportFragmentManager()
-//                        .findFragmentById(R.id.navigation);
-//        navController = navHostFragment.getNavController();
-
-//        setupActionBarWithNavController(navController, );
     }
 
     @Override

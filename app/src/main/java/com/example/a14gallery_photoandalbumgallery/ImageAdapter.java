@@ -120,4 +120,3 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         return 0;
     }
 }
-

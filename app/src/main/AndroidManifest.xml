@@ -36,6 +36,9 @@
         </activity>
         <activity android:name=".detailAlbum.DetailAlbumFragment"/>
         <activity android:name=".album.AlbumFragment"/>
+        <activity android:name=".password.CreatePasswordActivity"/>
+        <activity android:name=".password.InputPasswordActivity"/>
+        <activity android:name=".password.ConfirmPasswordActivity"/>
 
     </application>
 
