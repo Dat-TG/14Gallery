@@ -1,14 +1,22 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
@@ -23,11 +31,19 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateB
 import java.util.List;
 
 public class ImageFragment extends Fragment implements MenuProvider {
-    ItemClassifyDateBinding binding;
+    FragmentImageBinding binding;
 
     List<Image> images;
     List<ClassifyDate> classifyDateList;
     public int typeView=4;
+
+    ImageFragmentAdapter imageFragmentAdapter;
+    RecyclerView.LayoutManager layoutManager;
+    boolean upToDown = true;
+    boolean sortByDate = true;
+
+    ActivityResultLauncher<Intent> activityResultLauncher;
+
     public ImageFragment() {
 
     }
@@ -36,27 +52,40 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = ItemClassifyDateBinding.inflate(inflater, container, false);
+        binding = FragmentImageBinding.inflate(inflater, container, false);
 
         // Get images from gallery
         ImageGallery.getInstance().update(requireContext());
         images = ImageGallery.getInstance().images;
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
-        binding.rcvImages.setHasFixedSize(true);
-        binding.rcvImages.setNestedScrollingEnabled(true);
-        binding.rcvImages.setLayoutManager(layoutManager);
+        binding.imageFragmentRecycleView.setHasFixedSize(true);
+        binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
+        binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
 
         images = ImageGallery.getInstance().getListOfImages(getContext());
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
-        binding.rcvImages.setNestedScrollingEnabled(false);
-        binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+        binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
+        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
 
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+
+        //
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == getActivity().RESULT_OK && result.getData() != null ){
+                    LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
+                    loadAsyncTask.execute();
+                }
+            }
+        });
+
+
         return binding.getRoot();
     }
 
@@ -72,8 +101,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.img_camera) {
             // Click camera
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivity(intent);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            activityResultLauncher.launch(intent);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
@@ -81,44 +110,72 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.clear_choose) {
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
             typeView=2;
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_3) {
             typeView=3;
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_4) {
             typeView=4;
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_5) {
             typeView=5;
-            binding.rcvImages.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_normal) {
             // Click { sort UP-TO-DOWN
+            if(!upToDown){
+                ((LinearLayoutManager) layoutManager).setReverseLayout(false);
+                upToDown = true;
+            }
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_convert) {
             // Click { sort DOWN-TO-UP
+            if(upToDown){
+                ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+                upToDown = false;
+            }
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_day) {
             // Click Sort by day
+            if(!sortByDate){
+                classifyDateList = ImageGallery.getListClassifyDate(images);
+                if(!upToDown){
+                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+                }
+                imageFragmentAdapter.setData(classifyDateList);
+                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
+
+                sortByDate = true;
+            }
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_month) {
             // Click Sort by month
-            return true;
+//            if(sortByDate){
+//                classifyDateList = ImageGallery.getListClassifyMonth(images);
+//                if(!upToDown){
+////                    Collections.reverse(classifyDateList);
+//                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+//                }
+//                imageFragmentAdapter.setData(classifyDateList);
+//                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
+//                sortByDate = false;
+//            }
+//            return true;
         }
         if (menuItem.getItemId() == R.id.img_setting) {
             // Click Setting
@@ -127,4 +184,25 @@ public class ImageFragment extends Fragment implements MenuProvider {
         return false;
     }
 
+    public class LoadAsyncTask extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ImageGallery.getInstance().update(getActivity());
+            images = ImageGallery.listOfImages(requireContext());
+            if (sortByDate) {
+                classifyDateList = ImageGallery.getListClassifyDate(images);
+            } else {
+                classifyDateList = ImageGallery.getListClassifyMonth(images);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            imageFragmentAdapter.setData(classifyDateList);
+            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+        }
+    }
 }
