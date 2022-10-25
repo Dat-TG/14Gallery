@@ -41,5 +41,16 @@
     <string name="add_to_album_title">Add to album</string>
     <string name="details_title">Details</string>
     <string name="no_image_found"><b>Không có ảnh hoặc album</b>\n\nBạn có thể chụp ảnh hoặc tạo album bằng cách thao tác ở trên</string>
-
+    <string name="set_password_success">Set password successful!</string>
+    <string name="set_password_fail">Password not match!</string>
+    <string name="draw_password_again">Draw your password again</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="create_password">Create Password</string>
+    <string name="input_password">Input Password</string>
+    <string name="private_label">Riêng tư</string>
+    <string name="garbage">Thùng rác</string>
+    <string name="albums">Albums</string>
+    <string name="image_manage">Quản lý ảnh</string>
+    <string name="prefer">Ưa thích</string>
+    <string name="search_here">Tìm kiếm ở đây</string>
 </resources>

@@ -11,7 +11,7 @@ public class Image {
         return id;
     }
 
-    public void setId( int id ) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -27,7 +27,7 @@ public class Image {
         return albumName;
     }
 
-    public void setAlbumName( String name ) {
+    public void setAlbumName(String name) {
         this.albumName = name;
     }
 

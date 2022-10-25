@@ -2,12 +2,9 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.widget.Toast;
 
@@ -23,8 +20,6 @@ import androidx.navigation.NavController;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
-import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
-import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 
 public class MainActivity extends AppCompatActivity {
     private final int STORAGE_PERMISSION_CODE = 1;
@@ -48,11 +43,11 @@ public class MainActivity extends AppCompatActivity {
         // Handle bottom navigation
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.image_icon)
-                    replaceFragment(new ImageFragment());
+                replaceFragment(new ImageFragment());
             else if (item.getItemId() == R.id.album_icon)
-                    replaceFragment(new AlbumFragment());
+                replaceFragment(new AlbumFragment());
             else if (item.getItemId() == R.id.image_search_icon)
-                    replaceFragment(new ImageSearchFragment());
+                replaceFragment(new ImageSearchFragment());
             return true;
         });
     }
@@ -80,11 +75,11 @@ public class MainActivity extends AppCompatActivity {
                     .setMessage("This permission is needed because the app needs to read your storage to show images from your phone." +
                             "If permission is not granted, the app will be forced to close.")
                     .setPositiveButton("ok", (dialogInterface, i) -> ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE))
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE))
                     .setNegativeButton("cancel", (dialogInterface, i) -> dialogInterface.dismiss())
                     .create().show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     STORAGE_PERMISSION_CODE);
         }
     }

@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,7 +48,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle(album.getName());
-        if(size != 0){
+        if (size != 0) {
             List<Image> images = album.getAlbumImages();
             List<ClassifyDate> classifyDateList = ImageGallery.getListClassifyDate(images);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
@@ -60,7 +59,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.recyclerDetailView.setNestedScrollingEnabled(false);
             binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList, 4));
             binding.textNotFound.setVisibility(View.GONE);
-        }else {
+        } else {
             binding.textNotFound.setText(R.string.no_image_found);
             binding.recyclerDetailView.setVisibility(View.GONE);
         }
@@ -77,7 +76,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
         super.onOptionsItemSelected(menuItem);
-        if(menuItem.getItemId() == android.R.id.home) { // Click back button
+        if (menuItem.getItemId() == android.R.id.home) { // Click back button
             finish();
             return true;
         }

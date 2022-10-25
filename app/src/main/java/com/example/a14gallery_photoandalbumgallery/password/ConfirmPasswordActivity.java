@@ -32,8 +32,8 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("PREFS", 0);
         password = sharedPreferences.getString("password", "0");
 
-        mPatternLockView = (PatternLockView) findViewById(R.id.pattern_lock_view);
-        confirmPassWord=(TextView)findViewById(R.id.textResult);
+        mPatternLockView = findViewById(R.id.pattern_lock_view);
+        confirmPassWord = findViewById(R.id.textResult);
         mPatternLockView.addPatternLockListener(new PatternLockViewListener() {
             @Override
             public void onStarted() {
@@ -49,7 +49,7 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
             public void onComplete(List<PatternLockView.Dot> pattern) {
                 // if drawn pattern is equal to created pattern you will navigate to home screen
                 if (password.equals(PatternLockUtils.patternToString(mPatternLockView, pattern))) {
-                    confirmPassWord.setText("Set password successful!");
+                    confirmPassWord.setText(R.string.set_password_success);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("password", PatternLockUtils.patternToString(mPatternLockView, pattern));
                     editor.apply();
@@ -59,7 +59,7 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
                     finish();
                 } else {
                     // other wise you will get error wrong password
-                    confirmPassWord.setText("Password not match!");
+                    confirmPassWord.setText(R.string.set_password_fail);
                     confirmPassWord.setTextColor(getResources().getColor(R.color.red));
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("password", "0");

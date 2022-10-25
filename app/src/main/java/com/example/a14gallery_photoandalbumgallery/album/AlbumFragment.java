@@ -43,10 +43,10 @@ public class AlbumFragment extends Fragment implements MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
     List<Album> albums;
-    String rootFolder="/14Gallery/";
-    String favoriteAlbumFolderName="FavoriteAlbum";
-    String privateAlbumFolderName="PrivateAlbum";
-    String recycleBinFolderName="RecycleBin";
+    String rootFolder = "/14Gallery/";
+    String favoriteAlbumFolderName = "FavoriteAlbum";
+    String privateAlbumFolderName = "PrivateAlbum";
+    String recycleBinFolderName = "RecycleBin";
     AlbumFragmentAdapter adapter;
 
     @Override
@@ -66,20 +66,20 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        ImageView favoriteAlbum=(ImageView)binding.getRoot().findViewById(R.id.favoriteAlbum);
-        ImageView privateAlbum=(ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
-        ImageView recycleBin=(ImageView) binding.getRoot().findViewById(R.id.recycleBin);
+        ImageView favoriteAlbum = (ImageView) binding.getRoot().findViewById(R.id.favoriteAlbum);
+        ImageView privateAlbum = (ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
+        ImageView recycleBin = (ImageView) binding.getRoot().findViewById(R.id.recycleBin);
 
         //Tạo album Ưa thích nếu chưa tạo
-        File favoriteAlbumFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+favoriteAlbumFolderName);
+        File favoriteAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
         if (!favoriteAlbumFolder.exists()) {
             favoriteAlbumFolder.mkdirs();
         }
-        File hiddenFavoriteAlbum=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+favoriteAlbumFolderName+"/"+".nomedia");
+        File hiddenFavoriteAlbum = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + "/" + ".nomedia");
         if (!hiddenFavoriteAlbum.exists()) {
             try {
                 hiddenFavoriteAlbum.createNewFile();
-                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("CREATE FILE ERROR", "Cannot create new file");
@@ -87,15 +87,15 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
 
         //Tạo album Riêng tư nếu chưa tạo
-        File privateAlbumFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+privateAlbumFolderName);
+        File privateAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
         if (!privateAlbumFolder.exists()) {
             privateAlbumFolder.mkdirs();
         }
-        File hiddenPrivateAlbum=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+privateAlbumFolderName+"/"+".nomedia");
+        File hiddenPrivateAlbum = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + ".nomedia");
         if (!hiddenPrivateAlbum.exists()) {
             try {
                 hiddenPrivateAlbum.createNewFile();
-                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("CREATE FILE ERROR", "Cannot create new file");
@@ -103,15 +103,15 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
 
         //Tạo Thùng rác nếu chưa tạo
-        File recycleBinFolder=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+recycleBinFolderName);
+        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
         if (!recycleBinFolder.exists()) {
             recycleBinFolder.mkdirs();
         }
-        File hiddenRecycleBin=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+recycleBinFolderName+"/"+".nomedia");
+        File hiddenRecycleBin = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + "/" + ".nomedia");
         if (!hiddenRecycleBin.exists()) {
             try {
                 hiddenRecycleBin.createNewFile();
-                Toast.makeText(getActivity(),"Nomedia file created", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("CREATE FILE ERROR", "Cannot create new file");
@@ -121,13 +121,13 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         favoriteAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
             }
         });
         privateAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -138,7 +138,8 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             // Intent to navigate to Create Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
                             startActivity(intent)
-             ;              getActivity().finish();
+                            ;
+                            getActivity().finish();
                         } else {
                             //Intent to navigate to Input Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
@@ -149,12 +150,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                 }, 2000);
             }
         });
-        recycleBin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(),"RecycleBin clicked!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        recycleBin.setOnClickListener(view -> Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show());
         return binding.getRoot();
     }
 

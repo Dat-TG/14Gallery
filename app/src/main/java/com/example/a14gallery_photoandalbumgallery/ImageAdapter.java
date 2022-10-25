@@ -1,7 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.annotation.SuppressLint;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +53,8 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         public ImageViewHolder(SingleImageViewBinding b) {
             super(b.getRoot());
             binding = b;
-            scrim = (View) itemView.findViewById(R.id.pictureItemScrim);
-            checkBox = (CheckBox) itemView.findViewById(R.id.pictureItemCheck);
+            scrim = itemView.findViewById(R.id.pictureItemScrim);
+            checkBox = itemView.findViewById(R.id.pictureItemCheck);
         }
 
         public void bind(final Image image, final OnItemClickListener listener,final OnItemLongClickListener listeners) {
@@ -92,11 +91,7 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         } else if (ACTION_MODE==1) {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.scrim.setVisibility(View.VISIBLE);
-            if (image.isChecked()) {
-                holder.checkBox.setChecked(true);
-            } else {
-                holder.checkBox.setChecked(false);
-            }
+            holder.checkBox.setChecked(image.isChecked());
         }
         else{
             holder.checkBox.setVisibility(View.VISIBLE);

@@ -130,7 +130,6 @@ public class AlbumGallery {
                     album.setName(allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
-
                     albums.add(album);
                     albumsNames.add(allFile.getName());
                 }

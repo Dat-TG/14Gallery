@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +18,8 @@ public class ImageGallery {
     private static ImageGallery INSTANCE;
 
     // Constructor
-    private ImageGallery() { }
+    private ImageGallery() {
+    }
 
     public static ImageGallery getInstance() {
         if (INSTANCE == null) {
@@ -33,7 +33,7 @@ public class ImageGallery {
         return images;
     }
 
-    public void load(Context context)  {
+    public void load(Context context) {
         if (!loaded) {
             images = listOfImages(context);
             loaded = true;

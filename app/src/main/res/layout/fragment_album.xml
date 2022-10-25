@@ -1,110 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".album.AlbumFragment">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingTop="20dp"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+        tools:ignore="UselessParent">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Quản lý ảnh"
-            android:textSize="20sp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20sp"
             android:layout_marginTop="20dp"
-            android:textColor="@color/black"></TextView>
+            android:layout_marginBottom="20dp"
+            android:text="@string/image_manage"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <LinearLayout
+            android:id="@+id/defaultAlbumLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:id="@+id/defaultAlbumLayout"
-            >
+            tools:ignore="DisableBaselineAlignment">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_weight="1">
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/favoriteAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
+                    android:layout_gravity="center"
                     android:src="@mipmap/ic_favorite_album_foreground"
-                    android:layout_gravity="center"></ImageView>
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ưa thích"
                     android:layout_gravity="center"
-                    ></TextView>
+                    android:text="@string/prefer" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_weight="1">
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/privateAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
-                    android:src="@mipmap/ic_private_album_foreground"
-                    android:layout_gravity="center"></ImageView>
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/private_label"
+                    android:src="@mipmap/ic_private_album_foreground" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Riêng tư"
-                    android:layout_gravity="center">
-                </TextView>
+                    android:layout_gravity="center"
+                    android:text="@string/private_label" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:layout_weight="1">
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/recycleBin"
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
-                    android:src="@mipmap/ic_recycle_bin_foreground"
-                    android:layout_gravity="center"></ImageView>
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/garbage"
+                    android:src="@mipmap/ic_recycle_bin_foreground" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thùng rác"
-                    android:layout_gravity="center"></TextView>
+                    android:layout_gravity="center"
+                    android:text="@string/garbage" />
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Albums"
-            android:textSize="20sp"
-            android:layout_marginLeft="20dp"
-            android:textColor="@color/black"
+            android:layout_marginStart="20sp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"></TextView>
+            android:layout_marginBottom="20dp"
+            android:text="@string/albums"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/albumFragmentRecycleView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
-
-
 
 </FrameLayout>

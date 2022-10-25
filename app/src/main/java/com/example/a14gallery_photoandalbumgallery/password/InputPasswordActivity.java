@@ -16,7 +16,6 @@ import com.example.a14gallery_photoandalbumgallery.R;
 import java.util.List;
 
 public class InputPasswordActivity extends AppCompatActivity {
-
     PatternLockView mPatternLockView;
     String password;
 

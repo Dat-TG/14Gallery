@@ -40,7 +40,7 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.src_setting) {
-            // Click setting
+            // TODO: Click setting
             return true;
         }
         return false;

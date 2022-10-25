@@ -2,7 +2,6 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -21,19 +20,20 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
     public ImageAdapter imageAdapter;
 
 
-    public ImageFragmentAdapter(Context context, List<ClassifyDate> listClassifyDate,int typeView) {
+    public ImageFragmentAdapter(Context context, List<ClassifyDate> listClassifyDate, int typeView) {
         _context = context;
         _listClassifyDate = listClassifyDate;
-        this.typeView=typeView;
+        this.typeView = typeView;
     }
 
-    public void setData(List<ClassifyDate> listClassifyDate){
+    public void setData(List<ClassifyDate> listClassifyDate) {
         this._listClassifyDate = listClassifyDate;
         notifyDataSetChanged();
     }
 
     public static class ImageFragmentViewHolder extends RecyclerView.ViewHolder {
         ItemClassifyDateBinding binding;
+
         public ImageFragmentViewHolder(ItemClassifyDateBinding b) {
             super(b.getRoot());
             binding = b;
@@ -50,7 +50,7 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
     @Override
     public void onBindViewHolder(@NonNull ImageFragmentViewHolder holder, int position) {
         ClassifyDate classifyDate = _listClassifyDate.get(position);
-        List<Image> listImage=_listClassifyDate.get(position).getListImage();
+        List<Image> listImage = _listClassifyDate.get(position).getListImage();
 
         holder.binding.txtNameClassifyDate.setText(classifyDate.getNameClassifyDate());
         holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, typeView));
@@ -58,13 +58,13 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
                 image -> {
 
                 },
-                image-> {
+                image -> {
                     return false;
                 }
         );
         imageAdapter.setACTION_MODE(0);
         imageAdapter.setData(classifyDate.getListImage());
-        imageAdapter.setOnLongClickListener(image->{
+        imageAdapter.setOnLongClickListener(image -> {
             imageAdapter.setACTION_MODE(1);
             imageAdapter.notifyDataSetChanged();
             return false;
@@ -73,15 +73,13 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
             if (imageAdapter.getACTION_MODE() == 1) {
                 if (!listImage.get(holder.getAdapterPosition()).isChecked()) {
                     listImage.get(holder.getAdapterPosition()).setChecked(true);
-                }
-                else {
+                } else {
                     listImage.get(holder.getAdapterPosition()).setChecked(false);
                 }
                 imageAdapter.notifyDataSetChanged();
-            }
-            else{
+            } else {
                 Intent intent = new Intent(_context, FullscreenImageActivity.class);
-                intent.putExtra("path",image.getPath());
+                intent.putExtra("path", image.getPath());
                 _context.startActivity(intent);
             }
         });
@@ -91,7 +89,7 @@ public class ImageFragmentAdapter extends RecyclerView.Adapter<ImageFragmentAdap
 
     @Override
     public int getItemCount() {
-        if (_listClassifyDate != null){
+        if (_listClassifyDate != null) {
             return _listClassifyDate.size();
         }
         return 0;

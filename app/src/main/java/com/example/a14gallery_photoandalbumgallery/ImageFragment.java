@@ -1,6 +1,5 @@
 package com.example.a14gallery_photoandalbumgallery;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -26,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
-import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateBinding;
 
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     List<Image> images;
     List<ClassifyDate> classifyDateList;
-    public int typeView=4;
+    public int typeView = 4;
 
     ImageFragmentAdapter imageFragmentAdapter;
     RecyclerView.LayoutManager layoutManager;
@@ -68,7 +65,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -78,14 +75,12 @@ public class ImageFragment extends Fragment implements MenuProvider {
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-                if(result.getResultCode() == getActivity().RESULT_OK && result.getData() != null ){
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
                     LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
                     loadAsyncTask.execute();
                 }
             }
         });
-
-
         return binding.getRoot();
     }
 
@@ -110,32 +105,32 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.clear_choose) {
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
-            typeView=2;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            typeView = 2;
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_3) {
-            typeView=3;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            typeView = 3;
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_4) {
-            typeView=4;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            typeView = 4;
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_5) {
-            typeView=5;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(),classifyDateList,typeView));
+            typeView = 5;
+            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_normal) {
             // Click { sort UP-TO-DOWN
-            if(!upToDown){
+            if (!upToDown) {
                 ((LinearLayoutManager) layoutManager).setReverseLayout(false);
                 upToDown = true;
             }
@@ -143,7 +138,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.img_view_mode_convert) {
             // Click { sort DOWN-TO-UP
-            if(upToDown){
+            if (upToDown) {
                 ((LinearLayoutManager) layoutManager).setReverseLayout(true);
                 upToDown = false;
             }
@@ -151,13 +146,13 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.img_view_mode_day) {
             // Click Sort by day
-            if(!sortByDate){
+            if (!sortByDate) {
                 classifyDateList = ImageGallery.getListClassifyDate(images);
-                if(!upToDown){
+                if (!upToDown) {
                     ((LinearLayoutManager) layoutManager).setReverseLayout(true);
                 }
                 imageFragmentAdapter.setData(classifyDateList);
-                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
                 sortByDate = true;
             }
@@ -185,7 +180,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
     }
 
     public class LoadAsyncTask extends AsyncTask<Void, Integer, Void> {
-
         @Override
         protected Void doInBackground(Void... voids) {
             ImageGallery.getInstance().update(getActivity());

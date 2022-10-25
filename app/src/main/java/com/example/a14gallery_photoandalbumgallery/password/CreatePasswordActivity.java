@@ -16,7 +16,6 @@ import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import java.util.List;
 
 public class CreatePasswordActivity extends AppCompatActivity {
-
     // Initialize pattern lock view
     PatternLockView mPatternLockView;
 
@@ -50,6 +49,7 @@ public class CreatePasswordActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
+
             @Override
             public void onCleared() {
 
