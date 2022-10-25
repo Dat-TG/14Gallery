@@ -38,7 +38,7 @@ dependencies {
     def nav_version = "2.5.2"
     implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
@@ -49,4 +49,5 @@ dependencies {
     implementation 'androidx.fragment:fragment:1.5.3'
     implementation 'com.github.bumptech.glide:glide:4.14.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

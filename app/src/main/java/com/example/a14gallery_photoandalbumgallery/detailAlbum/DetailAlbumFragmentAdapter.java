@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -38,10 +39,11 @@ public class DetailAlbumFragmentAdapter extends RecyclerView.Adapter<DetailAlbum
     public void onBindViewHolder(@NonNull DetailAlbumFragmentAdapter.AlbumFragmentViewHolder holder, int position) {
         String albumTitle = _album.get(position).getName();
         List<Image> albumPhotos = _album.get(position).getAlbumImages();
+//        holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, 4));
         int albumsCount = albumPhotos.size();
         if (albumsCount > 0) {
             Glide.with(_context)
-                    .load(albumPhotos.get(albumsCount - 2).getPath())
+                    .load(albumPhotos.get(albumsCount - 1).getPath())
                     .into(holder.binding.albumImg);
         } else {
             holder.binding.albumImg.setImageResource(R.drawable.album_empty);
