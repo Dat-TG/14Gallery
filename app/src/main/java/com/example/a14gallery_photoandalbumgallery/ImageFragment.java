@@ -65,7 +65,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
         classifyDateList = ImageGallery.getListClassifyDate(images);
 
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+        imageFragmentAdapter = new ImageFragmentAdapter(getContext(), classifyDateList, typeView);
+        binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -160,17 +161,17 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.img_view_mode_month) {
             // Click Sort by month
-//            if(sortByDate){
-//                classifyDateList = ImageGallery.getListClassifyMonth(images);
-//                if(!upToDown){
-////                    Collections.reverse(classifyDateList);
-//                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-//                }
-//                imageFragmentAdapter.setData(classifyDateList);
-//                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
-//                sortByDate = false;
-//            }
-//            return true;
+            if(sortByDate){
+                classifyDateList = ImageGallery.getListClassifyMonth(images);
+                if(!upToDown){
+//                    Collections.reverse(classifyDateList);
+                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+                }
+                imageFragmentAdapter.setData(classifyDateList);
+                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
+                sortByDate = false;
+            }
+            return true;
         }
         if (menuItem.getItemId() == R.id.img_setting) {
             // Click Setting
