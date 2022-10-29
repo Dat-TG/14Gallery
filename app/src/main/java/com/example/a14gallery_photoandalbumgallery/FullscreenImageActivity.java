@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
+import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 
 import java.io.File;
 
@@ -104,6 +105,16 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Details button
         if (menuItem.getItemId() == R.id.btnDetails) {
+            return true;
+        }
+
+        //Add to Favorite
+        if (menuItem.getItemId()==R.id.btnAddPrivate) {
+            Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
+            intent.putExtra("message", "AddPrivate");
+            intent.putExtra("imagePath", imagePath);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
         }
         return false;

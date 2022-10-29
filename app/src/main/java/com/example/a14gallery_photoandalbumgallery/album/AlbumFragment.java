@@ -189,6 +189,8 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                         } else {
                             //Intent to navigate to Input Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
+                            intent.putExtra("message", "OpenPrivate");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             getActivity().startActivity(intent);
                             //getActivity().finish();
                         }

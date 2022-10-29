@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/btnRename"
-        android:title="@string/rename_title"/>
+        android:title="Đổi tên"/>
     <item android:id="@+id/btnAddToAlbum"
-        android:title="@string/add_to_album_title"/>
+        android:title="Thêm vào album"/>
+    <item android:id="@+id/btnAddPrivate"
+        android:title="Di chuyển vào Riêng tư"
+        />
     <item android:id="@+id/btnDetails"
-        android:title="@string/details_title"/>
+        android:title="Chi tiết"/>
 </menu>
