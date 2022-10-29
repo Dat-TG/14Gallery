@@ -251,7 +251,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                                 image.setId(Integer.parseInt(imageId));
                                 image.setDateTaken(dateText);
 
-                                Favorite.getAlbumImages().add(image);
+                                RecycleBin.getAlbumImages().add(image);
 
                             } while (cursor.moveToNext());
                         }

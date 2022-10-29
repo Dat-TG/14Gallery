@@ -75,7 +75,9 @@ public class ImageGallery {
 
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
-
+            if (absolutePathOfImage.contains("/PrivateAlbum/") || absolutePathOfImage.contains("/RecycleBin/")) {
+                continue;
+            }
             dateTaken = cursor.getLong(dateIndex);
             myCal.setTimeInMillis(dateTaken);
             String dateText = formatter.format(myCal.getTime());
