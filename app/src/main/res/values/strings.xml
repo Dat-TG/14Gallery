@@ -41,5 +41,5 @@
     <string name="add_to_album_title">Add to album</string>
     <string name="details_title">Details</string>
     <string name="no_image_found"><b>Không có ảnh hoặc album</b>\n\nBạn có thể chụp ảnh hoặc tạo album bằng cách thao tác ở trên</string>
-
+    <string name="empty_recycle_bin"><b>Thùng rác trống</b>\n\nChưa có ảnh nào trong thùng rác</string>
 </resources>
