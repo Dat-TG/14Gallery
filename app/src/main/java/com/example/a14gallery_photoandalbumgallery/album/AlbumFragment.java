@@ -66,9 +66,9 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        ImageView favoriteAlbum = (ImageView) binding.getRoot().findViewById(R.id.favoriteAlbum);
-        ImageView privateAlbum = (ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
-        ImageView recycleBin = (ImageView) binding.getRoot().findViewById(R.id.recycleBin);
+        ImageView favoriteAlbum = binding.getRoot().findViewById(R.id.favoriteAlbum);
+        ImageView privateAlbum = binding.getRoot().findViewById(R.id.privateAlbum);
+        ImageView recycleBin = binding.getRoot().findViewById(R.id.recycleBin);
 
         //Tạo album Ưa thích nếu chưa tạo
         File favoriteAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
@@ -118,37 +118,26 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             }
         }
 
-        favoriteAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        privateAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // loading is given
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREFS", 0);
-                        if (sharedPreferences.getString("password", "0").equals("0")) {
-                            // Intent to navigate to Create Password Screen
-                            Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
-                            startActivity(intent)
-                            ;
-                            getActivity().finish();
-                        } else {
-                            //Intent to navigate to Input Password Screen
-                            Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    }
-                }, 2000);
-            }
+        favoriteAlbum.setOnClickListener(view -> Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show());
+        privateAlbum.setOnClickListener(view -> {
+            Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                // loading is given
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("PREFS", 0);
+                if (sharedPreferences.getString("password", "0").equals("0")) {
+                    // Intent to navigate to Create Password Screen
+                    Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
+                    startActivity(intent)
+                    ;
+                    getActivity().finish();
+                } else {
+                    //Intent to navigate to Input Password Screen
+                    Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+            }, 2000);
         });
         recycleBin.setOnClickListener(view -> Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show());
         return binding.getRoot();

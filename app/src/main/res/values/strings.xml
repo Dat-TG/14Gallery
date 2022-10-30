@@ -50,7 +50,11 @@
     <string name="private_label">Riêng tư</string>
     <string name="garbage">Thùng rác</string>
     <string name="albums">Albums</string>
+    <string name="album">Album</string>
     <string name="image_manage">Quản lý ảnh</string>
     <string name="prefer">Ưa thích</string>
     <string name="search_here">Tìm kiếm ở đây</string>
+    <string name="add_image_title">Thêm ảnh</string>
+    <string name="image">Ảnh</string>
+    <string name="add_image">Thêm ảnh vào %1$s</string>
 </resources>

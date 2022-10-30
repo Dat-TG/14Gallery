@@ -13,22 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.google.gson.Gson;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
     ActivityDetailAlbumBinding binding;
     Toolbar toolbar;
+    Album album;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Gson gson = new Gson();
-        Album album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle(album.getName());
@@ -69,7 +74,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
-        getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
+        getMenuInflater().inflate(R.menu.top_bar_menu_detail_album, menu);
         return true;
     }
 
@@ -80,48 +85,57 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_camera) { // Click Camera
+        if(menuItem.getItemId() == R.id.detAlb_add_image) {
+            // TODO
+            Intent intent = new Intent(DetailAlbumActivity.this, AddItemActivity.class);
+            Gson gson = new Gson();
+            String imagesObj = gson.toJson(album);
+            intent.putExtra("album", imagesObj);
+            startActivity(intent);
+            return true;
+        }
+        if (menuItem.getItemId() == R.id.detAlb_camera) { // Click Camera
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_choose) {
+        if (menuItem.getItemId() == R.id.detAlb_choose) {
             // Click choose
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_2) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_2) {
             // Click grid_col_2
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_3) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_3) {
             // Click grid_col_3
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_4) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_4) {
             // Click grid_col_4
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_5) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_5) {
             // Click grid_col_5
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_view_mode_normal) {
+        if (menuItem.getItemId() == R.id.detAlb_view_mode_normal) {
             // Click { sort UP-TO-DOWN
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_view_mode_convert) {
+        if (menuItem.getItemId() == R.id.detAlb_view_mode_convert) {
             // Click { sort DOWN-TO-UP
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_view_mode_day) {
+        if (menuItem.getItemId() == R.id.detAlb_view_mode_day) {
             // Click Sort by day
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_view_mode_month) {
+        if (menuItem.getItemId() == R.id.detAlb_view_mode_month) {
             // Click Sort by month
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_setting) {
+        if (menuItem.getItemId() == R.id.detAlb_setting) {
             // Click Setting
             return true;
         }

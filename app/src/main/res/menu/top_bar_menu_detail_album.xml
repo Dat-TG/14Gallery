@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/clear_choose"
+        android:title=""
+        android:icon="@drawable/ic_clear"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_camera"
+        android:contentDescription="@string/icon_camera_description"
+        android:icon="@drawable/ic_baseline_camera_enhance_24"
+        android:title="@string/camera_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_more"
+        android:contentDescription="@string/icon_menu_description"
+        android:icon="@drawable/ic_menu_24dp"
+        android:title="@string/more_title"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/detAlb_add_image"
+                android:title="@string/add_image_title" />
+            <item
+                android:id="@+id/detAlb_choose"
+                android:title="@string/choose_title" />
+            <item
+                android:id="@+id/detAlb_grid"
+                android:title="@string/grid_columns">
+                <menu>
+                    <item
+                        android:id="@+id/detAlb_grid_col_2"
+                        android:title="@string/grid_column_2" />
+                    <item
+                        android:id="@+id/detAlb_grid_col_3"
+                        android:title="@string/grid_column_3" />
+                    <item
+                        android:id="@+id/detAlb_grid_col_4"
+                        android:title="@string/grid_column_4" />
+                    <item
+                        android:id="@+id/detAlb_grid_col_5"
+                        android:title="@string/grid_column_5" />
+                </menu>
+            </item>
+
+            <item
+                android:id="@+id/detAlb_view_mode"
+                android:title="@string/view_mode">
+                <menu>
+                    <item
+                        android:id="@+id/detAlb_view_mode_normal"
+                        android:title="@string/view_mode_normal" />
+                    <item
+                        android:id="@+id/detAlb_view_mode_convert"
+                        android:title="@string/view_mode_convert" />
+                    <item
+                        android:id="@+id/detAlb_view_mode_day"
+                        android:title="@string/view_mode_day" />
+                    <item
+                        android:id="@+id/detAlb_view_mode_month"
+                        android:title="@string/view_mode_month" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/detAlb_setting"
+                android:title="@string/setting_title" />
+        </menu>
+
+    </item>
+
+</menu>

@@ -6,7 +6,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.ImageGallery;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -136,5 +138,27 @@ public class AlbumGallery {
             }
         }
         return albums;
+    }
+
+    public static List<Album> getAlbumAddImage(Context context, List<Image> imagesIncluded) {
+        List<Album> tempAlbum = getPhoneAlbums(context);
+        List<Album> result = new ArrayList<>();
+        for (int i = 0; i < tempAlbum.size(); i++) {
+            List<Image> imgs = new ArrayList<>();
+            Album albumAddImage = tempAlbum.get(i);
+
+            List<ClassifyDate> newImages = ImageGallery.getListAddImage(albumAddImage.getAlbumImages(), imagesIncluded);
+            if (newImages == null) {
+                albumAddImage.setAlbumImages(imgs);
+                result.add(albumAddImage);
+                continue;
+            };
+            for (int j = 0; j < newImages.size(); j++) {
+                imgs.addAll(newImages.get(j).getListImage());
+            }
+            albumAddImage.setAlbumImages(imgs);
+            result.add(albumAddImage);
+        }
+        return result;
     }
 }
