@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
@@ -25,8 +25,6 @@ import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.google.gson.Gson;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -56,13 +54,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (size != 0) {
             List<Image> images = album.getAlbumImages();
             List<ClassifyDate> classifyDateList = ImageGallery.getListClassifyDate(images);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             binding.recyclerDetailView.setLayoutManager(layoutManager);
             binding.recyclerDetailView.setNestedScrollingEnabled(false);
-            binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList, 4));
+            binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(this, classifyDateList, 4));
             binding.textNotFound.setVisibility(View.GONE);
         } else {
             binding.textNotFound.setText(R.string.no_image_found);
@@ -85,9 +83,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             return true;
         }
-        if(menuItem.getItemId() == R.id.detAlb_add_image) {
-            // TODO
-            Intent intent = new Intent(DetailAlbumActivity.this, AddItemActivity.class);
+        if(menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
+            Intent intent = new Intent(this, AddItemActivity.class);
             Gson gson = new Gson();
             String imagesObj = gson.toJson(album);
             intent.putExtra("album", imagesObj);

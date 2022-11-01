@@ -58,7 +58,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
 
-        AlbumGallery.getInstance().load(getContext());
+        AlbumGallery.getInstance().update(getContext());
         albums = AlbumGallery.getInstance().albums;
         adapter = new AlbumFragmentAdapter(getContext(), albums);
         binding.albumFragmentRecycleView.setAdapter(adapter);

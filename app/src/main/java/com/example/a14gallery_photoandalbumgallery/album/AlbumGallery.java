@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class AlbumGallery {
     private static AlbumGallery INSTANCE = null;
@@ -37,8 +38,7 @@ public class AlbumGallery {
     }
 
     public void update(Context context) {
-        if (!loaded)
-            load(context);
+        if (!loaded) load(context);
         else {
             albums = getPhoneAlbums(context);
         }
@@ -49,16 +49,9 @@ public class AlbumGallery {
         List<String> albumsNames = new ArrayList<>();
 
         // which image properties are we querying
-        String[] projection = new String[]{
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATE_TAKEN
-        };
+        String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID, MediaStore.Images.Media.DATE_TAKEN};
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-        Cursor cur = context.getContentResolver().query(images,
-                projection, // Which columns to return
+        Cursor cur = context.getContentResolver().query(images, projection, // Which columns to return
                 null,       // Which rows to return (all rows)
                 null,       // Selection arguments (none)
                 null        // Ordering
@@ -70,17 +63,10 @@ public class AlbumGallery {
                 String data;
                 String imageId;
                 long dateTaken;
-                int bucketNameColumn = cur.getColumnIndex(
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
-                int imageUriColumn = cur.getColumnIndex(
-                        MediaStore.Images.Media.DATA);
-
-                int imageIdColumn = cur.getColumnIndex(
-                        MediaStore.Images.Media._ID);
-
-                int dateTakenColumn = cur.getColumnIndex(
-                        MediaStore.Images.Media.DATE_TAKEN);
+                int bucketNameColumn = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+                int imageUriColumn = cur.getColumnIndex(MediaStore.Images.Media.DATA);
+                int imageIdColumn = cur.getColumnIndex(MediaStore.Images.Media._ID);
+                int dateTakenColumn = cur.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                 do {
                     Calendar myCal = Calendar.getInstance();
                     SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
@@ -111,11 +97,9 @@ public class AlbumGallery {
                         album.setName(bucketName);
                         album.setCoverUri(image.getPath());
                         album.getAlbumImages().add(image);
-
                         albums.add(album);
                         albumsNames.add(bucketName);
                     }
-
                 } while (cur.moveToNext());
             }
 
@@ -140,19 +124,20 @@ public class AlbumGallery {
         return albums;
     }
 
-    public static List<Album> getAlbumAddImage(Context context, List<Image> imagesIncluded) {
+    public static List<Album> getAlbumAddImage(Context context, Album album) {
+        List<Image> imagesIncluded = album.getAlbumImages();
         List<Album> tempAlbum = getPhoneAlbums(context);
         List<Album> result = new ArrayList<>();
         for (int i = 0; i < tempAlbum.size(); i++) {
             List<Image> imgs = new ArrayList<>();
             Album albumAddImage = tempAlbum.get(i);
-
+            if (Objects.equals(albumAddImage.getName(), album.getName())) continue;
             List<ClassifyDate> newImages = ImageGallery.getListAddImage(albumAddImage.getAlbumImages(), imagesIncluded);
             if (newImages == null) {
                 albumAddImage.setAlbumImages(imgs);
                 result.add(albumAddImage);
                 continue;
-            };
+            }
             for (int j = 0; j < newImages.size(); j++) {
                 imgs.addAll(newImages.get(j).getListImage());
             }

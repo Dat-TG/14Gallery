@@ -20,8 +20,7 @@ import java.util.List;
 public class RecyclerImageViewAdapter extends RecyclerView.Adapter<RecyclerImageViewAdapter.RecyclerImageViewHolder> {
     private final Context _context;
     private List<ClassifyDate> _listClassifyDate;
-    private int typeView;
-    public ImageAdapter imageAdapter;
+    private final int typeView;
 
     public RecyclerImageViewAdapter(Context context, List<ClassifyDate> listClassifyDate, int typeView) {
         this._context = context;

@@ -41,7 +41,7 @@ public class RecyclerAlbumViewFragment extends Fragment implements RecyclerAlbum
         binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
 
-        albumsCanAdd = AlbumGallery.getAlbumAddImage(getContext(), albumIncluded.getAlbumImages());
+        albumsCanAdd = AlbumGallery.getAlbumAddImage(getContext(), albumIncluded);
         recyclerAlbumViewAdapter = new RecyclerAlbumViewAdapter(getContext(), albumsCanAdd);
         recyclerAlbumViewAdapter.setClickListener(this);
         binding.btnBack.setVisibility(View.GONE);
