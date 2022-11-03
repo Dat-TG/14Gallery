@@ -47,7 +47,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
     List<ClassifyDate> classifyDateList;
     public int typeView = 4;
 
-    ImageFragmentAdapter imageFragmentAdapter;
+    public static ImageFragmentAdapter imageFragmentAdapter;
     RecyclerView.LayoutManager layoutManager;
     GridLayoutManager gridLayoutManager;
     boolean upToDown = true;
@@ -165,6 +165,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(4).setVisible(false);
             menu.getItem(5).setVisible(false);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ImageGallery.getInstance().update(getActivity());
+        images = ImageGallery.listOfImages(requireContext());
+        toViewList();
+        imageFragmentAdapter.setData(viewList);
     }
 
 
@@ -337,7 +346,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
     }
 
-    private void setRecyclerViewLayoutManager(int newTypeView) {
+    public void setRecyclerViewLayoutManager(int newTypeView) {
         typeView = newTypeView;
         gridLayoutManager = new GridLayoutManager(getContext(), typeView);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

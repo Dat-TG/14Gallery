@@ -35,6 +35,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscree
 
 import java.io.IOException;
 
+import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
@@ -238,6 +239,14 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
             dialog.show();
 
+            return true;
+        }
+        if (menuItem.getItemId()==R.id.btnAddPrivate) {
+            Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
+            intent.putExtra("message", "AddPrivate");
+            intent.putExtra("imagePath", imagePath);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
         }
 
