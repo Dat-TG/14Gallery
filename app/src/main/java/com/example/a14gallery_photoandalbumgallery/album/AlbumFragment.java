@@ -3,6 +3,7 @@ package com.example.a14gallery_photoandalbumgallery.album;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -139,6 +140,8 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
                         int dateTakenColumn = cursor.getColumnIndex(
                                 MediaStore.Images.Media.DATE_TAKEN);
+
+
                         do {
                             Calendar myCal = Calendar.getInstance();
                             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
@@ -149,12 +152,15 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             dateTaken = cursor.getLong(dateTakenColumn);
                             myCal.setTimeInMillis(dateTaken);
                             String dateText = formatter.format(myCal.getTime());
+                            long id = cursor.getLong(imageIdColumn);
+                            Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                             Image image = new Image();
                             image.setAlbumName(bucketName);
                             image.setPath(data);
                             image.setId(Integer.parseInt(imageId));
                             image.setDateTaken(dateText);
+                            image.setUri(contentUri);
 
                             Favorite.getAlbumImages().add(image);
 
@@ -240,7 +246,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                                 MediaStore.Images.Media.DATE_TAKEN);
                         do {
                             Calendar myCal = Calendar.getInstance();
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
                             // Get the field values
                             bucketName = cursor.getString(bucketNameColumn);
                             data = cursor.getString(imageUriColumn);
@@ -248,12 +254,15 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             dateTaken = cursor.getLong(dateTakenColumn);
                             myCal.setTimeInMillis(dateTaken);
                             String dateText = formatter.format(myCal.getTime());
+                            long id = cursor.getLong(imageIdColumn);
+                            Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                             Image image = new Image();
                             image.setAlbumName(bucketName);
                             image.setPath(data);
                             image.setId(Integer.parseInt(imageId));
                             image.setDateTaken(dateText);
+                            image.setUri(contentUri);
 
                             RecycleBin.getAlbumImages().add(image);
 

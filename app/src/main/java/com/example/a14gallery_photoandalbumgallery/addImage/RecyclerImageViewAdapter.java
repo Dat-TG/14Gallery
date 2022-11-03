@@ -1,100 +1,157 @@
 package com.example.a14gallery_photoandalbumgallery.addImage;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
-import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageAdapter;
-import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateBinding;
+import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.RecyclerData;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
-public class RecyclerImageViewAdapter extends RecyclerView.Adapter<RecyclerImageViewAdapter.RecyclerImageViewHolder> {
-    private final Context _context;
-    private List<ClassifyDate> _listClassifyDate;
-    private final int typeView;
+public class RecyclerImageViewAdapter extends
+        RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public RecyclerImageViewAdapter(Context context, List<ClassifyDate> listClassifyDate, int typeView) {
-        this._context = context;
-        _listClassifyDate = listClassifyDate;
-        this.typeView = typeView;
+    public static class ImageViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView imageView;
+        public View scrim;
+        public CheckBox check;
+
+        ImageViewHolder(@NonNull View view,
+                        BiConsumer<Integer, View> onItemClick,
+                        BiConsumer<Integer, View> onItemLongClick) {
+            super(view);
+            imageView = view.findViewById(R.id.image);
+            scrim = itemView.findViewById(R.id.pictureItemScrim);
+            check = itemView.findViewById(R.id.pictureItemCheckCircle);
+
+            itemView.setOnLongClickListener(view1 -> {
+                onItemLongClick.accept(getAdapterPosition(), view1);
+                return false;
+            });
+
+            itemView.setOnClickListener(
+                    view1 -> onItemClick.accept(getAdapterPosition(), view1));
+        }
     }
 
-    public void setData(List<ClassifyDate> listClassifyDate) {
-        this._listClassifyDate = listClassifyDate;
-        notifyDataSetChanged();
+    public static class TimelineViewHolder extends RecyclerView.ViewHolder {
+        public TextView textView;
+
+        TimelineViewHolder(@NonNull View view) {
+            super(view);
+            textView = view.findViewById(R.id.timelineItemText);
+        }
     }
 
+    public enum State {
+        Normal,
+        MultipleSelect
+    }
+    public static int ITEM_TYPE_TIME = 0;
+    public static int ITEM_TYPE_IMAGE = 1;
+    @NonNull
+    private List<RecyclerData> imageDataList;
+    @NonNull
+    private final BiConsumer<Integer, View> onItemClick;
+    @NonNull
+    private final BiConsumer<Integer, View> onItemLongClick;
 
-    public static class RecyclerImageViewHolder extends RecyclerView.ViewHolder {
-        ItemClassifyDateBinding binding;
+    private State state = State.Normal;
 
-        public RecyclerImageViewHolder(ItemClassifyDateBinding b) {
-            super(b.getRoot());
-            binding = b;
+    public RecyclerImageViewAdapter(@NonNull List<RecyclerData> imageDataList,
+                                @NonNull BiConsumer<Integer, View> onItemClick,
+                                @NonNull BiConsumer<Integer, View> onItemLongClick) {
+        this.imageDataList = imageDataList;
+        this.onItemClick = onItemClick;
+        this.onItemLongClick = onItemLongClick;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (imageDataList.get(position).type == RecyclerData.Type.Label) {
+            return ITEM_TYPE_TIME;
+        } else {
+            return ITEM_TYPE_IMAGE;
         }
     }
 
     @NonNull
     @Override
-    public RecyclerImageViewAdapter.RecyclerImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new RecyclerImageViewHolder(ItemClassifyDateBinding.inflate(inflater, parent, false));
+        if (viewType == ITEM_TYPE_IMAGE) {
+            View view = inflater.inflate(R.layout.single_image_view, parent, false);
+            return new ImageViewHolder(view, onItemClick, onItemLongClick);
+        } else {
+            return new TimelineViewHolder(inflater.inflate(R.layout.timeline_item, parent, false));
+        }
+
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerImageViewAdapter.RecyclerImageViewHolder holder, int position) {
-        ClassifyDate classifyDate = _listClassifyDate.get(position);
-        List<Image> listImage = _listClassifyDate.get(position).getListImage();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (imageDataList.get(position).type == RecyclerData.Type.Label) {
+            final TimelineViewHolder timelineHolder = (TimelineViewHolder) holder;
+            timelineHolder.textView.setText(imageDataList.get(position).labelData);
+        } else {
+            final ImageViewHolder imageHolder = (ImageViewHolder) holder;
+            ImageView imageView = imageHolder.imageView;
+            Image imageData = imageDataList.get(position).imageData;
+            Glide.with(imageView.getContext())
+                    .load(imageData.getPath())
+                    .centerCrop()
+                    .placeholder(R.drawable.pic02)
+                    .into(imageView);
 
-        holder.binding.txtNameClassifyDate.setText(classifyDate.getNameClassifyDate());
-        holder.binding.rcvImages.setLayoutManager(new GridLayoutManager(_context, typeView));
-        ImageAdapter imageAdapter = new ImageAdapter(classifyDate.getListImage(),
-                image -> {
-
-                },
-                image -> {
-                    return false;
-                }
-        );
-        imageAdapter.setACTION_MODE(0);
-        imageAdapter.setData(classifyDate.getListImage());
-        imageAdapter.setOnLongClickListener(image -> {
-            imageAdapter.setACTION_MODE(1);
-            imageAdapter.notifyDataSetChanged();
-            return false;
-        });
-        imageAdapter.setOnClickListener(image -> {
-            if (imageAdapter.getACTION_MODE() == 1) {
-                if (!listImage.get(holder.getAdapterPosition()).isChecked()) {
-                    listImage.get(holder.getAdapterPosition()).setChecked(true);
-                } else {
-                    listImage.get(holder.getAdapterPosition()).setChecked(false);
-                }
-                imageAdapter.notifyDataSetChanged();
+            if (state == State.Normal) {
+                imageHolder.scrim.setVisibility(View.GONE);
+                imageHolder.check.setVisibility(View.GONE);
+                imageData.setChecked(false);
             } else {
-                Intent intent = new Intent(_context, FullscreenImageActivity.class);
-                intent.putExtra("path", image.getPath());
-                _context.startActivity(intent);
+                imageHolder.check.setVisibility(View.VISIBLE);
+                imageHolder.scrim.setVisibility(View.VISIBLE);
+                if (imageData.isChecked()) {
+                    imageHolder.check.setChecked(true);
+                } else {
+                    imageHolder.check.setChecked(false);
+                }
             }
-        });
+        }
+    }
 
-        holder.binding.rcvImages.setAdapter(imageAdapter);
+    public void setData(List<RecyclerData> imageDataList) {
+        this.imageDataList = imageDataList;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if (_listClassifyDate != null) {
-            return _listClassifyDate.size();
+        if(imageDataList.size()>0) {
+            return imageDataList.size();
         }
-        return 0;
+        else{
+            return 0;
+        }
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 }

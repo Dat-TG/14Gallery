@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,7 +49,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
     BiConsumer<Integer, View> onItemLongClick;
-    private ImageFragmentAdapter imageFragmentAdapter;
+    private ImageFragmentAdapter imageFragmentAdapter=null;
     public int typeView = 4;
     GridLayoutManager gridLayoutManager;
     boolean upToDown = true;
@@ -58,6 +59,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailAlbumBinding.inflate(getLayoutInflater());
+
         toolbar = binding.appBarDetail;
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -71,10 +73,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle(album.getName());
-
         if (size != 0) {
             images = album.getAlbumImages();
-            toViewList();
+            toViewList(images);
             onItemClick = (position, view1) -> {
                 if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                     if (!viewList.get(position).imageData.isChecked()) {
@@ -106,20 +107,19 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             setRecyclerViewLayoutManager(4);
-            //binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList, 4));
             imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
-        } else {
-            binding.textNotFound.setText(R.string.no_image_found);
+            binding.textNotFound.setVisibility(View.GONE);
 
-            binding.recyclerDetailView.setVisibility(View.GONE);
+        }else {
             if (album.getName().equals("Thùng rác")) {
                 binding.textNotFound.setText(R.string.empty_recycle_bin);
             }
             else {
                 binding.textNotFound.setText(R.string.no_image_found);
             }
+            binding.recyclerDetailView.setVisibility(View.GONE);
         }
         setContentView(binding.getRoot());
     }
@@ -128,22 +128,24 @@ public class DetailAlbumActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
-        if(imageFragmentAdapter.getState()== ImageFragmentAdapter.State.MultipleSelect){
-            menu.getItem(0).setVisible(true);
-            menu.getItem(6).setVisible(false);
-            menu.getItem(2).setVisible(true);
-            menu.getItem(3).setVisible(true);
-            menu.getItem(4).setVisible(true);
-            menu.getItem(5).setVisible(true);
-        }
-        else{
-            menu.getItem(0).setVisible(false);
-            menu.getItem(1).setVisible(true);
-            menu.getItem(6).setVisible(true);
-            menu.getItem(2).setVisible(false);
-            menu.getItem(3).setVisible(false);
-            menu.getItem(4).setVisible(false);
-            menu.getItem(5).setVisible(false);
+        int size = album.getAlbumImages().size();
+        if(size!=0) {
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                menu.getItem(0).setVisible(true);
+                menu.getItem(6).setVisible(false);
+                menu.getItem(2).setVisible(true);
+                menu.getItem(3).setVisible(true);
+                menu.getItem(4).setVisible(true);
+                menu.getItem(5).setVisible(true);
+            } else {
+                menu.getItem(0).setVisible(false);
+                menu.getItem(1).setVisible(true);
+                menu.getItem(6).setVisible(true);
+                menu.getItem(2).setVisible(false);
+                menu.getItem(3).setVisible(false);
+                menu.getItem(4).setVisible(false);
+                menu.getItem(5).setVisible(false);
+            }
         }
         return true;
     }
@@ -200,7 +202,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (menuItem.getItemId() == R.id.detAlb_view_mode_normal) {
             // Click { sort UP-TO-DOWN
             if (!upToDown) {
-                toViewList();
+                toViewList(images);
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 upToDown = true;
@@ -220,7 +222,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (menuItem.getItemId() == R.id.detAlb_view_mode_day) {
             // Click Sort by day
             if (!sortByDate) {
-                toViewList();
+                toViewList(images);
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = true;
@@ -247,7 +249,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         return false;
     }
 
-    private void toViewList() {
+    private void toViewList(List<Image>images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();

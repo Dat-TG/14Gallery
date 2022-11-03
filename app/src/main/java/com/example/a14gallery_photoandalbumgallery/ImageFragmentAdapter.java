@@ -111,10 +111,11 @@ public class ImageFragmentAdapter extends
             ImageView imageView = imageHolder.imageView;
             Image imageData = imageDataList.get(position).imageData;
             Glide.with(imageView.getContext())
-                    .load(imageData.getUri())
+                    .load(imageData.getPath())
                     .centerCrop()
-                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .placeholder(R.drawable.pic02)
                     .into(imageView);
+
             if (state == State.Normal) {
                 imageHolder.scrim.setVisibility(View.GONE);
                 imageHolder.check.setVisibility(View.GONE);
