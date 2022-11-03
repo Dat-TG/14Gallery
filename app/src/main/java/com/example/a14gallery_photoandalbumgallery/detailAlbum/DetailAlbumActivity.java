@@ -147,6 +147,15 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(5).setVisible(false);
             }
         }
+        else{
+            menu.getItem(0).setVisible(false);
+            menu.getItem(1).setVisible(true);
+            menu.getItem(6).setVisible(true);
+            menu.getItem(2).setVisible(false);
+            menu.getItem(3).setVisible(false);
+            menu.getItem(4).setVisible(false);
+            menu.getItem(5).setVisible(false);
+        }
         return true;
     }
 

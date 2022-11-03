@@ -48,11 +48,9 @@ public class RecyclerImageViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = FragmentImageBinding.inflate(inflater, container, false);
-
         imagesInAlbum = album.getAlbumImages();
-        toViewListAdd(ImageGallery.getInstance().images,imagesInAlbum);
+        toViewListAdd(ImageGallery.getInstance().images, imagesInAlbum);
         layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        //classifyDateList = ImageGallery.getListAddImage(ImageGallery.getInstance().images, imagesInAlbum);
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
@@ -63,10 +61,10 @@ public class RecyclerImageViewFragment extends Fragment {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 if (!viewList.get(position).imageData.isChecked()) {
                     viewList.get(position).imageData.setChecked(true);
-                    imagesInAlbum.get(viewList.get(position).index).setChecked(true);
+                    //imagesInAlbum.get(viewList.get(position).index).setChecked(true);
                 } else {
                     viewList.get(position).imageData.setChecked(false);
-                    imagesInAlbum.get(viewList.get(position).index).setChecked(false);
+                    //imagesInAlbum.get(viewList.get(position).index).setChecked(false);
                 }
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
@@ -79,7 +77,6 @@ public class RecyclerImageViewFragment extends Fragment {
         onItemLongClick = (position, view1) -> {
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
             viewList.get(position).imageData.setChecked(true);
-            imagesInAlbum.get(viewList.get(position).index).setChecked(true);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             getActivity().invalidateOptionsMenu();
         };
@@ -115,7 +112,6 @@ public class RecyclerImageViewFragment extends Fragment {
         if (images.size() > 0) {
             for (int i = 0; i < images.size(); i++) {
                 if(!imagesPath.contains(images.get(i).getPath())){
-                    String label=images.get(i).getDateTaken();
                     temp.add(images.get(i));
                 }
             }
