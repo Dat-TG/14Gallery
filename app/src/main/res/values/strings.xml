@@ -53,4 +53,6 @@
     <string name="image_manage">Quản lý ảnh</string>
     <string name="prefer">Ưa thích</string>
     <string name="search_here">Tìm kiếm ở đây</string>
+    <string name="empty_recycle_bin"><b>Thùng rác trống</b>\n\nChưa có ảnh nào trong thùng rác</string>
+
 </resources>

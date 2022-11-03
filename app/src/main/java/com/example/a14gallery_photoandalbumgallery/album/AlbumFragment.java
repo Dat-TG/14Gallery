@@ -5,11 +5,13 @@ import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMI
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,14 +32,20 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
+import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
+import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class AlbumFragment extends Fragment implements MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
@@ -63,6 +71,11 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         adapter = new AlbumFragmentAdapter(getContext(), albums);
         binding.albumFragmentRecycleView.setAdapter(adapter);
 
+
+        //Album Favorite, RecycleBin
+        Album Favorite = new Album();
+        Album RecycleBin = new Album();
+
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
@@ -75,31 +88,11 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         if (!favoriteAlbumFolder.exists()) {
             favoriteAlbumFolder.mkdirs();
         }
-        File hiddenFavoriteAlbum = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + "/" + ".nomedia");
-        if (!hiddenFavoriteAlbum.exists()) {
-            try {
-                hiddenFavoriteAlbum.createNewFile();
-                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("CREATE FILE ERROR", "Cannot create new file");
-            }
-        }
 
         //Tạo album Riêng tư nếu chưa tạo
         File privateAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
         if (!privateAlbumFolder.exists()) {
             privateAlbumFolder.mkdirs();
-        }
-        File hiddenPrivateAlbum = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + ".nomedia");
-        if (!hiddenPrivateAlbum.exists()) {
-            try {
-                hiddenPrivateAlbum.createNewFile();
-                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("CREATE FILE ERROR", "Cannot create new file");
-            }
         }
 
         //Tạo Thùng rác nếu chưa tạo
@@ -107,26 +100,82 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         if (!recycleBinFolder.exists()) {
             recycleBinFolder.mkdirs();
         }
-        File hiddenRecycleBin = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + "/" + ".nomedia");
-        if (!hiddenRecycleBin.exists()) {
-            try {
-                hiddenRecycleBin.createNewFile();
-                Toast.makeText(getActivity(), "Nomedia file created", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("CREATE FILE ERROR", "Cannot create new file");
-            }
-        }
+
 
         favoriteAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
+
+                File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+                File[] content = folder.listFiles();
+                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
+                folderPath = folderPath + "%";
+                Favorite.setName("Ưa thích");
+                String[] projection = new String[]{
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                        MediaStore.Images.Media.DATA,
+                        MediaStore.Images.Media._ID,
+                        MediaStore.Images.Media.DATE_TAKEN
+                };
+                String[] selectionArgs = new String[]{folderPath};
+                String selection = MediaStore.Images.Media.DATA + " like ? ";
+                Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
+                if (cursor != null && cursor.getCount() > 0) {
+                    if (cursor.moveToFirst()) {
+                        String bucketName;
+                        String data;
+                        String imageId;
+                        long dateTaken;
+                        int bucketNameColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                        int imageUriColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.DATA);
+
+                        int imageIdColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media._ID);
+
+                        int dateTakenColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.DATE_TAKEN);
+                        do {
+                            Calendar myCal = Calendar.getInstance();
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                            // Get the field values
+                            bucketName = cursor.getString(bucketNameColumn);
+                            data = cursor.getString(imageUriColumn);
+                            imageId = cursor.getString(imageIdColumn);
+                            dateTaken = cursor.getLong(dateTakenColumn);
+                            myCal.setTimeInMillis(dateTaken);
+                            String dateText = formatter.format(myCal.getTime());
+
+                            Image image = new Image();
+                            image.setAlbumName(bucketName);
+                            image.setPath(data);
+                            image.setId(Integer.parseInt(imageId));
+                            image.setDateTaken(dateText);
+
+                            Favorite.getAlbumImages().add(image);
+
+                        } while (cursor.moveToNext());
+                    }
+
+                    cursor.close();
+                }
+                Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);
+                Gson gson = new Gson();
+                String imagesObj = gson.toJson(Favorite);
+                intent.putExtra("ALBUM", imagesObj);
+                getActivity().startActivity(intent);
             }
+
         });
+
         privateAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -137,20 +186,88 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                         if (sharedPreferences.getString("password", "0").equals("0")) {
                             // Intent to navigate to Create Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
-                            startActivity(intent)
-                            ;
-                            getActivity().finish();
+
+                            startActivity(intent);
+                            //getActivity().finish();
                         } else {
                             //Intent to navigate to Input Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), InputPasswordActivity.class);
-                            startActivity(intent);
-                            getActivity().finish();
+                            intent.putExtra("message", "OpenPrivate");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            getActivity().startActivity(intent);
+                            //getActivity().finish();
                         }
                     }
                 }, 2000);
             }
         });
-        recycleBin.setOnClickListener(view -> Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show());
+        recycleBin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show();
+                File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+                File[] content = folder.listFiles();
+                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
+                folderPath = folderPath + "%";
+                RecycleBin.setName("Thùng rác");
+                String[] projection = new String[]{
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                        MediaStore.Images.Media.DATA,
+                        MediaStore.Images.Media._ID,
+                        MediaStore.Images.Media.DATE_TAKEN
+                };
+                String[] selectionArgs = new String[]{folderPath};
+                String selection = MediaStore.Images.Media.DATA + " like ? ";
+                Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
+                if (cursor != null && cursor.getCount() > 0) {
+                    if (cursor.moveToFirst()) {
+                        String bucketName;
+                        String data;
+                        String imageId;
+                        long dateTaken;
+                        int bucketNameColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                        int imageUriColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.DATA);
+
+                        int imageIdColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media._ID);
+
+                        int dateTakenColumn = cursor.getColumnIndex(
+                                MediaStore.Images.Media.DATE_TAKEN);
+                        do {
+                            Calendar myCal = Calendar.getInstance();
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                            // Get the field values
+                            bucketName = cursor.getString(bucketNameColumn);
+                            data = cursor.getString(imageUriColumn);
+                            imageId = cursor.getString(imageIdColumn);
+                            dateTaken = cursor.getLong(dateTakenColumn);
+                            myCal.setTimeInMillis(dateTaken);
+                            String dateText = formatter.format(myCal.getTime());
+
+                            Image image = new Image();
+                            image.setAlbumName(bucketName);
+                            image.setPath(data);
+                            image.setId(Integer.parseInt(imageId));
+                            image.setDateTaken(dateText);
+
+                            RecycleBin.getAlbumImages().add(image);
+
+                        } while (cursor.moveToNext());
+                    }
+
+                    cursor.close();
+                }
+                Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);
+                Gson gson = new Gson();
+                String imagesObj = gson.toJson(RecycleBin);
+                intent.putExtra("ALBUM", imagesObj);
+                getActivity().startActivity(intent);
+            }
+        });
         return binding.getRoot();
     }
 
@@ -259,4 +376,5 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
         return false;
     }
+
 }

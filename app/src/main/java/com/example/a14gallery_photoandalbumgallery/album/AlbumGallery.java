@@ -90,11 +90,17 @@ public class AlbumGallery {
                     myCal.setTimeInMillis(dateTaken);
                     String dateText = formatter.format(myCal.getTime());
 
+                    if (bucketName.equals("FavoriteAlbum") || bucketName.equals("PrivateAlbum") || bucketName.equals("RecycleBin")) {
+                        continue;
+                    }
+
                     Image image = new Image();
                     image.setAlbumName(bucketName);
                     image.setPath(data);
                     image.setId(Integer.parseInt(imageId));
                     image.setDateTaken(dateText);
+
+
 
                     if (albumsNames.contains(bucketName)) {
                         for (Album album : albums) {
@@ -124,6 +130,9 @@ public class AlbumGallery {
         if (folder.exists()) {
             for (File allFile : allFiles) {
                 File[] content = allFile.listFiles();
+                if (allFile.getName().equals("FavoriteAlbum") || allFile.getName().equals("PrivateAlbum") || allFile.getName().equals("RecycleBin")) {
+                    continue;
+                }
                 if (content.length == 0) {
                     Album album = new Album();
                     //album.setId(image.getId());

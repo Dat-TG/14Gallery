@@ -18,6 +18,7 @@ import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.MainActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
@@ -59,8 +60,14 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.recyclerDetailView.setNestedScrollingEnabled(false);
             binding.recyclerDetailView.setAdapter(new ImageFragmentAdapter(getApplicationContext(), classifyDateList, 4));
             binding.textNotFound.setVisibility(View.GONE);
-        } else {
-            binding.textNotFound.setText(R.string.no_image_found);
+
+        }else {
+            if (album.getName().equals("Thùng rác")) {
+                binding.textNotFound.setText(R.string.empty_recycle_bin);
+            }
+            else {
+                binding.textNotFound.setText(R.string.no_image_found);
+            }
             binding.recyclerDetailView.setVisibility(View.GONE);
         }
         setContentView(binding.getRoot());
@@ -126,5 +133,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
