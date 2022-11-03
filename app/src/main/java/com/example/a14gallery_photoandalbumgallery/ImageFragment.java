@@ -273,9 +273,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
             ImageGallery.getInstance().update(getActivity());
             images = ImageGallery.listOfImages(requireContext());
             if (sortByDate) {
-                classifyDateList = ImageGallery.getListClassifyDate(images);
+                toViewList();
             } else {
-                classifyDateList = ImageGallery.getListClassifyMonth(images);
+                toViewListMonth();
             }
             return null;
         }
@@ -283,8 +283,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            //imageFragmentAdapter.setData(classifyDateList);
-            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+            imageFragmentAdapter.setData(viewList);
         }
     }
     private void toViewListMonth() {

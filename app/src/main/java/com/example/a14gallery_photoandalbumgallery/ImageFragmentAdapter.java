@@ -113,7 +113,7 @@ public class ImageFragmentAdapter extends
             Glide.with(imageView.getContext())
                     .load(imageData.getPath())
                     .centerCrop()
-                    .placeholder(R.drawable.pic02)
+                    .placeholder(R.drawable.ic_launcher_foreground)
                     .into(imageView);
 
             if (state == State.Normal) {
