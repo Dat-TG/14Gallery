@@ -1,8 +1,12 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.app.WallpaperManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -15,6 +19,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscree
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FullscreenImageActivity extends AppCompatActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     ActivityFullscreenImageBinding binding;
@@ -79,7 +84,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         //  More button
         if (view.getId() == R.id.btnMore) {
-            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
             // Initialize the popup menu
             PopupMenu popupMenu = new PopupMenu(FullscreenImageActivity.this, binding.btnMore);
 
@@ -108,15 +112,48 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
-        //Add to Favorite
-        if (menuItem.getItemId()==R.id.btnAddPrivate) {
-            Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
-            intent.putExtra("message", "AddPrivate");
-            intent.putExtra("imagePath", imagePath);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+        if (menuItem.getItemId() == R.id.btnHomeWallpaper){
+            File image = new File(imagePath);
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getPath(),bmOptions);
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            // get the height and width of screen
+            int height = metrics.heightPixels;
+            int width = metrics.widthPixels;
+            bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+            WallpaperManager wallpaperManager = WallpaperManager
+                    .getInstance(getApplicationContext());
+            try {
+                wallpaperManager.setBitmap(bitmap,  null, true, WallpaperManager.FLAG_SYSTEM);
+                Toast.makeText(this, "Set wallpaper successfully", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return true;
         }
+
+        if (menuItem.getItemId() == R.id.btnLockWallpaper){
+            File image = new File(imagePath);
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getPath(),bmOptions);
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            // get the height and width of screen
+            int height = metrics.heightPixels;
+            int width = metrics.widthPixels;
+            bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+            WallpaperManager wallpaperManager = WallpaperManager
+                    .getInstance(getApplicationContext());
+            try {
+                wallpaperManager.setBitmap(bitmap,  null, true, WallpaperManager.FLAG_LOCK);
+                Toast.makeText(this, "Set wallpaper successfully", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
         return false;
     }
 }

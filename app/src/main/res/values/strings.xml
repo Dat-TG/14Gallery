@@ -54,5 +54,5 @@
     <string name="prefer">Ưa thích</string>
     <string name="search_here">Tìm kiếm ở đây</string>
     <string name="empty_recycle_bin"><b>Thùng rác trống</b>\n\nChưa có ảnh nào trong thùng rác</string>
-
+    <string name="set_as_title">Set As</string>
 </resources>
