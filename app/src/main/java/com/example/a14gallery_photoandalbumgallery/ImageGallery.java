@@ -147,6 +147,7 @@ public class ImageGallery {
     }
 
     public static List<ClassifyDate> getListAddImage(List<Image> images, List<Image> imagesIncluded) {
+        ArrayList<RecyclerData> viewList=new ArrayList<>();
 
         List<ClassifyDate> ClassifyDateList = new ArrayList<>();
         List<String> imagesPath = new ArrayList<>();

@@ -50,8 +50,9 @@ public class RecyclerImageViewFragment extends Fragment {
         binding = FragmentImageBinding.inflate(inflater, container, false);
 
         imagesInAlbum = album.getAlbumImages();
-        toViewList(imagesInAlbum);
+        toViewListAdd(ImageGallery.getInstance().images,imagesInAlbum);
         layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        //classifyDateList = ImageGallery.getListAddImage(ImageGallery.getInstance().images, imagesInAlbum);
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
@@ -104,6 +105,22 @@ public class RecyclerImageViewFragment extends Fragment {
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
+    }
+
+    private void toViewListAdd(List<Image> images, List<Image>imagesIncluded) {
+        List<String> imagesPath = new ArrayList<>();
+        List<Image>temp=new ArrayList<>();
+        for (int i = 0; i < imagesIncluded.size(); i++)
+            imagesPath.add(imagesIncluded.get(i).getPath());
+        if (images.size() > 0) {
+            for (int i = 0; i < images.size(); i++) {
+                if(!imagesPath.contains(images.get(i).getPath())){
+                    String label=images.get(i).getDateTaken();
+                    temp.add(images.get(i));
+                }
+            }
+        }
+        toViewList(temp);
     }
 
     private void setRecyclerViewLayoutManager(int newTypeView) {
