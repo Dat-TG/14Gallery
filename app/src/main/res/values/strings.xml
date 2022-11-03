@@ -53,4 +53,5 @@
     <string name="image_manage">Quản lý ảnh</string>
     <string name="prefer">Ưa thích</string>
     <string name="search_here">Tìm kiếm ở đây</string>
+    <string name="set_as_title">Set As</string>
 </resources>

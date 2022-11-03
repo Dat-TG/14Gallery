@@ -6,4 +6,13 @@
         android:title="@string/add_to_album_title"/>
     <item android:id="@+id/btnDetails"
         android:title="@string/details_title"/>
+    <item android:id="@+id/btnSetAs"
+        android:title="@string/set_as_title">
+        <menu>
+            <item android:id="@+id/btnHomeWallpaper"
+                android:title="Home screen wallpaper"/>
+            <item android:id="@+id/btnLockWallpaper"
+                android:title="Lock screen wallpaper"/>
+        </menu>
+    </item>
 </menu>

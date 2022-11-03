@@ -1,6 +1,9 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -39,6 +43,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
     boolean upToDown = true;
     boolean sortByDate = true;
 
+
+    private Uri imageUri;
+    ActivityResultLauncher<String> requestPermissionLauncher;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     public ImageFragment() {
@@ -72,6 +79,24 @@ public class ImageFragment extends Fragment implements MenuProvider {
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
+        // permission camera
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        // Permission is granted. Continue the action or workflow in your
+                        // app.
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                        imageUri = getActivity().getApplicationContext().getContentResolver().insert(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                        activityResultLauncher.launch(intent);
+                    } else {
+                        Toast.makeText(getContext(), "There is no app that support this action", Toast.LENGTH_SHORT).show();
+                    }
+                });
         //
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
@@ -97,8 +122,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.img_camera) {
             // Click camera
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            activityResultLauncher.launch(intent);
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
@@ -134,6 +158,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
             if (!upToDown) {
                 ((LinearLayoutManager) layoutManager).setReverseLayout(false);
                 upToDown = true;
+            }else {
+                Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -142,6 +168,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
             if (upToDown) {
                 ((LinearLayoutManager) layoutManager).setReverseLayout(true);
                 upToDown = false;
+            }else {
+                Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -153,9 +181,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
                     ((LinearLayoutManager) layoutManager).setReverseLayout(true);
                 }
                 imageFragmentAdapter.setData(classifyDateList);
-                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
-
                 sortByDate = true;
+            }else{
+                Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -164,12 +192,12 @@ public class ImageFragment extends Fragment implements MenuProvider {
             if(sortByDate){
                 classifyDateList = ImageGallery.getListClassifyMonth(images);
                 if(!upToDown){
-//                    Collections.reverse(classifyDateList);
                     ((LinearLayoutManager) layoutManager).setReverseLayout(true);
                 }
                 imageFragmentAdapter.setData(classifyDateList);
-                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
                 sortByDate = false;
+            } else {
+                Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -197,7 +225,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
             imageFragmentAdapter.setData(classifyDateList);
-            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
         }
     }
 }
