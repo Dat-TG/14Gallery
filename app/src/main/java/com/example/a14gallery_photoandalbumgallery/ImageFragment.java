@@ -2,10 +2,12 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,13 +25,19 @@ import androidx.annotation.NonNull;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class ImageFragment extends Fragment implements MenuProvider {
     FragmentImageBinding binding;
@@ -40,12 +48,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     ImageFragmentAdapter imageFragmentAdapter;
     RecyclerView.LayoutManager layoutManager;
+    GridLayoutManager gridLayoutManager;
     boolean upToDown = true;
     boolean sortByDate = true;
 
-
     private Uri imageUri;
     ActivityResultLauncher<String> requestPermissionLauncher;
+    private ArrayList<RecyclerData> viewList = null;
+    BiConsumer<Integer, View> onItemClick;
+    BiConsumer<Integer, View> onItemLongClick;
+
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     public ImageFragment() {
@@ -53,26 +65,46 @@ public class ImageFragment extends Fragment implements MenuProvider {
     }
 
     @Override
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final FragmentActivity activity = requireActivity();
         binding = FragmentImageBinding.inflate(inflater, container, false);
-
-        // Get images from gallery
-        ImageGallery.getInstance().update(requireContext());
-        images = ImageGallery.getInstance().images;
-
+        images = ImageGallery.getInstance().getListOfImages(getContext());
+        toViewList();
         layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
+        setRecyclerViewLayoutManager(4);
 
-        images = ImageGallery.getInstance().getListOfImages(getContext());
-        classifyDateList = ImageGallery.getListClassifyDate(images);
+        onItemClick = (position, view1) -> {
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                if (!viewList.get(position).imageData.isChecked()) {
+                    viewList.get(position).imageData.setChecked(true);
+                    images.get(viewList.get(position).index).setChecked(true);
+                } else {
+                    viewList.get(position).imageData.setChecked(false);
+                    images.get(viewList.get(position).index).setChecked(false);
+                }
+                imageFragmentAdapter.notifyItemChanged(position);
+            } else {
+                Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
+                intent.putExtra("path", viewList.get(position).imageData.getPath());
+                getContext().startActivity(intent);
+            }
+        };
 
-        binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        imageFragmentAdapter = new ImageFragmentAdapter(getContext(), classifyDateList, typeView);
+        onItemLongClick = (position, view1) -> {
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
+            viewList.get(position).imageData.setChecked(true);
+            images.get(viewList.get(position).index).setChecked(true);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            activity.invalidateOptionsMenu();
+        };
+
+        imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
+        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
         binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
         // Menu
@@ -110,53 +142,74 @@ public class ImageFragment extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
+
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menu.clear();
-        if (!menu.hasVisibleItems()) {
-            menuInflater.inflate(R.menu.top_bar_menu_image, menu);
+        menuInflater.inflate(R.menu.top_bar_menu_image, menu);
+        if(imageFragmentAdapter.getState()== ImageFragmentAdapter.State.MultipleSelect){
+            menu.getItem(0).setVisible(true);
+            menu.getItem(6).setVisible(false);
+            menu.getItem(2).setVisible(true);
+            menu.getItem(3).setVisible(true);
+            menu.getItem(4).setVisible(true);
+            menu.getItem(5).setVisible(true);
+        }
+        else{
+            menu.getItem(0).setVisible(false);
+            menu.getItem(1).setVisible(true);
+            menu.getItem(6).setVisible(true);
+            menu.getItem(2).setVisible(false);
+            menu.getItem(3).setVisible(false);
+            menu.getItem(4).setVisible(false);
+            menu.getItem(5).setVisible(false);
         }
     }
 
+
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        Activity activity = requireActivity();
         if (menuItem.getItemId() == R.id.img_camera) {
             // Click camera
             requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_choose) {
-
+            images.forEach(imageData -> imageData.setChecked(true));
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            activity.invalidateOptionsMenu();
             return true;
         }
         if (menuItem.getItemId() == R.id.clear_choose) {
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            activity.invalidateOptionsMenu();
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
-            typeView = 2;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+            setRecyclerViewLayoutManager(2);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_3) {
-            typeView = 3;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+            setRecyclerViewLayoutManager(3);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_4) {
-            typeView = 4;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+            setRecyclerViewLayoutManager(4);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_grid_col_5) {
-            typeView = 5;
-            binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, typeView));
+            setRecyclerViewLayoutManager(5);
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_normal) {
             // Click { sort UP-TO-DOWN
             if (!upToDown) {
-                ((LinearLayoutManager) layoutManager).setReverseLayout(false);
+                toViewList();
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 upToDown = true;
             }else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
@@ -166,7 +219,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.img_view_mode_convert) {
             // Click { sort DOWN-TO-UP
             if (upToDown) {
-                ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+                setDownToUp();
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 upToDown = false;
             }else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
@@ -176,11 +231,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.img_view_mode_day) {
             // Click Sort by day
             if (!sortByDate) {
-                classifyDateList = ImageGallery.getListClassifyDate(images);
-                if (!upToDown) {
-                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-                }
-                imageFragmentAdapter.setData(classifyDateList);
+                toViewList();
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 sortByDate = true;
             }else{
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
@@ -190,11 +243,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.img_view_mode_month) {
             // Click Sort by month
             if(sortByDate){
-                classifyDateList = ImageGallery.getListClassifyMonth(images);
-                if(!upToDown){
-                    ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-                }
-                imageFragmentAdapter.setData(classifyDateList);
+                toViewListMonth();
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
                 sortByDate = false;
             } else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
@@ -204,6 +255,13 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.img_setting) {
             // Click Setting
             return true;
+        }
+        if(menuItem.getItemId()==R.id.delete_images){
+            addToTrash();
+            toViewList();
+            imageFragmentAdapter.setData(viewList);
+            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+            activity.invalidateOptionsMenu();
         }
         return false;
     }
@@ -224,7 +282,80 @@ public class ImageFragment extends Fragment implements MenuProvider {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            imageFragmentAdapter.setData(classifyDateList);
+            //imageFragmentAdapter.setData(classifyDateList);
+            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
         }
+    }
+    private void toViewListMonth() {
+        if (images.size() > 0) {
+            int beg = 3;
+            viewList = new ArrayList<>();
+            String label = images.get(0).getDateTaken();
+            label=label.substring(beg,label.length()-6);
+            label += '.';
+            for (int i = 0; i < images.size(); i++) {
+                String labelCur = images.get(i).getDateTaken();
+                labelCur=labelCur.substring(beg,labelCur.length()-6);
+                if (!labelCur.equals(label)) {
+                    label = labelCur;
+                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                }
+                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+            }
+        }
+    }
+
+    private void toViewList() {
+        if (images.size() > 0) {
+            viewList = new ArrayList<>();
+            String label = images.get(0).getDateTaken();
+            label += '.';
+            for (int i = 0; i < images.size(); i++) {
+                String labelCur = images.get(i).getDateTaken();
+                if (!labelCur.equals(label)) {
+                    label = labelCur;
+                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                }
+                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+            }
+        }
+    }
+
+    private void setDownToUp(){
+        if (images.size() > 0) {
+            viewList = new ArrayList<>();
+            String label = images.get(0).getDateTaken();
+            label += '.';
+            for (int i = images.size()-1; i >=0; i--) {
+                String labelCur = images.get(i).getDateTaken();
+                if (!labelCur.equals(label)) {
+                    label = labelCur;
+                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                }
+                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+            }
+        }
+    }
+
+    private void setRecyclerViewLayoutManager(int newTypeView) {
+        typeView = newTypeView;
+        gridLayoutManager = new GridLayoutManager(getContext(), typeView);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return viewList.get(position).type == RecyclerData.Type.Label ? typeView : 1;
+            }
+        });
+        binding.imageFragmentRecycleView.setLayoutManager(gridLayoutManager);
+    }
+
+    private void addToTrash() {
+        ArrayList<Image> selectedImages = images.stream()
+                .filter(Image::isChecked)
+                .collect(Collectors.toCollection(ArrayList::new));
+        for (Image image : selectedImages) {
+            images.remove(image);
+        }
+        Snackbar.make(requireView(), "Images removed", Snackbar.LENGTH_SHORT).show();
     }
 }

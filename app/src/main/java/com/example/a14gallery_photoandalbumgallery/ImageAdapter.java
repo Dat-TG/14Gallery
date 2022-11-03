@@ -54,7 +54,7 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             super(b.getRoot());
             binding = b;
             scrim = itemView.findViewById(R.id.pictureItemScrim);
-            checkBox = itemView.findViewById(R.id.pictureItemCheck);
+            checkBox = itemView.findViewById(R.id.pictureItemCheckCircle);
         }
 
         public void bind(final Image image, final OnItemClickListener listener,final OnItemLongClickListener listeners) {
@@ -114,4 +114,5 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             return _listImages.size();
         return 0;
     }
+
 }

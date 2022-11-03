@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -59,7 +60,9 @@ public class ImageGallery {
 
         String[] projection = {MediaStore.MediaColumns.DATA,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DATE_TAKEN
+                MediaStore.Images.Media.DATE_TAKEN,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media._ID
         };
 
         String orderBy = MediaStore.Video.Media.DATE_TAKEN;
@@ -68,11 +71,12 @@ public class ImageGallery {
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
         dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
+        int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
         Calendar myCal = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
         // Get folder name
         // column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
+        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
             if (absolutePathOfImage.contains("/PrivateAlbum/") || absolutePathOfImage.contains("/RecycleBin/")) {
@@ -85,6 +89,11 @@ public class ImageGallery {
             Image image = new Image();
             image.setPath(absolutePathOfImage);
             image.setDateTaken(dateText);
+            long dateAdded = cursor.getLong(dateAddedColumn);
+            image.setDateAdded(dateAdded * 1000L);
+            long id = cursor.getLong(idColumn);
+            Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+            image.setUri(contentUri);
             listOfAllImages.add(image);
         }
 

@@ -278,6 +278,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         if (!menu.hasVisibleItems()) {
             menuInflater.inflate(R.menu.top_bar_menu_album, menu);
         }
+
     }
 
     @Override

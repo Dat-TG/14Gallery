@@ -47,7 +47,7 @@ public class RecyclerImageViewFragment extends Fragment {
         binding.imageFragmentRecycleView.setLayoutManager(layoutManager);
 
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(false);
-        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, 4));
+//        binding.imageFragmentRecycleView.setAdapter(new ImageFragmentAdapter(getContext(), classifyDateList, 4));
 
         return binding.getRoot();
     }

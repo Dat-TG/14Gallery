@@ -7,11 +7,19 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
+<<<<<<< HEAD
             <value value="C:\Users\Admin\.android\avd\Pixel_5_API_31_4.avd" />
+=======
+            <value value="C:\Users\ADMIN\.android\avd\Pixel_5_API_31_1.avd" />
+>>>>>>> origin/CVJV-22
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
+<<<<<<< HEAD
     <timeTargetWasSelectedWithDropDown value="2022-11-03T05:04:53.310636100Z" />
+=======
+    <timeTargetWasSelectedWithDropDown value="2022-11-01T06:05:54.282031800Z" />
+>>>>>>> origin/CVJV-22
   </component>
 </project>

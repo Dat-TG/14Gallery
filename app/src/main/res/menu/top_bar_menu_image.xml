@@ -8,10 +8,34 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/img_camera"
-        android:contentDescription="@string/icon_camera_description"
         android:icon="@drawable/ic_baseline_camera_enhance_24"
         android:title="@string/camera_title"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/importAlbums"
+        android:title="@string/import_album"
+        android:icon="@drawable/ic_album"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/slideShow"
+        android:title="@string/slideshow"
+        android:icon="@drawable/ic_slideshow"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/share"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/delete_images"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/img_more"
         android:contentDescription="@string/icon_menu_description"
@@ -19,6 +43,9 @@
         android:title="@string/more_title"
         app:showAsAction="ifRoom">
         <menu>
+            <item
+                android:id="@+id/detAlb_add_image"
+                android:title="@string/add_image_title" />
             <item
                 android:id="@+id/img_choose"
                 android:title="@string/choose_title" />

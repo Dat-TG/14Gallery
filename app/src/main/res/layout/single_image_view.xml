@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="1dp" >
+    android:layout_margin="2dp" >
 
         <ImageView
             android:id="@+id/image"
@@ -14,6 +14,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintDimensionRatio="1"
             tools:ignore="MissingConstraints" />
+
         <View
             android:id="@+id/pictureItemScrim"
             android:layout_width="match_parent"
@@ -23,14 +24,15 @@
             tools:ignore="MissingConstraints" />
 
         <CheckBox
-            android:id="@+id/pictureItemCheck"
+            android:id="@+id/pictureItemCheckCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="@id/image"
             app:layout_constraintTop_toTopOf="@+id/image"
-            app:layout_constraintBottom_toBottomOf="@id/image"
-            app:layout_constraintRight_toRightOf="@id/image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp"
+            android:button="@drawable/custom_checkbox"
+            android:clickable="false"
             tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
