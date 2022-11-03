@@ -60,6 +60,7 @@ public class ImageFragmentAdapter extends
         Normal,
         MultipleSelect
     }
+
     public static int ITEM_TYPE_TIME = 0;
     public static int ITEM_TYPE_IMAGE = 1;
     @NonNull
@@ -72,8 +73,8 @@ public class ImageFragmentAdapter extends
     private State state = State.Normal;
 
     public ImageFragmentAdapter(@NonNull List<RecyclerData> imageDataList,
-                                    @NonNull BiConsumer<Integer, View> onItemClick,
-                                    @NonNull BiConsumer<Integer, View> onItemLongClick) {
+                                @NonNull BiConsumer<Integer, View> onItemClick,
+                                @NonNull BiConsumer<Integer, View> onItemLongClick) {
         this.imageDataList = imageDataList;
         this.onItemClick = onItemClick;
         this.onItemLongClick = onItemLongClick;
@@ -139,12 +140,11 @@ public class ImageFragmentAdapter extends
 
     @Override
     public int getItemCount() {
-        if(imageDataList.size()>0) {
+        if (imageDataList == null) return 0;
+        else if (imageDataList.size() > 0) {
             return imageDataList.size();
         }
-        else{
-            return 0;
-        }
+        return 0;
     }
 
     public State getState() {
