@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +16,6 @@ import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBi
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {

@@ -66,7 +66,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         binding.albumFragmentRecycleView.setLayoutManager(layoutManager);
         binding.albumFragmentRecycleView.setNestedScrollingEnabled(false);
 
-        AlbumGallery.getInstance().load(getContext());
+        AlbumGallery.getInstance().update(getContext());
         albums = AlbumGallery.getInstance().albums;
         adapter = new AlbumFragmentAdapter(getContext(), albums);
         binding.albumFragmentRecycleView.setAdapter(adapter);
@@ -79,9 +79,9 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         // Menu
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        ImageView favoriteAlbum = (ImageView) binding.getRoot().findViewById(R.id.favoriteAlbum);
-        ImageView privateAlbum = (ImageView) binding.getRoot().findViewById(R.id.privateAlbum);
-        ImageView recycleBin = (ImageView) binding.getRoot().findViewById(R.id.recycleBin);
+        ImageView favoriteAlbum = binding.getRoot().findViewById(R.id.favoriteAlbum);
+        ImageView privateAlbum = binding.getRoot().findViewById(R.id.privateAlbum);
+        ImageView recycleBin = binding.getRoot().findViewById(R.id.recycleBin);
 
         //Tạo album Ưa thích nếu chưa tạo
         File favoriteAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
@@ -200,6 +200,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                     }
                 }, 2000);
             }
+
         });
         recycleBin.setOnClickListener(new View.OnClickListener() {
             @Override

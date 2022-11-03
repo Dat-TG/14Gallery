@@ -136,4 +136,37 @@ public class ImageGallery {
             return null;
         }
     }
+
+    public static List<ClassifyDate> getListAddImage(List<Image> images, List<Image> imagesIncluded) {
+
+        List<ClassifyDate> ClassifyDateList = new ArrayList<>();
+        List<String> imagesPath = new ArrayList<>();
+        for (int i = 0; i < imagesIncluded.size(); i++)
+            imagesPath.add(imagesIncluded.get(i).getPath());
+        int ClassifyDateCount = 0;
+        int size = 0;
+        try {
+            ClassifyDateList.add(new ClassifyDate(images.get(0).getDateTaken(), new ArrayList<>()));
+            ClassifyDateList.get(ClassifyDateCount).addListImage(images.get(0));
+            for (int i = 1; i < images.size(); i++) {
+                if (!images.get(i).getDateTaken().equals(images.get(i - 1).getDateTaken())) {
+                    ClassifyDateList.add(new ClassifyDate(images.get(i).getDateTaken(), new ArrayList<>()));
+                    ClassifyDateCount++;
+                }
+                if (!imagesPath.contains(images.get(i).getPath()))
+                    ClassifyDateList.get(ClassifyDateCount).addListImage(images.get(i));
+            }
+            if (imagesPath.contains(images.get(0).getPath()))
+                ClassifyDateList.get(0).getListImage().remove(0);
+            size = ClassifyDateList.size();
+            for (int i = 0; i < size; i++) {
+                if (ClassifyDateList.get(i).getListImage().size() <= 0) {
+                    ClassifyDateList.remove(ClassifyDateList.get(i));
+                }
+            }
+            return ClassifyDateList;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

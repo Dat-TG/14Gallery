@@ -17,7 +17,7 @@ public class Album {
         return id;
     }
 
-    public void setId( int id ) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -25,7 +25,7 @@ public class Album {
         return name;
     }
 
-    public void setName( String name ) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -33,23 +33,23 @@ public class Album {
         return coverUri;
     }
 
-    public void setCoverUri( String albumCoverUri ) {
+    public void setCoverUri(String albumCoverUri) {
         this.coverUri = albumCoverUri;
     }
 
-    public List< Image > getAlbumImages() {
+    public List<Image> getAlbumImages() {
         return albumImages;
     }
 
-    public void setAlbumImages( List<Image> albumImages ) {
+    public void setAlbumImages(List<Image> albumImages) {
         this.albumImages = albumImages;
     }
 
-    public List< Album > getAlbumChildren() {
+    public List<Album> getAlbumChildren() {
         return albumChildren;
     }
 
-    public void setAlbumChildren( List<Album > albumChildren ) {
+    public void setAlbumChildren(List<Album> albumChildren) {
         this.albumChildren = albumChildren;
     }
 }
