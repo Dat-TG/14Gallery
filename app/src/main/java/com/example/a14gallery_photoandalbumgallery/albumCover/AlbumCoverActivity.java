@@ -1,50 +1,30 @@
 package com.example.a14gallery_photoandalbumgallery.albumCover;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
-import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.ImageGallery;
-import com.example.a14gallery_photoandalbumgallery.MainActivity;
-import com.example.a14gallery_photoandalbumgallery.R;
-import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
 import com.example.a14gallery_photoandalbumgallery.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
-import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
-import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumCoverDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 
 public class AlbumCoverActivity extends AppCompatActivity {
@@ -91,7 +71,7 @@ public class AlbumCoverActivity extends AppCompatActivity {
                     String imagesObj = gson.toJson(album);
                     intent.putExtra("ALBUM", imagesObj);
                     AlbumData albumData = new AlbumData(album.getName(),  viewList.get(position).imageData.getPath());
-                    AlbumCoverDatabase.getInstance(this).albumDataDao().updateAlbum(albumData);
+                    AppDatabase.getInstance(this).albumDataDao().updateAlbum(albumData);
                     Toast.makeText(this, "Đổi ảnh bìa thành công", Toast.LENGTH_SHORT).show();
                     AlbumGallery.getInstance().update(this);
                     this.startActivity(intent);

@@ -9,7 +9,7 @@ import android.provider.MediaStore;
 import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.ImageGallery;
-import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumCoverDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 
 import java.io.File;
@@ -127,7 +127,7 @@ public class AlbumGallery {
                     album.setName(allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
-                    AlbumData albumData = AlbumCoverDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCover(allFile.getName());
+                    AlbumData albumData = AppDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCover(allFile.getName());
                     if(albumData != null) album.setAlbumCover(albumData.albumCover);
                     albums.add(album);
                     albumsNames.add(allFile.getName());
