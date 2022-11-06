@@ -7,7 +7,7 @@
     <string name="icon_camera_description">Icon camera</string>
     <string name="camera_title">Camera</string>
     <string name="icon_menu_description">Icon menu</string>
-    <string name="more_title">More</string>
+    <string name="more_title">Khác</string>
     <string name="grid_column_2">Column 2</string>
     <string name="grid_column_3">Column 3</string>
     <string name="grid_column_4">Column 4</string>
@@ -29,13 +29,13 @@
     <string name="nav_image_title">Ảnh</string>
     <string name="nav_album_title">Albums</string>
     <string name="nav_search_title">Tìm kiếm</string>
-    <string name="share_title">Share</string>
+    <string name="share_title">Chia sẻ</string>
     <string name="share_description">Share image</string>
-    <string name="edit_title">Edit</string>
+    <string name="edit_title">Sửa</string>
     <string name="edit_description">Edit image</string>
-    <string name="hide_title">Hide</string>
+    <string name="hide_title">Ẩn</string>
     <string name="hide_description">Hide image</string>
-    <string name="delete_title">Delete</string>
+    <string name="delete_title">Xóa</string>
     <string name="delete_description">Delete image</string>
     <string name="more_description">More option</string>
     <string name="rename_title">Rename</string>

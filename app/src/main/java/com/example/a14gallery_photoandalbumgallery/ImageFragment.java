@@ -1,13 +1,12 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -92,7 +90,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
                 intent.putExtra("path", viewList.get(position).imageData.getPath());
-                getContext().startActivity(intent);
+                requireContext().startActivity(intent);
             }
         };
 
