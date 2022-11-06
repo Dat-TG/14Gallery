@@ -61,11 +61,8 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
         holder.binding.albumImg.setOnClickListener(view -> {
-            album = albumPos;
             Intent intent = new Intent(_context, DetailAlbumActivity.class);
-            Gson gson = new Gson();
-            String imagesObj = gson.toJson(album);
-            intent.putExtra("ALBUM", imagesObj);
+            intent.putExtra("NAME", albumPos.getName());
             _context.startActivity(intent);
         });
     }

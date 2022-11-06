@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
 
 
@@ -125,6 +126,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             if (file.delete()) {
                 Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
                 ImageGallery.getInstance().update(this);
+                AlbumGallery.getInstance().update(this);
             } else {
                 Toast.makeText(this, "Delete unsuccessfully", Toast.LENGTH_SHORT).show();
             }

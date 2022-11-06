@@ -162,19 +162,17 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             image.setId(Integer.parseInt(imageId));
                             image.setDateTaken(dateText);
                             image.setUri(contentUri);
-
                             Favorite.getAlbumImages().add(image);
-
                         } while (cursor.moveToNext());
                     }
-
                     cursor.close();
                 }
                 Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(Favorite);
                 intent.putExtra("ALBUM", imagesObj);
-                getActivity().startActivity(intent);
+                intent.putExtra("NAME", favoriteAlbumFolderName);
+                startActivity(intent);
             }
 
         });
@@ -273,10 +271,20 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(RecycleBin);
                 intent.putExtra("ALBUM", imagesObj);
+                intent.putExtra("NAME", recycleBinFolderName);
                 getActivity().startActivity(intent);
             }
         });
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        AlbumGallery.getInstance().update(getContext());
+        albums = AlbumGallery.getInstance().albums;
+        adapter = new AlbumFragmentAdapter(getContext(), albums);
+        binding.albumFragmentRecycleView.setAdapter(adapter);
     }
 
     @Override
@@ -285,7 +293,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         if (!menu.hasVisibleItems()) {
             menuInflater.inflate(R.menu.top_bar_menu_album, menu);
         }
-
     }
 
     @Override

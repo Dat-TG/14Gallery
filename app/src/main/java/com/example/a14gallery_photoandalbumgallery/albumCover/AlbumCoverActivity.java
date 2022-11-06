@@ -35,12 +35,11 @@ public class AlbumCoverActivity extends AppCompatActivity {
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
     BiConsumer<Integer, View> onItemLongClick;
-    private ImageFragmentAdapter imageFragmentAdapter=null;
+    private ImageFragmentAdapter imageFragmentAdapter = null;
     public int typeView = 4;
     GridLayoutManager gridLayoutManager;
-    boolean upToDown = true;
-    boolean sortByDate = true;
-    Gson gson;
+
+    String nameFolder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +54,8 @@ public class AlbumCoverActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        gson = new Gson();
-        album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        nameFolder = getIntent().getStringExtra("NAME");
+        album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle("Chọn ảnh bìa cần đổi");
@@ -64,24 +63,28 @@ public class AlbumCoverActivity extends AppCompatActivity {
             images = album.getAlbumImages();
             toViewList(images);
             onItemClick = (position, view1) -> {
-                if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {}
-                else {
+                if (imageFragmentAdapter.getState() != ImageFragmentAdapter.State.MultipleSelect) {
                     Intent intent = new Intent(this, DetailAlbumActivity.class);
-                    Gson gson = new Gson();
-                    String imagesObj = gson.toJson(album);
-                    intent.putExtra("ALBUM", imagesObj);
-                    AlbumData albumData = new AlbumData(album.getName(),  viewList.get(position).imageData.getPath());
-                    AppDatabase.getInstance(this).albumDataDao().updateAlbum(albumData);
-                    Toast.makeText(this, "Đổi ảnh bìa thành công", Toast.LENGTH_SHORT).show();
+                    intent.putExtra("NAME", album.getName());
+                    AlbumData data = AppDatabase.getInstance(this).albumDataDao().getAlbumCover(album.getName());
+                    AlbumData albumData = new AlbumData(album.getName(), viewList.get(position).imageData.getPath());
+
+                    if (data != null)
+                        AppDatabase.getInstance(this).albumDataDao().updateAlbum(albumData);
+                    else
+                        AppDatabase.getInstance(this).albumDataDao().insertAlbumCover(albumData);
                     AlbumGallery.getInstance().update(this);
+                    Toast.makeText(this, "Đổi ảnh bìa thành công", Toast.LENGTH_SHORT).show();
                     this.startActivity(intent);
+                    AlbumCoverActivity.this.finish();
                 }
             };
+            onItemLongClick = (position, view1) -> {};
 
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             setRecyclerViewLayoutManager(4);
-            imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
+            imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
             binding.textNotFound.setVisibility(View.GONE);
@@ -101,7 +104,8 @@ public class AlbumCoverActivity extends AppCompatActivity {
         });
         binding.recyclerDetailView.setLayoutManager(gridLayoutManager);
     }
-    private void toViewList(List<Image>images) {
+
+    private void toViewList(List<Image> images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();

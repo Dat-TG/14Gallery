@@ -135,6 +135,7 @@ public class InputPasswordActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), DetailAlbumActivity.class);
                         Gson gson = new Gson();
                         String imagesObj = gson.toJson(Private);
+                        intent.putExtra("NAME", privateAlbumFolderName);
                         intent.putExtra("ALBUM", imagesObj);
                         startActivity(intent);
                     }

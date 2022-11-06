@@ -99,7 +99,6 @@ public class ImageFragmentAdapter extends
         } else {
             return new TimelineViewHolder(inflater.inflate(R.layout.timeline_item, parent, false));
         }
-
     }
 
     @Override
