@@ -1,6 +1,8 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.WallpaperManager;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -47,9 +49,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         binding = ActivityFullscreenImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -59,8 +58,8 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Set on click for back navigator
         binding.topAppBar.setNavigationOnClickListener(v -> finish());
-        binding.topBarLayout.setLiftable(true);
-        binding.bottomBarLayout.setLiftable(true);
+        binding.topAppBar.setElevation(3);
+        binding.bottomAppBar.setElevation(3);
         // Set on click for image
         binding.imageView.setOnClickListener(this);
         // Set on click for buttons
@@ -104,38 +103,59 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
     }
 
+    private void setButtonsEnabled(boolean enabled) {
+        binding.btnShare.setEnabled(enabled);
+        binding.btnHide.setEnabled(enabled);
+        binding.btnDelete.setEnabled(enabled);
+        binding.btnEdit.setEnabled(enabled);
+        binding.btnMore.setEnabled(enabled);
+    }
+
     @Override
     public void onClick(View view) {
         // Click on image
         if (view.getId() == R.id.imageView) {
-            // Lift if app bars is not lifted
-//            if (binding.topBarLayout.isLifted()) {
-//                binding.topBarLayout.setLifted(false);
-//                binding.bottomBarLayout.setLifted(false);
-//            }
-//            else {
-//                binding.topBarLayout.setLifted(true);
-//                binding.bottomBarLayout.setLifted(true);
-//            }
-//            if (binding.topBarLayout.getVisibility() == View.VISIBLE) {
-//                binding.topBarLayout.animate()
-//                        .alpha(0f)
-//                        .setListener(new AnimatorListenerAdapter() {
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                binding.topBarLayout.setVisibility(View.GONE);
-//                            }
-//                        });
-//            }
-//            else {
-//                binding.topBarLayout.setAlpha(0f);
-//                binding.topBarLayout.setVisibility(View.VISIBLE);
-//
-//                binding.topBarLayout.animate()
-//                        .alpha(1f)
-//                        .setDuration(200)
-//                        .setListener(null);
-//            }
+            if (binding.topBarLayout.getVisibility() == View.VISIBLE) {
+                binding.topBarLayout.animate()
+                        .alpha(0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                binding.topBarLayout.setVisibility(View.GONE);
+                            }
+                        });
+                binding.bottomBarLayout.animate()
+                        .alpha(0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                binding.topBarLayout.setVisibility(View.GONE);
+                                // Disable all buttons
+                                setButtonsEnabled(false);
+                            }
+                        });
+            }
+            else {
+                binding.topBarLayout.setAlpha(0f);
+                binding.bottomBarLayout.setAlpha(0f);
+                binding.topBarLayout.setVisibility(View.VISIBLE);
+                binding.bottomBarLayout.setVisibility(View.VISIBLE);
+
+                binding.topBarLayout.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .setListener(null);
+                binding.bottomBarLayout.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                // Enable all buttons
+                                setButtonsEnabled(true);
+                            }
+                        });
+            }
 
 
         }

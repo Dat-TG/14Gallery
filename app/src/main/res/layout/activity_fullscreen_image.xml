@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".FullscreenImageActivity">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        tools:ignore="ContentDescription" />
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/topBarLayout"
         android:layout_width="match_parent"
@@ -18,14 +26,6 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_ios_new_24" />
     </com.google.android.material.appbar.AppBarLayout>
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        tools:ignore="ContentDescription" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/bottomBarLayout"
@@ -41,6 +41,7 @@
             app:contentInsetStart="0dp">
 
             <LinearLayout
+                android:id="@+id/buttonLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
