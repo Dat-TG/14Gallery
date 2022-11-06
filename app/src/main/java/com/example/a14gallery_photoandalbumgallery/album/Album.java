@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
 import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Album {
     private String coverUri;
     private List<Image> albumImages = new ArrayList<>();
     private List<Album> albumChildren = new ArrayList<>();
+    private String albumCover = "";
 
     public int getId() {
         return id;
@@ -51,5 +53,13 @@ public class Album {
 
     public void setAlbumChildren(List<Album> albumChildren) {
         this.albumChildren = albumChildren;
+    }
+
+    public String getAlbumCover() {
+        return albumCover;
+    }
+
+    public void setAlbumCover(String albumCover) {
+        this.albumCover = albumCover;
     }
 }

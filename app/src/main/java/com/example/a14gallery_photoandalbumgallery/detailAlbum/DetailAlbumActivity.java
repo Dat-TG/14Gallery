@@ -31,6 +31,7 @@ import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
 import com.example.a14gallery_photoandalbumgallery.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -71,6 +72,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         Gson gson = new Gson();
         album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
         int size = album.getAlbumImages().size();
+
 
         binding.appBarDetail.setTitle(album.getName());
         if (size != 0) {
@@ -191,6 +193,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             invalidateOptionsMenu();
             return true;
+        }
+        if (menuItem.getItemId() == R.id.detAlb_coverAlbum) {
+            Intent intent = new Intent(getApplicationContext(), AlbumCoverActivity.class);
+            Gson gson = new Gson();
+            String imagesObj = gson.toJson(album);
+            intent.putExtra("ALBUM", imagesObj);
+            startActivity(intent);
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
             setRecyclerViewLayoutManager(2);

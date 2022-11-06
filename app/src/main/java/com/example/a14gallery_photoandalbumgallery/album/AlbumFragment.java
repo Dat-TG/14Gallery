@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
@@ -97,7 +98,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
 
         //Tạo Thùng rác nếu chưa tạo
-        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + recycleBinFolderName);
         if (!recycleBinFolder.exists()) {
             recycleBinFolder.mkdirs();
         }
@@ -181,7 +182,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         privateAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -192,7 +192,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                         if (sharedPreferences.getString("password", "0").equals("0")) {
                             // Intent to navigate to Create Password Screen
                             Intent intent = new Intent(getActivity().getApplicationContext(), CreatePasswordActivity.class);
-
                             startActivity(intent);
                             //getActivity().finish();
                         } else {
@@ -268,7 +267,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
                         } while (cursor.moveToNext());
                     }
-
                     cursor.close();
                 }
                 Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);

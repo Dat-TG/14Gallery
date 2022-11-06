@@ -17,6 +17,7 @@ import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivi
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {
     Context _context;
@@ -38,22 +39,29 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
     @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(@NonNull AlbumFragmentAdapter.AlbumFragmentViewHolder holder, int position) {
-        String albumTitle = _album.get(position).getName();
-        List<Image> albumImages = _album.get(position).getAlbumImages();
+        Album albumPos = _album.get(position);
+        String albumTitle = albumPos.getName();
+        List<Image> albumImages = albumPos.getAlbumImages();
 
         int albumsCount = albumImages.size();
-        if (albumsCount > 0) {
-            Glide.with(_context)
-                    .load(albumImages.get(albumsCount - 1).getPath())
-                    .into(holder.binding.albumImg);
+        if (Objects.equals(albumPos.getAlbumCover(), "")) {
+            if (albumsCount > 0) {
+                Glide.with(_context)
+                        .load(albumImages.get(albumImages.size() - 1).getPath())
+                        .into(holder.binding.albumImg);
+            } else {
+                holder.binding.albumImg.setImageResource(R.drawable.album_empty);
+            }
         } else {
-            holder.binding.albumImg.setImageResource(R.drawable.album_empty);
+            Glide.with(_context)
+                    .load(albumPos.getAlbumCover())
+                    .into(holder.binding.albumImg);
         }
 
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
         holder.binding.albumImg.setOnClickListener(view -> {
-            album = _album.get(position);
+            album = albumPos;
             Intent intent = new Intent(_context, DetailAlbumActivity.class);
             Gson gson = new Gson();
             String imagesObj = gson.toJson(album);
