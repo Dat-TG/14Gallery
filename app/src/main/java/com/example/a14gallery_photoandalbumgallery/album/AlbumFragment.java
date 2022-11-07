@@ -73,9 +73,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         binding.albumFragmentRecycleView.setAdapter(adapter);
 
 
-        //Album Favorite, RecycleBin
-        Album Favorite = new Album();
-        Album RecycleBin = new Album();
+
 
         // Menu
         MenuHost menuHost = requireActivity();
@@ -107,7 +105,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
-
+                Album Favorite = new Album();
                 File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
                 File[] content = folder.listFiles();
                 String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
@@ -140,8 +138,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
                         int dateTakenColumn = cursor.getColumnIndex(
                                 MediaStore.Images.Media.DATE_TAKEN);
-
-
                         do {
                             Calendar myCal = Calendar.getInstance();
                             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
@@ -152,15 +148,12 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             dateTaken = cursor.getLong(dateTakenColumn);
                             myCal.setTimeInMillis(dateTaken);
                             String dateText = formatter.format(myCal.getTime());
-                            long id = cursor.getLong(imageIdColumn);
-                            Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                             Image image = new Image();
                             image.setAlbumName(bucketName);
                             image.setPath(data);
                             image.setId(Integer.parseInt(imageId));
                             image.setDateTaken(dateText);
-                            image.setUri(contentUri);
 
                             Favorite.getAlbumImages().add(image);
 
@@ -169,11 +162,12 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
                     cursor.close();
                 }
-                Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(Favorite);
                 intent.putExtra("ALBUM", imagesObj);
-                getActivity().startActivity(intent);
+                startActivity(intent);
             }
 
         });
@@ -212,6 +206,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show();
+                Album RecycleBin = new Album();
                 File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
                 File[] content = folder.listFiles();
                 String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
@@ -246,7 +241,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                                 MediaStore.Images.Media.DATE_TAKEN);
                         do {
                             Calendar myCal = Calendar.getInstance();
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
                             // Get the field values
                             bucketName = cursor.getString(bucketNameColumn);
                             data = cursor.getString(imageUriColumn);
@@ -254,15 +249,12 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             dateTaken = cursor.getLong(dateTakenColumn);
                             myCal.setTimeInMillis(dateTaken);
                             String dateText = formatter.format(myCal.getTime());
-                            long id = cursor.getLong(imageIdColumn);
-                            Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                             Image image = new Image();
                             image.setAlbumName(bucketName);
                             image.setPath(data);
                             image.setId(Integer.parseInt(imageId));
                             image.setDateTaken(dateText);
-                            image.setUri(contentUri);
 
                             RecycleBin.getAlbumImages().add(image);
 
@@ -271,11 +263,12 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
                     cursor.close();
                 }
-                Intent intent = new Intent(getActivity(), DetailAlbumActivity.class);
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(RecycleBin);
                 intent.putExtra("ALBUM", imagesObj);
-                getActivity().startActivity(intent);
+                startActivity(intent);
             }
         });
         return binding.getRoot();
