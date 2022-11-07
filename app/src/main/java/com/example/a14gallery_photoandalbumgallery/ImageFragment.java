@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +51,7 @@ import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -295,15 +298,24 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId()==R.id.move_images) {
             //Show album to choose
-            Fragment newFragment = new AlbumFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_layout, newFragment);
-            transaction.addToBackStack(null);
-            BottomNavigationView navBar = getActivity().findViewById(R.id.bottomNavigationView);
-            navBar.setVisibility(View.GONE);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("Di chuyển đến Album");
+            alert.setMessage("Nhập tên album");
+            final EditText input = new EditText(getContext()); // Set an EditText view to get user input
+            alert.setView(input);
+            alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+                String value = input.getText().toString();
+                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
+                if (!file.exists()) {
+                    Toast.makeText(getActivity(), "Album không tồn tại!", Toast.LENGTH_LONG).show();
+                } else {
+                    String dest=Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
+                    moveToAlbum(dest);
+                }
+            });
+            alert.setNegativeButton("Cancel", (dialog, whichButton) -> {/* Canceled.*/});
+            alert.show();
 
-            // Commit the transaction
-            transaction.commit();
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
@@ -410,15 +422,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
         for (Image image : selectedImages) {
             Path result = null;
             String src=image.getPath();
+            String name[]=src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+                    result = Files.move(Paths.get(src), Paths.get(dest+"/"+name[name.length-1]), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if(result != null) {
-                Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh vào Riêng tư", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }

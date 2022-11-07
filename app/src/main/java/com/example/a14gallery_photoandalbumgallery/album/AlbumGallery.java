@@ -119,7 +119,7 @@ public class AlbumGallery {
                 if (allFile.getName().equals("FavoriteAlbum") || allFile.getName().equals("PrivateAlbum") || allFile.getName().equals("RecycleBin")) {
                     continue;
                 }
-                if (content.length == 0) {
+                if (content==null || content.length == 0) {
                     Album album = new Album();
                     //album.setId(image.getId());
                     album.setName(allFile.getName());
