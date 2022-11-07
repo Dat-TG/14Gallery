@@ -53,7 +53,6 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/share_description"
                     android:drawableTop="@drawable/ic_outline_share_24"
-                    android:text="@string/share_title"
                     android:textAllCaps="false"
                     android:textColor="@color/black" />
 
@@ -62,9 +61,9 @@
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:contentDescription="@string/hide_description"
                     android:drawableTop="@drawable/ic_outline_hide_24"
-                    android:text="@string/hide_title"
                     android:textAllCaps="false"
                     android:textColor="@color/black" />
 
@@ -76,7 +75,6 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/edit_description"
                     android:drawableTop="@drawable/ic_outline_edit_24"
-                    android:text="@string/edit_title"
                     android:textAllCaps="false"
                     android:textColor="@color/black" />
 
@@ -88,7 +86,16 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/delete_description"
                     android:drawableTop="@drawable/ic_outline_delete_24"
-                    android:text="@string/delete_title"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black" />
+                <Button
+                    android:id="@+id/btnHashtag"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/add_hashtag_description"
+                    android:drawableTop="@drawable/ic_hashtag_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black" />
 
@@ -100,7 +107,6 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/more_description"
                     android:drawableTop="@drawable/ic_menu_24dp"
-                    android:text="@string/more_title"
                     android:textAllCaps="false"
                     android:textColor="@color/black" />
 

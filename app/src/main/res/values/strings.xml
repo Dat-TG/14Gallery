@@ -64,4 +64,7 @@
     <string name="import_album">Thêm vào album</string>
     <string name="slideshow">Trình chiếu</string>
     <string name="share">Chia sẻ</string>
+    <string name="add_hashtag_description">Add hashtag</string>
+    <string name="hashtag_textfield_hint">Hashtag name</string>
+    <string name="no_added_hashtag_msg">No hashtag has been added</string>
 </resources>

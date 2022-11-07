@@ -2,11 +2,19 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.net.Uri;
 
+import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Image {
+    private String path;
     private int id;
     private String albumName;
-    private String path;
     private String dateTaken;
+
+    List<ImageHashtag> hashtags = new ArrayList<>();
+
     public long dateAdded;
     private boolean checked;
     public  Uri uri;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/txtNumberOfHashtag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.6"
+        android:fontFamily="@font/raleway_medium"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Added hashtag: 5" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listAddedHashtag"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtNumberOfHashtag" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutEditText"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/listAddedHashtag">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextHashtag"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:hint="@string/hashtag_textfield_hint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btnAddHashtag"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:background="@android:color/transparent"
+        android:drawableTop="@drawable/ic_baseline_add_24"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/layoutEditText" />
+</androidx.constraintlayout.widget.ConstraintLayout>
