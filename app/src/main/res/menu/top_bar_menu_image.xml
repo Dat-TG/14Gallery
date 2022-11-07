@@ -19,6 +19,17 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/delete_images"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/move_images"
+        android:title="Di chuyển"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/slideShow"
         android:title="@string/slideshow"
         android:icon="@drawable/ic_slideshow"
@@ -28,12 +39,6 @@
         android:id="@+id/menu_share"
         android:title="@string/share"
         android:icon="@drawable/ic_share"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/delete_images"
-        android:title="@string/delete"
-        android:icon="@drawable/ic_delete"
         app:showAsAction="ifRoom" />
 
     <item

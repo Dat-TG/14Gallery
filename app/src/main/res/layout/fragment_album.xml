@@ -13,6 +13,7 @@
         tools:ignore="UselessParent">
 
         <TextView
+            android:id="@+id/ImageManagement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"
@@ -97,6 +98,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/albums"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"

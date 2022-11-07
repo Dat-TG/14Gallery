@@ -6,15 +6,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -26,15 +30,31 @@ import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -273,6 +293,22 @@ public class ImageFragment extends Fragment implements MenuProvider {
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
         }
+        if (menuItem.getItemId()==R.id.move_images) {
+            //Show album to choose
+            Fragment newFragment = new AlbumFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.frame_layout, newFragment);
+            transaction.addToBackStack(null);
+            BottomNavigationView navBar = getActivity().findViewById(R.id.bottomNavigationView);
+            navBar.setVisibility(View.GONE);
+
+            // Commit the transaction
+            transaction.commit();
+            toViewList();
+            imageFragmentAdapter.setData(viewList);
+            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+            activity.invalidateOptionsMenu();
+        }
         return false;
     }
 
@@ -366,5 +402,27 @@ public class ImageFragment extends Fragment implements MenuProvider {
             images.remove(image);
         }
         Snackbar.make(requireView(), "Images removed", Snackbar.LENGTH_SHORT).show();
+    }
+    private void moveToAlbum(String dest) {
+        ArrayList<Image> selectedImages = images.stream()
+                .filter(Image::isChecked)
+                .collect(Collectors.toCollection(ArrayList::new));
+        for (Image image : selectedImages) {
+            Path result = null;
+            String src=image.getPath();
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException e) {
+                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            if(result != null) {
+                Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh vào Riêng tư", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+            }
+        }
+        Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
     }
 }
