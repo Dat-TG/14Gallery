@@ -4,14 +4,16 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,22 +40,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.a14gallery_photoandalbumgallery.album.Album;
-import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
-import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
-import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
-import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -196,6 +187,13 @@ public class ImageFragment extends Fragment implements MenuProvider {
         ImageGallery.getInstance().update(getActivity());
         images = ImageGallery.listOfImages(requireContext());
         toViewList();
+        if (this.images.size() > 0) {
+            binding.textView.setVisibility(View.GONE);
+            binding.imageFragmentRecycleView.setVisibility(View.VISIBLE);
+        } else {
+            binding.textView.setVisibility(View.VISIBLE);
+            binding.imageFragmentRecycleView.setVisibility(View.GONE);
+        }
         imageFragmentAdapter.setData(viewList);
     }
 
@@ -410,10 +408,42 @@ public class ImageFragment extends Fragment implements MenuProvider {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
-        for (Image image : selectedImages) {
-            images.remove(image);
+        ArrayList<String> path = new ArrayList<String>();
+        if(selectedImages.size()>0) {
+            for (Image image : selectedImages) {
+                path.add(image.getPath());
+            }
+            androidx.appcompat.app.AlertDialog.Builder confirmDialog =
+                    new androidx.appcompat.app.AlertDialog.Builder(getContext(), R.style.AlertDialog);
+            confirmDialog.setMessage("Bạn có chắc chắn muốn xóa những hình ảnh này?");
+            confirmDialog.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    for (int index = 0; index < path.size(); index++) {
+                        File a = new File(path.get(index));
+                        a.delete();
+                        callScanIntent(getContext(), path.get(index));
+                    }
+                    Toast.makeText(getContext(), "Đã xóa", Toast.LENGTH_SHORT).show();
+                    onResume();
+                }
+            });
+            confirmDialog.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            confirmDialog.create();
+            confirmDialog.show();
         }
-        Snackbar.make(requireView(), "Images removed", Snackbar.LENGTH_SHORT).show();
+        else{
+            Toast.makeText(getContext(), "Vui lòng chọn hình ảnh để xóa", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void  callScanIntent(Context context, String path) {
+        MediaScannerConnection.scanFile(context,
+                new String[] { path }, null,null);
     }
     private void moveToAlbum(String dest) {
         ArrayList<Image> selectedImages = images.stream()
