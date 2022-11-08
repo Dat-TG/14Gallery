@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.image;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -6,8 +6,6 @@ import android.content.ContentValues;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -23,8 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -36,12 +32,13 @@ import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -120,7 +117,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             activity.invalidateOptionsMenu();
         };
 
-        imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
+        imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
         imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
         binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
@@ -164,15 +161,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menu.clear();
         menuInflater.inflate(R.menu.top_bar_menu_image, menu);
-        if(imageFragmentAdapter.getState()== ImageFragmentAdapter.State.MultipleSelect){
+        if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
             menu.getItem(0).setVisible(true);
             menu.getItem(6).setVisible(false);
             menu.getItem(2).setVisible(true);
             menu.getItem(3).setVisible(true);
             menu.getItem(4).setVisible(true);
             menu.getItem(5).setVisible(true);
-        }
-        else{
+        } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
             menu.getItem(6).setVisible(true);
@@ -244,7 +240,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.setData(viewList);
                 binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 upToDown = true;
-            }else {
+            } else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
@@ -256,7 +252,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.setData(viewList);
                 binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 upToDown = false;
-            }else {
+            } else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
@@ -268,17 +264,17 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.setData(viewList);
                 binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 sortByDate = true;
-            }else{
+            } else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
         if (menuItem.getItemId() == R.id.img_view_mode_month) {
             // Click Sort by month
-            if(sortByDate){
+            if (sortByDate) {
                 toViewListMonth();
                 imageFragmentAdapter.setData(viewList);
-                binding.imageFragmentRecycleView.setAdapter( imageFragmentAdapter);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
                 sortByDate = false;
             } else {
                 Toast.makeText(getContext(), "view has been set", Toast.LENGTH_SHORT).show();
@@ -289,14 +285,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
             // Click Setting
             return true;
         }
-        if(menuItem.getItemId()==R.id.delete_images){
+        if (menuItem.getItemId() == R.id.delete_images) {
             addToTrash();
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
         }
-        if (menuItem.getItemId()==R.id.move_images) {
+        if (menuItem.getItemId() == R.id.move_images) {
             //Show album to choose
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
             alert.setTitle("Di chuyển đến Album");
@@ -309,7 +305,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 if (!file.exists()) {
                     Toast.makeText(getActivity(), "Album không tồn tại!", Toast.LENGTH_LONG).show();
                 } else {
-                    String dest= Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
+                    String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
                     moveToAlbum(dest);
                 }
             });
@@ -343,16 +339,17 @@ public class ImageFragment extends Fragment implements MenuProvider {
             imageFragmentAdapter.setData(viewList);
         }
     }
+
     private void toViewListMonth() {
         if (images.size() > 0) {
             int beg = 3;
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
-            label=label.substring(beg,label.length()-6);
+            label = label.substring(beg, label.length() - 6);
             label += '.';
             for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
-                labelCur=labelCur.substring(beg,labelCur.length()-6);
+                labelCur = labelCur.substring(beg, labelCur.length() - 6);
                 if (!labelCur.equals(label)) {
                     label = labelCur;
                     viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -378,12 +375,12 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
     }
 
-    private void setDownToUp(){
+    private void setDownToUp() {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
             label += '.';
-            for (int i = images.size()-1; i >=0; i--) {
+            for (int i = images.size() - 1; i >= 0; i--) {
                 String labelCur = images.get(i).getDateTaken();
                 if (!labelCur.equals(label)) {
                     label = labelCur;
@@ -411,7 +408,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         ArrayList<String> path = new ArrayList<String>();
-        if(selectedImages.size()>0) {
+        if (selectedImages.size() > 0) {
             for (Image image : selectedImages) {
                 path.add(image.getPath());
             }
@@ -437,34 +434,34 @@ public class ImageFragment extends Fragment implements MenuProvider {
             });
             confirmDialog.create();
             confirmDialog.show();
-        }
-        else{
+        } else {
             Toast.makeText(getContext(), "Vui lòng chọn hình ảnh để xóa", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void  callScanIntent(Context context, String path) {
+    public void callScanIntent(Context context, String path) {
         MediaScannerConnection.scanFile(context,
-                new String[] { path }, null,null);
+                new String[]{path}, null, null);
     }
+
     private void moveToAlbum(String dest) {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         for (Image image : selectedImages) {
             Path result = null;
-            String src=image.getPath();
-            String name[]=src.split("/");
+            String src = image.getPath();
+            String name[] = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    result = Files.move(Paths.get(src), Paths.get(dest+"/"+name[name.length-1]), StandardCopyOption.REPLACE_EXISTING);
+                    result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
-                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-            if(result != null) {
+            if (result != null) {
                 Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }

@@ -11,16 +11,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.RecyclerData;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class AlbumCoverActivity extends AppCompatActivity {
                 if (imageFragmentAdapter.getState() != ImageFragmentAdapter.State.MultipleSelect) {
                     Intent intent = new Intent(this, DetailAlbumActivity.class);
                     intent.putExtra("NAME", album.getName());
-                    AlbumData data = AppDatabase.getInstance(this).albumDataDao().getAlbumCover(album.getName());
+                    AlbumData data = AppDatabase.getInstance(this).albumDataDao().getAlbumCoverByName(album.getName());
                     AlbumData albumData = new AlbumData(album.getName(), viewList.get(position).imageData.getPath());
 
                     if (data != null)
@@ -79,7 +78,8 @@ public class AlbumCoverActivity extends AppCompatActivity {
                     AlbumCoverActivity.this.finish();
                 }
             };
-            onItemLongClick = (position, view1) -> {};
+            onItemLongClick = (position, view1) -> {
+            };
 
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);

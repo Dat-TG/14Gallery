@@ -16,8 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.MainActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
@@ -25,9 +24,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.*;
-import java.net.StandardSocketOptions;
 import java.nio.file.*;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -38,8 +35,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class InputPasswordActivity extends AppCompatActivity {
-    String rootFolder="/14Gallery/";
-    String privateAlbumFolderName="PrivateAlbum";
+    String rootFolder = "/14Gallery/";
+    String privateAlbumFolderName = "PrivateAlbum";
 
     PatternLockView mPatternLockView;
     String password;
@@ -55,7 +52,7 @@ public class InputPasswordActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         String message = bundle.getString("message");
-        Log.e("MESSAGE",message);
+        Log.e("MESSAGE", message);
 
         mPatternLockView = (PatternLockView) findViewById(R.id.pattern_lock_view);
         mPatternLockView.addPatternLockListener(new PatternLockViewListener() {
@@ -141,12 +138,12 @@ public class InputPasswordActivity extends AppCompatActivity {
                     }
                     if (Objects.equals(message, "AddPrivate")) {
                         String imagePath = bundle.getString("imagePath");
-                        String name[]=imagePath.split("/");
-                        Log.e("PATH",imagePath);
-                        Log.e("PATH",Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+privateAlbumFolderName+"/"+name[name.length-1]);
-                        String imageDestPath=Environment.getExternalStorageDirectory().getAbsolutePath()+rootFolder+privateAlbumFolderName+"/"+name[name.length-1];
-                        File dest=new File(imageDestPath);
-                        File src=new File(imagePath);
+                        String name[] = imagePath.split("/");
+                        Log.e("PATH", imagePath);
+                        Log.e("PATH", Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1]);
+                        String imageDestPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1];
+                        File dest = new File(imageDestPath);
+                        File src = new File(imagePath);
                         moveFile(imagePath, imageDestPath);
                     }
                     finish();
@@ -164,6 +161,7 @@ public class InputPasswordActivity extends AppCompatActivity {
 
         });
     }
+
     private void moveFile(String src, String dest) {
         Path result = null;
         try {
@@ -171,11 +169,11 @@ public class InputPasswordActivity extends AppCompatActivity {
                 result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: "+ e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        if(result != null) {
+        if (result != null) {
             Toast.makeText(getApplicationContext(), "Đã di chuyển ảnh vào Riêng tư", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
         }
     }

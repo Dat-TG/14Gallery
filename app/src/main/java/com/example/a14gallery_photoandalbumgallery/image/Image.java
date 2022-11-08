@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.image;
 
 import android.net.Uri;
 
@@ -17,7 +17,7 @@ public class Image {
 
     public long dateAdded;
     private boolean checked;
-    public  Uri uri;
+    public Uri uri;
 
     public int getId() {
         return id;
@@ -67,8 +67,12 @@ public class Image {
         this.checked = checked;
     }
 
-    public Uri getUri(){return uri;}
+    public Uri getUri() {
+        return uri;
+    }
 
-    public void setUri(Uri uri){this.uri=uri;}
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
 
 }

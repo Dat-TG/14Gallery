@@ -3,7 +3,6 @@ package com.example.a14gallery_photoandalbumgallery.album;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 
 import android.app.AlertDialog;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -33,9 +32,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
-import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
-import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
@@ -43,7 +41,6 @@ import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivit
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -72,8 +69,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         albums = AlbumGallery.getInstance().albums;
         adapter = new AlbumFragmentAdapter(getContext(), albums);
         binding.albumFragmentRecycleView.setAdapter(adapter);
-
-
 
 
         // Menu

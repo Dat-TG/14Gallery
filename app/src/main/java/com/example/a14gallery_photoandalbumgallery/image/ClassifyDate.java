@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.image;
 
 import java.util.List;
 

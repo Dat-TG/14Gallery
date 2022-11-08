@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.searchImage;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -21,6 +21,11 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.searchImage.ImageFragmentAdapterSearch;
 
 import java.util.ArrayList;
@@ -106,7 +111,7 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
             activity.invalidateOptionsMenu();
         };
 
-        imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList,onItemClick,onItemLongClick);
+        imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList, onItemClick, onItemLongClick);
         imageFragmentAdapterSearch.setState(ImageFragmentAdapterSearch.State.Normal);
         searchRecyclerView.setAdapter(imageFragmentAdapterSearch);
 
@@ -126,18 +131,17 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
 
 
     private void filterList(String text) {
-        List<RecyclerData>  filteredList = new ArrayList<>();
-        for(RecyclerData recyclerData: viewList){
-            if(recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())){
+        List<RecyclerData> filteredList = new ArrayList<>();
+        for (RecyclerData recyclerData : viewList) {
+            if (recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(recyclerData);
             }
         }
-        if(filteredList.isEmpty()){
+        if (filteredList.isEmpty()) {
 //            Toast.makeText(getContext(), "No matching image found", Toast.LENGTH_SHORT).show();
             textNotImageFound.setVisibility(TextView.VISIBLE);
             textNotImageFound.setText("Không tìm thấy ảnh phù hợp!");
-        }
-        else{
+        } else {
             textNotImageFound.setVisibility(TextView.INVISIBLE);
         }
         imageFragmentAdapterSearch.setFilteredList(filteredList);

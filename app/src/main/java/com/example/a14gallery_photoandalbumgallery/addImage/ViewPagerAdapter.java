@@ -20,7 +20,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if(position == 0) return new RecyclerImageViewFragment(album);
+        if (position == 0) return new RecyclerImageViewFragment(album);
         return new RecyclerAlbumViewFragment(album, albumClickDetail);
     }
 

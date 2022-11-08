@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.image;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -10,14 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleImageViewBinding;
 
 import java.util.List;
 
-public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder>{
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     public interface OnItemClickListener {
         void onItemClick(Image image);
     }
+
     public interface OnItemLongClickListener {
         boolean onItemLongClick(Image image);
     }
@@ -26,10 +28,10 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
     private OnItemClickListener _listener;
     private OnItemLongClickListener _listeners;
 
-    public ImageAdapter(List<Image> listImage, OnItemClickListener listener,OnItemLongClickListener listeners) {
+    public ImageAdapter(List<Image> listImage, OnItemClickListener listener, OnItemLongClickListener listeners) {
         _listImages = listImage;
         _listener = listener;
-        _listeners=listeners;
+        _listeners = listeners;
     }
 
     public void setData(List<Image> listImages) {
@@ -37,12 +39,12 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
         notifyDataSetChanged();
     }
 
-    public void setOnLongClickListener(OnItemLongClickListener listeners){
-        _listeners=listeners;
+    public void setOnLongClickListener(OnItemLongClickListener listeners) {
+        _listeners = listeners;
     }
 
-    public void setOnClickListener(OnItemClickListener listener){
-        _listener=listener;
+    public void setOnClickListener(OnItemClickListener listener) {
+        _listener = listener;
     }
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -57,14 +59,14 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             checkBox = itemView.findViewById(R.id.pictureItemCheckCircle);
         }
 
-        public void bind(final Image image, final OnItemClickListener listener,final OnItemLongClickListener listeners) {
+        public void bind(final Image image, final OnItemClickListener listener, final OnItemLongClickListener listeners) {
             Glide.with(binding.getRoot().getContext())
                     .load(image.getPath())
                     .centerCrop()
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(binding.image);
             binding.image.setOnClickListener(view -> listener.onItemClick(image));
-            binding.image.setOnLongClickListener(view->listeners.onItemLongClick(image));
+            binding.image.setOnLongClickListener(view -> listeners.onItemLongClick(image));
         }
     }
 
@@ -76,6 +78,7 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
     }
 
     public int ACTION_MODE = 0;
+
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = _listImages.get(position);
@@ -83,17 +86,16 @@ public class  ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHo
             return;
         }
 
-        holder.bind(image, _listener,_listeners);
+        holder.bind(image, _listener, _listeners);
         if (ACTION_MODE == 0) {
             holder.scrim.setVisibility(View.GONE);
             holder.checkBox.setVisibility(View.GONE);
             image.setChecked(false);
-        } else if (ACTION_MODE==1) {
+        } else if (ACTION_MODE == 1) {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.scrim.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(image.isChecked());
-        }
-        else{
+        } else {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.scrim.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(true);

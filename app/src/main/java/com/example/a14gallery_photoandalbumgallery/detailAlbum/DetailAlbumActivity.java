@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
-import com.example.a14gallery_photoandalbumgallery.RecyclerData;
+import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
@@ -133,9 +131,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-        images = album.getAlbumImages();
-        toViewList(images);
-        imageFragmentAdapter.setData(viewList);
+        if (album.getAlbumImages().size() != 0) {
+            images = album.getAlbumImages();
+            toViewList(images);
+            imageFragmentAdapter.setData(viewList);
+        }
     }
 
     @Override

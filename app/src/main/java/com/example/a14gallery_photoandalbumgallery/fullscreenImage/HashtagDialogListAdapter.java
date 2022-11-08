@@ -61,12 +61,12 @@ public class HashtagDialogListAdapter extends RecyclerView.Adapter<HashtagDialog
     public void removeAt(int position) {
         hashtags.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount())    ;
+        notifyItemRangeChanged(position, getItemCount());
     }
 
     public void addItem(String newHashtag) {
         hashtags.add(newHashtag);
-        notifyItemInserted(getItemCount()-1);
-        notifyItemRangeChanged(getItemCount()-1, getItemCount());
+        notifyItemInserted(getItemCount() - 1);
+        notifyItemRangeChanged(getItemCount() - 1, getItemCount());
     }
 }

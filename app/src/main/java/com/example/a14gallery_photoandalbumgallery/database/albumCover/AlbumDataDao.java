@@ -14,10 +14,7 @@ public interface AlbumDataDao {
     List<AlbumData> getAllAlbumCover();
 
     @Query("Select * FROM albumCover where album_name=:name")
-    AlbumData getAlbumCover(String name);
-
-    @Insert
-    void insertAll(List<AlbumData> albumDataList);
+    AlbumData getAlbumCoverByName(String name);
 
     @Insert
     void insertAlbumCover(AlbumData albumData);
@@ -25,8 +22,6 @@ public interface AlbumDataDao {
     @Update
     void updateAlbum(AlbumData albumData);
 
-//    @Query("Delete from albumCover Where album_name = :name")
-//    void deleteAlbumCover(String name);
-//    @Delete
-//    void deleteAlbumCover(AlbumData albumData);
+    @Delete
+    void deleteAlbum(AlbumData albumData);
 }

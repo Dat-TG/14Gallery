@@ -14,12 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
-import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.ImageGallery;
-import com.example.a14gallery_photoandalbumgallery.RecyclerData;
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
@@ -75,20 +74,21 @@ public class RecyclerImageViewFragment extends Fragment {
         };
 
         onItemLongClick = (position, view1) -> {
-            imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
+            //imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
             viewList.get(position).imageData.setChecked(true);
-            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            //imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             getActivity().invalidateOptionsMenu();
         };
 
-        imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
-        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+        imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
+        imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
+        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
         binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
         return binding.getRoot();
     }
 
-    private void toViewList(List<Image>images) {
+    private void toViewList(List<Image> images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
@@ -104,14 +104,14 @@ public class RecyclerImageViewFragment extends Fragment {
         }
     }
 
-    private void toViewListAdd(List<Image> images, List<Image>imagesIncluded) {
+    private void toViewListAdd(List<Image> images, List<Image> imagesIncluded) {
         List<String> imagesPath = new ArrayList<>();
-        List<Image>temp=new ArrayList<>();
+        List<Image> temp = new ArrayList<>();
         for (int i = 0; i < imagesIncluded.size(); i++)
             imagesPath.add(imagesIncluded.get(i).getPath());
         if (images.size() > 0) {
             for (int i = 0; i < images.size(); i++) {
-                if(!imagesPath.contains(images.get(i).getPath())){
+                if (!imagesPath.contains(images.get(i).getPath())) {
                     temp.add(images.get(i));
                 }
             }

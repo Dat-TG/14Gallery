@@ -6,9 +6,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.image.ClassifyDate;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 
@@ -48,12 +48,13 @@ public class AlbumGallery {
 
     public Album getAlbumByName(Context context, String name) {
         update(context);
-        for(int i = 0 ; i < albums.size(); i++){
-            if(albums.get(i).getName().equals(name))
+        for (int i = 0; i < albums.size(); i++) {
+            if (albums.get(i).getName().equals(name))
                 return albums.get(i);
         }
         return null;
     }
+
     public static List<Album> getPhoneAlbums(Context context) {
         List<Album> albums = new ArrayList<>();
         List<String> albumsNames = new ArrayList<>();
@@ -112,8 +113,8 @@ public class AlbumGallery {
                         album.setCoverUri(image.getPath());
                         album.getAlbumImages().add(image);
                         albums.add(album);
-                        AlbumData albumData = AppDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCover(bucketName);
-                        if(albumData != null) album.setAlbumCover(albumData.albumCover);
+                        AlbumData albumData = AppDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCoverByName(bucketName);
+                        if (albumData != null) album.setAlbumCover(albumData.albumCover);
                         albumsNames.add(bucketName);
                     }
                 } while (cur.moveToNext());
@@ -130,7 +131,7 @@ public class AlbumGallery {
                 if (allFile.getName().equals("FavoriteAlbum") || allFile.getName().equals("PrivateAlbum") || allFile.getName().equals("RecycleBin")) {
                     continue;
                 }
-                if (content==null || content.length == 0) {
+                if (content == null || content.length == 0) {
                     Album album = new Album();
 //                    album.setId(image.getId());
                     album.setName(allFile.getName());

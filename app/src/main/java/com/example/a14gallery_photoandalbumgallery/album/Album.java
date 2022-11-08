@@ -1,7 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.album;
 
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;

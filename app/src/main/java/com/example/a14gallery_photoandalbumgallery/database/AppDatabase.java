@@ -17,8 +17,11 @@ import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageH
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DBName = "14Gallery";
     private static AppDatabase instance;
+
     public abstract HashtagDao hashtagDao();
+
     public abstract ImageHashtagDao imageHashtagDao();
+
     public abstract AlbumDataDao albumDataDao();
 
     public static synchronized AppDatabase getInstance(Context context) {

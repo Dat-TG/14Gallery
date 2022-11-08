@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.image;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -147,7 +147,7 @@ public class ImageGallery {
     }
 
     public static List<ClassifyDate> getListAddImage(List<Image> images, List<Image> imagesIncluded) {
-        ArrayList<RecyclerData> viewList=new ArrayList<>();
+        ArrayList<RecyclerData> viewList = new ArrayList<>();
 
         List<ClassifyDate> ClassifyDateList = new ArrayList<>();
         List<String> imagesPath = new ArrayList<>();

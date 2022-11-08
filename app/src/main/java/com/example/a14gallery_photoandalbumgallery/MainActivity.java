@@ -20,6 +20,8 @@ import androidx.navigation.NavController;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
+import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
 
 public class MainActivity extends AppCompatActivity {
     private final int STORAGE_PERMISSION_CODE = 1;

@@ -11,11 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
-import com.example.a14gallery_photoandalbumgallery.RecyclerData;
+import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -79,8 +77,8 @@ public class ImageFragmentAdapterSearch extends
     private State state = State.Normal;
 
     public ImageFragmentAdapterSearch(@NonNull List<RecyclerData> imageDataList,
-                                @NonNull BiConsumer<Integer, View> onItemClick,
-                                @NonNull BiConsumer<Integer, View> onItemLongClick) {
+                                      @NonNull BiConsumer<Integer, View> onItemClick,
+                                      @NonNull BiConsumer<Integer, View> onItemLongClick) {
         this.imageDataList = imageDataList;
         this.onItemClick = onItemClick;
         this.onItemLongClick = onItemLongClick;

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.a14gallery_photoandalbumgallery.Image;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
@@ -74,6 +74,7 @@ public class RecyclerAlbumViewAdapter extends RecyclerView.Adapter<RecyclerAlbum
     void setClickListener(ItemClickListener itemClickListener) {
         mClickListener = itemClickListener;
     }
+
     Album getItem(int id) {
         return albums.get(id);
     }

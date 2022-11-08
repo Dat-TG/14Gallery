@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
-import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
-import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageAdapter;
+import com.example.a14gallery_photoandalbumgallery.image.ClassifyDate;
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageAdapter;
 import com.example.a14gallery_photoandalbumgallery.databinding.ItemClassifyDateBinding;
 
 import java.util.List;

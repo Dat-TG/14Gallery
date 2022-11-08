@@ -27,7 +27,7 @@
         <activity android:name=".addImage.AddItemActivity" />
         <activity android:name=".albumCover.AlbumCoverActivity" />
         <activity
-            android:name=".FullscreenImageActivity"
+            android:name=".fullscreenImage.FullscreenImageActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

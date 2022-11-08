@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
@@ -35,13 +36,13 @@ public class AddItemActivity extends AppCompatActivity {
         viewPager = binding.viewPager;
 
         Gson gson = new Gson();
-        album =  gson.fromJson(getIntent().getStringExtra("album"), Album.class);
+        album = gson.fromJson(getIntent().getStringExtra("album"), Album.class);
         viewPager.setAdapter(new ViewPagerAdapter(this, album, albumClickDetail));
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
-                        if(position == 0) tab.setText(R.string.image);
-                        if(position == 1) tab.setText(R.string.album);
+                    if (position == 0) tab.setText(R.string.image);
+                    if (position == 1) tab.setText(R.string.album);
                 });
         tabLayoutMediator.attach();
 
@@ -58,7 +59,9 @@ public class AddItemActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_bar_menu_add_image, menu);
+        return true;
     }
 
     @Override
@@ -68,7 +71,10 @@ public class AddItemActivity extends AppCompatActivity {
             finish();
             return true;
         }
+        if (item.getItemId() == R.id.add_button) {
+            Toast.makeText(this, "Click Submit", Toast.LENGTH_SHORT).show();
+            return true;
+        }
         return false;
     }
-
 }

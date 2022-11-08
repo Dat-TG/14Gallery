@@ -1,4 +1,4 @@
-package com.example.a14gallery_photoandalbumgallery;
+package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -37,13 +37,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
-import com.example.a14gallery_photoandalbumgallery.fullscreenImage.HashtagDialogListAdapter;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -120,7 +121,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     }
 
     private void launchHashtagDialog() {
-        List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[] {imagePath});
+        List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[]{imagePath});
         String[] dataset = hashtagList.toArray(new String[0]);
         HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset);
         dialogHashtagBinding.listAddedHashtag.setLayoutManager(new LinearLayoutManager(this));
@@ -129,7 +130,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             if (event != null &&
                     (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
             ) {
-                InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 in.hideSoftInputFromWindow(dialogHashtagBinding.editTextHashtag.getApplicationWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
@@ -173,8 +174,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                     appDatabase.hashtagDao().insertAll(new Hashtag(newHashtag));
                     int newId = appDatabase.hashtagDao().findByName(newHashtag).id;
                     appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, newId));
-                }
-                else {
+                } else {
                     appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, foundHashtag.id));
                 }
                 dialogHashtagBinding.editTextHashtag.setText("");
@@ -219,8 +219,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                                 setButtonsEnabled(false);
                             }
                         });
-            }
-            else {
+            } else {
                 binding.topBarLayout.setAlpha(0f);
                 binding.bottomBarLayout.setAlpha(0f);
                 binding.topBarLayout.setVisibility(View.VISIBLE);
