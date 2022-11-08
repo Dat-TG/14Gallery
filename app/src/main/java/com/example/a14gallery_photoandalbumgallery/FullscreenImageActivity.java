@@ -1,21 +1,23 @@
 package com.example.a14gallery_photoandalbumgallery;
 
-import android.app.WallpaperManager;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.WallpaperManager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -31,14 +33,11 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
-
-
-import java.io.IOException;
-
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +56,12 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         Intent intent = getIntent();
         imagePath = intent.getExtras().getString("path");
 
+        // Set on click for back navigator
+        binding.topAppBar.setNavigationOnClickListener(v -> finish());
+        binding.topAppBar.setElevation(3);
+        binding.bottomAppBar.setElevation(3);
+        // Set on click for image
+        binding.imageView.setOnClickListener(this);
         // Set on click for buttons
         binding.btnShare.setOnClickListener(this);
         binding.btnEdit.setOnClickListener(this);
@@ -77,6 +82,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         });
     }
 
+    /* Request write permission if not granted */
     private void requestPermission() {
         boolean minSDK = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
@@ -97,8 +103,62 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
     }
 
+    private void setButtonsEnabled(boolean enabled) {
+        binding.btnShare.setEnabled(enabled);
+        binding.btnHide.setEnabled(enabled);
+        binding.btnDelete.setEnabled(enabled);
+        binding.btnEdit.setEnabled(enabled);
+        binding.btnMore.setEnabled(enabled);
+    }
+
     @Override
     public void onClick(View view) {
+        // Click on image
+        if (view.getId() == R.id.imageView) {
+            if (binding.topBarLayout.getVisibility() == View.VISIBLE) {
+                binding.topBarLayout.animate()
+                        .alpha(0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                binding.topBarLayout.setVisibility(View.GONE);
+                            }
+                        });
+                binding.bottomBarLayout.animate()
+                        .alpha(0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                binding.topBarLayout.setVisibility(View.GONE);
+                                // Disable all buttons
+                                setButtonsEnabled(false);
+                            }
+                        });
+            }
+            else {
+                binding.topBarLayout.setAlpha(0f);
+                binding.bottomBarLayout.setAlpha(0f);
+                binding.topBarLayout.setVisibility(View.VISIBLE);
+                binding.bottomBarLayout.setVisibility(View.VISIBLE);
+
+                binding.topBarLayout.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .setListener(null);
+                binding.bottomBarLayout.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                // Enable all buttons
+                                setButtonsEnabled(true);
+                            }
+                        });
+            }
+
+
+        }
         // Share button
         if (view.getId() == R.id.btnShare) {
             Intent shareIntent = new Intent();
@@ -149,19 +209,21 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     public boolean onMenuItemClick(MenuItem menuItem) {
         // Rename button
         if (menuItem.getItemId() == R.id.btnRename) {
+            // Request write permission
             requestPermission();
+
             File file = new File(imagePath);
             String fileName = file.getName();
             String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
 
-            // Get file extension (with '.')
+            // Get file extension (includes '.')
             String extension = "";
             int index = fileName.lastIndexOf('.');
             if (index > 0) {
                 extension = fileName.substring(index);
             }
-            Toast.makeText(this, "extension: " + extension, Toast.LENGTH_SHORT).show();
 
+            // Text field
             final EditText editText = new EditText(this);
 
             String finalExtension = extension;
@@ -179,18 +241,16 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                         Toast.makeText(this, newPath, Toast.LENGTH_SHORT).show();
                         editText.setText(newFileNameWithoutExt);
                         File newFile = new File(newPath);
+
+                        // Check if name exists
                         if (newFile.exists()) {
                             Toast.makeText(this, "Tên đã tồn tại", Toast.LENGTH_SHORT).show();
                         } else {
+                            // Rename file, if succeed then update MediaStore content
                             if (file.renameTo(newFile)) {
                                 imagePath = newPath;
-                                Uri ImageCollection;
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                    ImageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-                                    // ImageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                                } else {
-                                    ImageCollection = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
-                                }
+                                Uri ImageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+
                                 // Query to get file details
                                 Cursor cursor = getContentResolver().query(ImageCollection,
                                         new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.BUCKET_DISPLAY_NAME},
@@ -208,8 +268,9 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                                 values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
                                 values.put(MediaStore.Images.Media.BUCKET_DISPLAY_NAME, bucketDisplayName);
                                 values.put(MediaStore.Images.Media.DATA, newPath);
+                                // Insert image record with new name
                                 getContentResolver().insert(ImageCollection, values);
-
+                                // Delete old one
                                 getContentResolver().delete(ImageCollection, MediaStore.Images.Media.DATA + "=?",
                                         new String[]{file.getAbsolutePath()});
                             } else {
@@ -217,10 +278,11 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                             }
                         }
                     })
-                    .setNeutralButton("CANCEL", (dialogInterface, i) -> {/* Cancel */});
+                    .setNeutralButton("HỦY", (dialogInterface, i) -> {/* Cancel */});
 
             final AlertDialog dialog = materialAlertDialogBuilder.create();
             editText.setText(fileNameWithoutExtension);
+            // Check EditText input as text changed
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -241,7 +303,9 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
             return true;
         }
-        if (menuItem.getItemId()==R.id.btnAddPrivate) {
+
+        // Add image to private album
+        if (menuItem.getItemId() == R.id.btnAddPrivate) {
             Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
             intent.putExtra("message", "AddPrivate");
             intent.putExtra("imagePath", imagePath);
@@ -260,6 +324,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
+        // Set image as wallpaper
         if (menuItem.getItemId() == R.id.btnHomeWallpaper) {
             File image = new File(imagePath);
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -281,6 +346,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
+        // Set image as lockscreen wallpaper
         if (menuItem.getItemId() == R.id.btnLockWallpaper) {
             File image = new File(imagePath);
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -300,6 +366,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 e.printStackTrace();
             }
             return true;
+
         }
 
         return false;

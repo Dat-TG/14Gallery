@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -106,7 +108,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
                 intent.putExtra("path", viewList.get(position).imageData.getPath());
-                getContext().startActivity(intent);
+                requireContext().startActivity(intent);
             }
         };
 
@@ -307,7 +309,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 if (!file.exists()) {
                     Toast.makeText(getActivity(), "Album không tồn tại!", Toast.LENGTH_LONG).show();
                 } else {
-                    String dest=Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
+                    String dest= Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
                     moveToAlbum(dest);
                 }
             });
