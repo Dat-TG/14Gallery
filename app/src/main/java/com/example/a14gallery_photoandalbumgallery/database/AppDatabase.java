@@ -22,9 +22,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract AlbumDataDao albumDataDao();
 
     public static synchronized AppDatabase getInstance(Context context) {
+        // Clear database every time migrate
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DBName)
-                    .allowMainThreadQueries().build();
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
         return instance;
     }
