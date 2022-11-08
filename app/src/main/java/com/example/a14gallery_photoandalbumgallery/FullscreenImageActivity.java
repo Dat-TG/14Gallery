@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.WallpaperManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -18,8 +19,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
@@ -31,8 +34,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
+import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.HashtagDialogListAdapter;
@@ -112,25 +119,64 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     }
 
     private void launchHashtagDialog() {
-        String[] dataset = {"dog", "dog", "cat", "wife", "son"};
-        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(dataset);
+        // String[] dataset = {"dog", "dog", "cat", "wife", "son"};
+        List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[] {imagePath});
+        String[] dataset = hashtagList.toArray(new String[0]);
+        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset);
         dialogHashtagBinding.listAddedHashtag.setLayoutManager(new LinearLayoutManager(this));
-        dialogHashtagBinding.listAddedHashtag.setAdapter(dialogListAdapter);
-
-        if (dialogListAdapter.getItemCount() != 0)
+        dialogHashtagBinding.editTextHashtag.setOnClickListener(v -> dialogHashtagBinding.listAddedHashtag.setVisibility(View.GONE));
+        dialogHashtagBinding.editTextHashtag.setOnEditorActionListener((v, actionId, event) -> {
+            if (event != null &&
+                    (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+            ) {
+                InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(dialogHashtagBinding.editTextHashtag.getApplicationWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+            // When it's done put the list back
+            dialogHashtagBinding.listAddedHashtag.setVisibility(View.VISIBLE);
+            return false;
+        });
+        final int[] nItem = {dialogListAdapter.getItemCount()};
+        if (nItem[0] != 0)
             dialogHashtagBinding.txtNumberOfHashtag.setText(
-                    String.format(Locale.ENGLISH, "Added hashtag: %d", dialogListAdapter.getItemCount())
+                    String.format(Locale.ENGLISH, "Added hashtag: %d", nItem[0])
             );
         else {
             dialogHashtagBinding.txtNumberOfHashtag.setText(R.string.no_added_hashtag_msg);
         }
 
-
+        dialogListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                nItem[0] = dialogListAdapter.getItemCount();
+                if (nItem[0] != 0)
+                    dialogHashtagBinding.txtNumberOfHashtag.setText(
+                            String.format(Locale.ENGLISH, "Added hashtag: %d", nItem[0])
+                    );
+                else {
+                    dialogHashtagBinding.txtNumberOfHashtag.setText(R.string.no_added_hashtag_msg);
+                }
+            }
+        });
+        dialogHashtagBinding.listAddedHashtag.setAdapter(dialogListAdapter);
 
         // Set click on listener for buttons
         dialogHashtagBinding.btnAddHashtag.setOnClickListener(v -> {
-            dialogListAdapter.addItem("test");
-            dialogHashtagBinding.editTextHashtag.setText("");
+            String newHashtag = String.valueOf(dialogHashtagBinding.editTextHashtag.getText());
+            if (!newHashtag.equals("null") && !newHashtag.isBlank()) {
+                AppDatabase appDatabase = AppDatabase.getInstance(this);
+                Hashtag foundHashtag = appDatabase.hashtagDao().findByName(newHashtag);
+                dialogListAdapter.addItem(newHashtag);
+                if (foundHashtag == null) {
+                    appDatabase.hashtagDao().insertAll(new Hashtag(newHashtag));
+                }
+                else {
+                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, foundHashtag.id));
+                }
+                dialogHashtagBinding.editTextHashtag.setText("");
+            }
         });
 
         materialAlertDialogBuilder.setView(hashtagDialogView)

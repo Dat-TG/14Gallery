@@ -12,8 +12,8 @@ public interface HashtagDao {
     @Query("SELECT * FROM hashtag")
     List<Hashtag> getAll();
 
-    @Query("SELECT * FROM hashtag WHERE id IN (:userIds)")
-    List<Hashtag> loadAllByIds(int[] userIds);
+    @Query("SELECT * FROM hashtag WHERE id IN (:ids)")
+    List<Hashtag> loadAllByIds(int[] ids);
 
     @Query("SELECT * FROM hashtag WHERE hashtag_name = :hName")
     Hashtag findByName(String hName);

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-@Entity(tableName = "image_hashtag")
+@Entity(tableName = "image_hashtag", primaryKeys = {"image_path", "hashtag_id"})
 public class ImageHashtag {
     @ColumnInfo(name = "image_path")
     @NonNull
