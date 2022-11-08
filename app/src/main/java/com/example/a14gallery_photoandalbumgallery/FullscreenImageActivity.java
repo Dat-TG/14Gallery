@@ -119,7 +119,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     }
 
     private void launchHashtagDialog() {
-        // String[] dataset = {"dog", "dog", "cat", "wife", "son"};
         List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[] {imagePath});
         String[] dataset = hashtagList.toArray(new String[0]);
         HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset);
@@ -171,6 +170,8 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 dialogListAdapter.addItem(newHashtag);
                 if (foundHashtag == null) {
                     appDatabase.hashtagDao().insertAll(new Hashtag(newHashtag));
+                    int newId = appDatabase.hashtagDao().findByName(newHashtag).id;
+                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, newId));
                 }
                 else {
                     appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, foundHashtag.id));
