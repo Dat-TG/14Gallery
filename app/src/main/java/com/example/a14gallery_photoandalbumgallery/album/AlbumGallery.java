@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.Image;
 import com.example.a14gallery_photoandalbumgallery.ImageGallery;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -44,6 +46,14 @@ public class AlbumGallery {
         }
     }
 
+    public Album getAlbumByName(Context context, String name) {
+        update(context);
+        for(int i = 0 ; i < albums.size(); i++){
+            if(albums.get(i).getName().equals(name))
+                return albums.get(i);
+        }
+        return null;
+    }
     public static List<Album> getPhoneAlbums(Context context) {
         List<Album> albums = new ArrayList<>();
         List<String> albumsNames = new ArrayList<>();
@@ -88,8 +98,6 @@ public class AlbumGallery {
                     image.setId(Integer.parseInt(imageId));
                     image.setDateTaken(dateText);
 
-
-
                     if (albumsNames.contains(bucketName)) {
                         for (Album album : albums) {
                             if (album.getName().equals(bucketName)) {
@@ -104,6 +112,8 @@ public class AlbumGallery {
                         album.setCoverUri(image.getPath());
                         album.getAlbumImages().add(image);
                         albums.add(album);
+                        AlbumData albumData = AppDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCover(bucketName);
+                        if(albumData != null) album.setAlbumCover(albumData.albumCover);
                         albumsNames.add(bucketName);
                     }
                 } while (cur.moveToNext());
@@ -114,6 +124,7 @@ public class AlbumGallery {
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/");
         File[] allFiles = folder.listFiles();
         if (folder.exists()) {
+            assert allFiles != null;
             for (File allFile : allFiles) {
                 File[] content = allFile.listFiles();
                 if (allFile.getName().equals("FavoriteAlbum") || allFile.getName().equals("PrivateAlbum") || allFile.getName().equals("RecycleBin")) {
@@ -121,7 +132,7 @@ public class AlbumGallery {
                 }
                 if (content==null || content.length == 0) {
                     Album album = new Album();
-                    //album.setId(image.getId());
+//                    album.setId(image.getId());
                     album.setName(allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
@@ -132,6 +143,7 @@ public class AlbumGallery {
         }
         return albums;
     }
+
 
     public static List<Album> getAlbumAddImage(Context context, Album album) {
         List<Image> imagesIncluded = album.getAlbumImages();

@@ -19,7 +19,7 @@
     <string name="setting_description">Setting</string>
     <string name="setting_title">Cài đặt</string>
     <string name="choose_description">Lựa chọn</string>
-    <string name="choose_title">Lựa chọn</string>
+    <string name="choose_title">Chọn tất cả</string>
     <string name="add_description">Thêm album</string>
     <string name="add_title">Thêm album</string>
     <string name="view_mode_day">Xếp theo ngày</string>
@@ -65,4 +65,5 @@
     <string name="slideshow">Trình chiếu</string>
     <string name="share">Chia sẻ</string>
     <string name="empty">Empty</string>
+    <string name="change_cover_album">Đổi ảnh bìa</string>
 </resources>

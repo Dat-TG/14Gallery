@@ -26,6 +26,9 @@
                 android:id="@+id/detAlb_choose"
                 android:title="@string/choose_title" />
             <item
+                android:id="@+id/detAlb_coverAlbum"
+                android:title="@string/change_cover_album" />
+            <item
                 android:id="@+id/detAlb_grid"
                 android:title="@string/grid_columns">
                 <menu>

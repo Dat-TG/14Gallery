@@ -1,6 +1,5 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,37 +7,29 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.example.a14gallery_photoandalbumgallery.ClassifyDate;
 import com.example.a14gallery_photoandalbumgallery.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.Image;
-import com.example.a14gallery_photoandalbumgallery.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.ImageGallery;
-import com.example.a14gallery_photoandalbumgallery.MainActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
 import com.example.a14gallery_photoandalbumgallery.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
@@ -46,10 +37,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
     Toolbar toolbar;
     Album album;
     List<Image> images;
+    String nameFolder;
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
     BiConsumer<Integer, View> onItemLongClick;
-    private ImageFragmentAdapter imageFragmentAdapter=null;
+    private ImageFragmentAdapter imageFragmentAdapter = null;
     public int typeView = 4;
     GridLayoutManager gridLayoutManager;
     boolean upToDown = true;
@@ -68,8 +60,15 @@ public class DetailAlbumActivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Gson gson = new Gson();
-        album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        nameFolder = getIntent().getStringExtra("NAME");
+        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
+            Gson gson = new Gson();
+            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        } else {
+            AlbumGallery.getInstance().update(this);
+            album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
+        }
+
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle(album.getName());
@@ -107,16 +106,15 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             setRecyclerViewLayoutManager(4);
-            imageFragmentAdapter = new ImageFragmentAdapter(viewList,onItemClick,onItemLongClick);
+            imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
             binding.textNotFound.setVisibility(View.GONE);
 
-        }else {
+        } else {
             if (album.getName().equals("Thùng rác")) {
                 binding.textNotFound.setText(R.string.empty_recycle_bin);
-            }
-            else {
+            } else {
                 binding.textNotFound.setText(R.string.no_image_found);
             }
             binding.recyclerDetailView.setVisibility(View.GONE);
@@ -125,11 +123,27 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        AlbumGallery.getInstance().update(this);
+        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
+            Gson gson = new Gson();
+            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        } else {
+            AlbumGallery.getInstance().update(this);
+            album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
+        }
+        images = album.getAlbumImages();
+        toViewList(images);
+        imageFragmentAdapter.setData(viewList);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
         int size = album.getAlbumImages().size();
-        if(size!=0) {
+        if (size != 0) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 menu.getItem(0).setVisible(true);
                 menu.getItem(6).setVisible(false);
@@ -146,8 +160,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(4).setVisible(false);
                 menu.getItem(5).setVisible(false);
             }
-        }
-        else{
+        } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
             menu.getItem(6).setVisible(true);
@@ -166,7 +179,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             return true;
         }
-        if(menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
+        if (menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
             Intent intent = new Intent(this, AddItemActivity.class);
             Gson gson = new Gson();
             String imagesObj = gson.toJson(album);
@@ -191,6 +204,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             invalidateOptionsMenu();
             return true;
+        }
+        if (menuItem.getItemId() == R.id.detAlb_coverAlbum) {
+            Intent intent = new Intent(getApplicationContext(), AlbumCoverActivity.class);
+            intent.putExtra("NAME", album.getName());
+            startActivity(intent);
+            DetailAlbumActivity.this.finish();
         }
         if (menuItem.getItemId() == R.id.img_grid_col_2) {
             setRecyclerViewLayoutManager(2);
@@ -240,10 +259,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.detAlb_view_mode_month) {
             // Click Sort by month
-            if(sortByDate){
+            if (sortByDate) {
                 toViewListMonth();
                 imageFragmentAdapter.setData(viewList);
-                binding.recyclerDetailView.setAdapter( imageFragmentAdapter);
+                binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = false;
             }
             return true;
@@ -252,17 +271,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             // Click Setting
             return true;
         }
-        if(menuItem.getItemId()==R.id.delete_images){
+        if (menuItem.getItemId() == R.id.delete_images) {
             return true;
         }
         return false;
     }
 
-    private void toViewList(List<Image>images) {
+    private void toViewList(List<Image> images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
-                label += '.';
+            label += '.';
             for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
                 if (!labelCur.equals(label)) {
@@ -273,16 +292,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
         }
     }
+
     private void toViewListMonth() {
         if (images.size() > 0) {
             int beg = 3;
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
-            label=label.substring(beg,label.length()-6);
+            label = label.substring(beg, label.length() - 6);
             label += '.';
             for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
-                labelCur=labelCur.substring(beg,labelCur.length()-6);
+                labelCur = labelCur.substring(beg, labelCur.length() - 6);
                 if (!labelCur.equals(label)) {
                     label = labelCur;
                     viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -291,12 +311,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
         }
     }
-    private void setDownToUp(){
+
+    private void setDownToUp() {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
             label += '.';
-            for (int i = images.size()-1; i >=0; i--) {
+            for (int i = images.size() - 1; i >= 0; i--) {
                 String labelCur = images.get(i).getDateTaken();
                 if (!labelCur.equals(label)) {
                     label = labelCur;
@@ -306,6 +327,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
         }
     }
+
     private void setRecyclerViewLayoutManager(int newTypeView) {
         typeView = newTypeView;
         gridLayoutManager = new GridLayoutManager(getApplicationContext(), typeView);
