@@ -66,4 +66,7 @@
     <string name="share">Chia sẻ</string>
     <string name="empty">Empty</string>
     <string name="change_cover_album">Đổi ảnh bìa</string>
+    <string name="add_hashtag_description">Add hashtag</string>
+    <string name="hashtag_textfield_hint">Hashtag name</string>
+    <string name="no_added_hashtag_msg">No hashtag has been added</string>
 </resources>
