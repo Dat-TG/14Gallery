@@ -51,6 +51,8 @@
         <activity android:name=".password.CreatePasswordActivity" />
         <activity android:name=".password.InputPasswordActivity" />
         <activity android:name=".password.ConfirmPasswordActivity" />
+        <activity android:name=".MoveImageToAlbum.DetailAlbumMoveActivity"/>
+        <activity android:name=".MoveImageToAlbum.ChooseAlbumActivity"/>
     </application>
 
 </manifest>

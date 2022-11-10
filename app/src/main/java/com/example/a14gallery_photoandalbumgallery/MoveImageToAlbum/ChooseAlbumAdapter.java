@@ -1,43 +1,53 @@
-package com.example.a14gallery_photoandalbumgallery.album;
+package com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum;
+import static  com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLaucher;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 
 import java.util.List;
 import java.util.Objects;
 
-public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {
+public class ChooseAlbumAdapter extends RecyclerView.Adapter<ChooseAlbumAdapter.ChooseAlbumAdapterViewHolder>{
     Context _context;
     List<Album> _album;
-    Album album;
 
-    public AlbumFragmentAdapter(Context context, List<Album> albums) {
+    public ChooseAlbumAdapter(Context context, List<Album> albums) {
         this._context = context;
         this._album = albums;
     }
 
     @NonNull
     @Override
-    public AlbumFragmentAdapter.AlbumFragmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ChooseAlbumAdapter.ChooseAlbumAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new AlbumFragmentViewHolder(SingleAlbumViewBinding.inflate(inflater, parent, false));
+
+        return new ChooseAlbumAdapterViewHolder(SingleAlbumViewBinding.inflate(inflater, parent, false));
     }
 
     @SuppressLint("RecyclerView")
     @Override
-    public void onBindViewHolder(@NonNull AlbumFragmentAdapter.AlbumFragmentViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ChooseAlbumAdapter.ChooseAlbumAdapterViewHolder holder, int position) {
         Album albumPos = _album.get(position);
         String albumTitle = albumPos.getName();
         List<Image> albumImages = albumPos.getAlbumImages();
@@ -60,9 +70,9 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         holder.binding.albumTitle.setText(albumTitle);
         holder.binding.albumCount.setText(String.format("%s", albumsCount));
         holder.binding.albumImg.setOnClickListener(view -> {
-            Intent intent = new Intent(_context, DetailAlbumActivity.class);
+            Intent intent = new Intent(_context, DetailAlbumMoveActivity.class);
             intent.putExtra("NAME", albumPos.getName());
-            _context.startActivity(intent);
+            activityMoveLaucher.launch(intent);
         });
     }
 
@@ -71,10 +81,10 @@ public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdap
         return _album.size();
     }
 
-    public static class AlbumFragmentViewHolder extends RecyclerView.ViewHolder {
-        public SingleAlbumViewBinding binding;
+    public static class ChooseAlbumAdapterViewHolder extends RecyclerView.ViewHolder {
+        SingleAlbumViewBinding binding;
 
-        public AlbumFragmentViewHolder(SingleAlbumViewBinding b) {
+        public ChooseAlbumAdapterViewHolder(SingleAlbumViewBinding b) {
             super(b.getRoot());
             binding = b;
         }

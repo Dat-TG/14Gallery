@@ -38,6 +38,9 @@ dependencies {
     annotationProcessor 'androidx.room:room-compiler:2.5.0-beta01'
     def nav_version = '2.5.3'
     def room_version = "2.4.3"
+    def lifecycle_version = "2.3.0"
+
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'

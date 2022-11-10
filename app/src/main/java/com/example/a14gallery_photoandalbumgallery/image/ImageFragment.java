@@ -1,5 +1,8 @@
 package com.example.a14gallery_photoandalbumgallery.image;
 
+
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -7,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +42,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.MainActivity;
+import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
@@ -52,6 +59,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
+
 
 public class ImageFragment extends Fragment implements MenuProvider {
     FragmentImageBinding binding;
@@ -73,10 +82,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
     BiConsumer<Integer, View> onItemLongClick;
 
     ActivityResultLauncher<Intent> activityResultLauncher;
+    ActivityResultLauncher<Intent> activityMoveLaucher;
+
 
     public ImageFragment() {
 
     }
+
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -153,6 +166,22 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
             }
         });
+        activityMoveLaucher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                        if (result.getResultCode() == 123) {
+                            Intent data = result.getData();
+                            String dest = data.getStringExtra("DEST");
+                            Log.e("ImageFragment",dest);
+                            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/"+dest);
+                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                        }
+                    }
+                });
         return binding.getRoot();
     }
 
@@ -294,24 +323,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.move_images) {
             //Show album to choose
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-            alert.setTitle("Di chuyển đến Album");
-            alert.setMessage("Nhập tên album");
-            final EditText input = new EditText(getContext()); // Set an EditText view to get user input
-            alert.setView(input);
-            alert.setPositiveButton("Ok", (dialog, whichButton) -> {
-                String value = input.getText().toString();
-                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
-                if (!file.exists()) {
-                    Toast.makeText(getActivity(), "Album không tồn tại!", Toast.LENGTH_LONG).show();
-                } else {
-                    String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
-                    moveToAlbum(dest);
-                }
-            });
-            alert.setNegativeButton("Cancel", (dialog, whichButton) -> {/* Canceled.*/});
-            alert.show();
-
+            Intent intent=new Intent(getActivity(), ChooseAlbumActivity.class);
+            activityMoveLaucher.launch(intent);
+            //moveToAlbum(dest);
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
@@ -449,6 +463,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         for (Image image : selectedImages) {
+            Log.e("src",image.getPath());
             Path result = null;
             String src = image.getPath();
             String name[] = src.split("/");

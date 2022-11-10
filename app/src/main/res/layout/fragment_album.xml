@@ -39,7 +39,7 @@
 
                 <ImageView
                     android:id="@+id/favoriteAlbum"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:src="@mipmap/ic_favorite_album_foreground"
@@ -61,7 +61,7 @@
 
                 <ImageView
                     android:id="@+id/privateAlbum"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/private_label"
@@ -83,7 +83,7 @@
 
                 <ImageView
                     android:id="@+id/recycleBin"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/garbage"
