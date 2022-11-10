@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -305,6 +307,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/RecycleBin");
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            onResume();
             return true;
         }
         if (menuItem.getItemId()==R.id.move_images) {
@@ -395,12 +401,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
-                Toast.makeText(getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        Snackbar.make(findViewById(R.id.detail_album_layout),"Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        String name[]=dest.split("/");
+        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+            Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
 }

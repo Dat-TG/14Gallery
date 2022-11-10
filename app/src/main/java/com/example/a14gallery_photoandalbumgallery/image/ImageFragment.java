@@ -57,6 +57,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -315,10 +316,13 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
-            addToTrash();
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/RecycleBin");
             toViewList();
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+            onResume();
             activity.invalidateOptionsMenu();
         }
         if (menuItem.getItemId() == R.id.move_images) {
@@ -474,11 +478,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
-                Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        String name[]=dest.split("/");
+        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+            Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        }
     }
 }
