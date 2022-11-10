@@ -177,9 +177,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment",dest);
                             moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/"+dest);
-                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
                         }
+                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
                     }
                 });
         return binding.getRoot();
