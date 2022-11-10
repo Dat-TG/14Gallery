@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,9 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
@@ -23,11 +26,18 @@ import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
@@ -274,6 +284,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (menuItem.getItemId() == R.id.delete_images) {
             return true;
         }
+        if (menuItem.getItemId()==R.id.move_images) {
+            return true;
+        }
         return false;
     }
 
@@ -338,6 +351,31 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
         });
         binding.recyclerDetailView.setLayoutManager(gridLayoutManager);
+    }
+
+    private void moveToAlbum(String dest) {
+        ArrayList<Image> selectedImages = images.stream()
+                .filter(Image::isChecked)
+                .collect(Collectors.toCollection(ArrayList::new));
+        for (Image image : selectedImages) {
+            Log.e("src",image.getPath());
+            Path result = null;
+            String src = image.getPath();
+            String name[] = src.split("/");
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            if (result != null) {
+                Toast.makeText(getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+            }
+        }
+        Snackbar.make(findViewById(R.id.detail_album_layout),"Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
     }
 
 }

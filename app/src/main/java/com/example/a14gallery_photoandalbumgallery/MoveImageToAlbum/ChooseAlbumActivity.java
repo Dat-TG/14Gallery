@@ -27,7 +27,7 @@ public class ChooseAlbumActivity extends AppCompatActivity {
     ChooseAlbumAdapter adapter;
     ActivityChooseAlbumBinding binding;
     List<Album> albums;
-    public static ActivityResultLauncher<Intent> activityMoveLaucher;
+    public static ActivityResultLauncher<Intent> activityMoveLauncher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class ChooseAlbumActivity extends AppCompatActivity {
         binding.ChooseAlbumRecycleView.setHasFixedSize(true);
         binding.ChooseAlbumRecycleView.setLayoutManager(layoutManager);
         binding.ChooseAlbumRecycleView.setNestedScrollingEnabled(false);
-        activityMoveLaucher = registerForActivityResult(
+        activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override

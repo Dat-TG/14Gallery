@@ -1,5 +1,5 @@
 package com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum;
-import static  com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLaucher;
+import static  com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -72,7 +72,7 @@ public class ChooseAlbumAdapter extends RecyclerView.Adapter<ChooseAlbumAdapter.
         holder.binding.albumImg.setOnClickListener(view -> {
             Intent intent = new Intent(_context, DetailAlbumMoveActivity.class);
             intent.putExtra("NAME", albumPos.getName());
-            activityMoveLaucher.launch(intent);
+            activityMoveLauncher.launch(intent);
         });
     }
 

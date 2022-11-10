@@ -82,7 +82,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
     BiConsumer<Integer, View> onItemLongClick;
 
     ActivityResultLauncher<Intent> activityResultLauncher;
-    ActivityResultLauncher<Intent> activityMoveLaucher;
+    ActivityResultLauncher<Intent> activityMoveLauncher;
 
 
     public ImageFragment() {
@@ -166,7 +166,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
             }
         });
-        activityMoveLaucher = registerForActivityResult(
+        activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -176,7 +176,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                             Intent data = result.getData();
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment",dest);
-                            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/"+dest);
+                            moveToAlbum(dest);
                         }
                         imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
                         imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -324,8 +324,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (menuItem.getItemId() == R.id.move_images) {
             //Show album to choose
             Intent intent=new Intent(getActivity(), ChooseAlbumActivity.class);
-            activityMoveLaucher.launch(intent);
-            //moveToAlbum(dest);
+            activityMoveLauncher.launch(intent);
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);

@@ -129,9 +129,9 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("DESTPATH",album.getName());
+                Log.e("DESTPATH",album.getPath());
                 Intent intent=new Intent();
-                intent.putExtra("DEST",album.getName());
+                intent.putExtra("DEST",album.getPath());
                 setResult(123, intent);
                 finish();
             }
