@@ -1,6 +1,8 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,6 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,13 +38,17 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlb
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -62,6 +69,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
     boolean upToDown = true;
     boolean sortByDate = true;
     ActivityResultLauncher<Intent> activityMoveLauncher;
+    String rootFolder = "/14Gallery/";
+    String favoriteAlbumFolderName = "FavoriteAlbum";
+    String privateAlbumFolderName = "PrivateAlbum";
+    String recycleBinFolderName = "RecycleBin";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,9 +107,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment",dest);
                             moveToAlbum(dest);
+                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                            onResume();
                         }
-                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
                     }
                 });
 
@@ -159,17 +171,36 @@ public class DetailAlbumActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         AlbumGallery.getInstance().update(this);
+        nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
-            Gson gson = new Gson();
-            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            if (nameFolder.equals("FavoriteAlbum")) {
+                album=getAlbumFavorite();
+            }
+            else if (nameFolder.equals("PrivateAlbum")) {
+                album=getAlbumPrivate();
+            }
+            else {
+                album=getRecycleBin();
+            }
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-        if (album.getAlbumImages().size() != 0) {
-            images = album.getAlbumImages();
+        images=album.getAlbumImages();
+        Log.e("heh",Integer.toString(images.size()));
+        if (images!=null && images.size()>0) {
+            //images = album.getAlbumImages();
             toViewList(images);
             imageFragmentAdapter.setData(viewList);
+        }
+        else {
+            if (album.getName().equals("Thùng rác") || album.getName().equals("RecycleBin")) {
+                binding.textNotFound.setText(R.string.empty_recycle_bin);
+            } else {
+                binding.textNotFound.setText(R.string.no_image_found);
+            }
+            binding.recyclerDetailView.setVisibility(View.GONE);
+            binding.textNotFound.setVisibility(View.VISIBLE);
         }
     }
 
@@ -322,7 +353,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private void toViewList(List<Image> images) {
-        if (images.size() > 0) {
+        if (images!=null && images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
             label += '.';
@@ -412,6 +443,185 @@ public class DetailAlbumActivity extends AppCompatActivity {
         } else {
             Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private Album getAlbumFavorite() {
+        Album Favorite = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
+        folderPath = folderPath + "%";
+        Favorite.setName("Ưa thích");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+//                            image.setUri(contentUri);
+                    Favorite.getAlbumImages().add(image);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return Favorite;
+    }
+
+    private Album getAlbumPrivate() {
+        Album Private = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
+        folderPath = folderPath + "%";
+        Private.setName("Riêng tư");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+
+                    Private.getAlbumImages().add(image);
+
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+            return Private;
+    }
+    private Album getRecycleBin() {
+        Album RecycleBin = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
+        folderPath = folderPath + "%";
+        RecycleBin.setName("Thùng rác");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+
+                    RecycleBin.getAlbumImages().add(image);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return RecycleBin;
     }
 
 }
