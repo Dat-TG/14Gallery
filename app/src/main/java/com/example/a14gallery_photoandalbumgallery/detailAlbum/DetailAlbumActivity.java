@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
@@ -54,6 +59,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     GridLayoutManager gridLayoutManager;
     boolean upToDown = true;
     boolean sortByDate = true;
+    ActivityResultLauncher<Intent> activityMoveLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,23 @@ public class DetailAlbumActivity extends AppCompatActivity {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
+
+        activityMoveLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                        if (result.getResultCode() == 123) {
+                            Intent data = result.getData();
+                            String dest = data.getStringExtra("DEST");
+                            Log.e("ImageFragment",dest);
+                            moveToAlbum(dest);
+                        }
+                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                    }
+                });
 
         int size = album.getAlbumImages().size();
 
@@ -285,6 +308,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId()==R.id.move_images) {
+            Intent intent=new Intent(this, ChooseAlbumActivity.class);
+            activityMoveLauncher.launch(intent);
             return true;
         }
         return false;
