@@ -97,6 +97,9 @@
                 </menu>
             </item>
             <item
+                android:id="@+id/slideShow_"
+                android:title="@string/slideshow" />
+            <item
                 android:id="@+id/img_setting"
                 android:title="@string/setting_title" />
         </menu>

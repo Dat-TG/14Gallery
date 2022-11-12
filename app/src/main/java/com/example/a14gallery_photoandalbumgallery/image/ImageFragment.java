@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -176,6 +177,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
             menu.getItem(5).setVisible(false);
+            menu.getItem(6).setVisible(true);
         }
     }
 
@@ -316,6 +318,26 @@ public class ImageFragment extends Fragment implements MenuProvider {
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
+        }
+        if(menuItem.getItemId()==R.id.slideShow || menuItem.getItemId()==R.id.slideShow_){
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                List<Image> selectedImages = images.stream()
+                        .filter(Image::isChecked)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                if (selectedImages.isEmpty()) {
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Lỗi")
+                            .setMessage("Vui lòng chọn hình ảnh để trình chiếu!")
+                            .setPositiveButton("OK", null)
+                            .show();
+                } else {
+                    SlideshowDialog ssDialog = new SlideshowDialog(selectedImages);
+                    ssDialog.show(getParentFragmentManager(), "SlideShowDialog");
+                }
+            } else {
+                SlideshowDialog ssDialog = new SlideshowDialog(images);
+                ssDialog.show(getParentFragmentManager(), "SlideShowDialog");
+            }
         }
         return false;
     }
