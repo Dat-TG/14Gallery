@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -22,6 +23,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityChooseAlb
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ChooseAlbumActivity extends AppCompatActivity {
     ChooseAlbumAdapter adapter;
@@ -37,6 +39,10 @@ public class ChooseAlbumActivity extends AppCompatActivity {
         binding.ChooseAlbumRecycleView.setHasFixedSize(true);
         binding.ChooseAlbumRecycleView.setLayoutManager(layoutManager);
         binding.ChooseAlbumRecycleView.setNestedScrollingEnabled(false);
+        String folderFrom=getIntent().getStringExtra("folder");
+        if (Objects.equals(folderFrom, "RecycleBin")) {
+            binding.ChooseAlbumText.setText("Chọn nơi lưu ảnh sau khi khôi phục");
+        }
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {

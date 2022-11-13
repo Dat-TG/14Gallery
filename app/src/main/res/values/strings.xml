@@ -70,4 +70,5 @@
     <string name="hashtag_textfield_hint">Hashtag name</string>
     <string name="no_added_hashtag_msg">No hashtag has been added</string>
     <string name="add">Thêm</string>
+    <string name="di_chuy_n">Di chuyển</string>
 </resources>

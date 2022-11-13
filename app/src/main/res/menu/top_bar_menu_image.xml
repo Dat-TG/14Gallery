@@ -26,7 +26,7 @@
 
     <item
         android:id="@+id/move_images"
-        android:title="Di chuyển"
+        android:title="@string/di_chuy_n"
         app:showAsAction="ifRoom" />
 
     <item

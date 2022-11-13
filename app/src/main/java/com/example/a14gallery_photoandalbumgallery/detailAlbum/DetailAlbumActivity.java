@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -96,6 +97,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
 
+
+
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -107,10 +110,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment",dest);
                             moveToAlbum(dest);
-                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-                            onResume();
                         }
+                        toViewList(images);
+                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                        invalidateOptionsMenu();
+                        onResume();
                     }
                 });
 
@@ -208,6 +213,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
+        if (Objects.equals(nameFolder, "RecycleBin")) {
+            MenuItem item=menu.findItem(R.id.move_images);
+            item.setTitle("Khôi phục");
+        }
         int size = album.getAlbumImages().size();
         if (size != 0) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
@@ -346,6 +355,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId()==R.id.move_images) {
             Intent intent=new Intent(this, ChooseAlbumActivity.class);
+            if (Objects.equals(nameFolder, "RecycleBin")) intent.putExtra("folder","RecycleBin");
             activityMoveLauncher.launch(intent);
             return true;
         }
