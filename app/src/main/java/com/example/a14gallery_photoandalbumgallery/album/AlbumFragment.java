@@ -387,6 +387,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
         return Private;
     }
+
     private Album getRecycleBin() {
         Album RecycleBin = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);

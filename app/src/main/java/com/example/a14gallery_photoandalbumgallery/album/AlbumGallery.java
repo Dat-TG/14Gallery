@@ -80,7 +80,7 @@ public class AlbumGallery {
                 int dateTakenColumn = cur.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                 do {
                     Calendar myCal = Calendar.getInstance();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
                     // Get the field values
                     bucketName = cur.getString(bucketNameColumn);
                     data = cur.getString(imageUriColumn);
@@ -89,7 +89,7 @@ public class AlbumGallery {
                     myCal.setTimeInMillis(dateTaken);
                     String dateText = formatter.format(myCal.getTime());
 
-                    if (bucketName==null) {
+                    if (bucketName == null) {
                         continue;
                     }
 
@@ -103,12 +103,11 @@ public class AlbumGallery {
                     image.setId(Integer.parseInt(imageId));
                     image.setDateTaken(dateText);
 
-                    String temp[]=data.split("/");
-                    String path="";
-                    for (int i=0;i<temp.length-1;i++) {
-                        path+=temp[i]+"/";
+                    String temp[] = data.split("/");
+                    String path = "";
+                    for (int i = 0; i < temp.length - 1; i++) {
+                        path += temp[i] + "/";
                     }
-
 
                     if (albumsNames.contains(bucketName)) {
                         for (Album album : albums) {
@@ -147,7 +146,7 @@ public class AlbumGallery {
                     Album album = new Album();
 //                    album.setId(image.getId());
                     album.setName(allFile.getName());
-                    album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/"+allFile.getName());
+                    album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
                     albums.add(album);

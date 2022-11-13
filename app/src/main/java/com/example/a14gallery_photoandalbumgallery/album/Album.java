@@ -13,7 +13,7 @@ public class Album {
     private List<Image> albumImages = new ArrayList<>();
     private List<Album> albumChildren = new ArrayList<>();
     private String albumCover = "";
-    private String path="";
+    private String path = "";
 
     public int getId() {
         return id;
@@ -68,6 +68,6 @@ public class Album {
     }
 
     public void setPath(String path) {
-        this.path=path;
+        this.path = path;
     }
 }

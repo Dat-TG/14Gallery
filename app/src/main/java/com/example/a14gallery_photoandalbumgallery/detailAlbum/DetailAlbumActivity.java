@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Environment;
+import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -65,7 +66,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 
-
 public class DetailAlbumActivity extends AppCompatActivity {
     ActivityDetailAlbumBinding binding;
     Toolbar toolbar;
@@ -85,8 +85,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
     String favoriteAlbumFolderName = "FavoriteAlbum";
     String privateAlbumFolderName = "PrivateAlbum";
     String recycleBinFolderName = "RecycleBin";
-    String nameGIF="animation";
-    int delay=500;
+    String nameGIF = "animation";
+    int delay = 500;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,7 +111,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
 
 
-
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -121,7 +120,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         if (result.getResultCode() == 123) {
                             Intent data = result.getData();
                             String dest = data.getStringExtra("DEST");
-                            Log.e("ImageFragment",dest);
+                            Log.e("ImageFragment", dest);
                             moveToAlbum(dest);
                         }
                         toViewList(images);
@@ -192,26 +191,23 @@ public class DetailAlbumActivity extends AppCompatActivity {
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
             if (nameFolder.equals("FavoriteAlbum")) {
-                album=getAlbumFavorite();
-            }
-            else if (nameFolder.equals("PrivateAlbum")) {
-                album=getAlbumPrivate();
-            }
-            else {
-                album=getRecycleBin();
+                album = getAlbumFavorite();
+            } else if (nameFolder.equals("PrivateAlbum")) {
+                album = getAlbumPrivate();
+            } else {
+                album = getRecycleBin();
             }
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-        images=album.getAlbumImages();
-        Log.e("heh",Integer.toString(images.size()));
-        if (images!=null && images.size()>0) {
+        images = album.getAlbumImages();
+        Log.e("heh", Integer.toString(images.size()));
+        if (images != null && images.size() > 0) {
             //images = album.getAlbumImages();
             toViewList(images);
             imageFragmentAdapter.setData(viewList);
-        }
-        else {
+        } else {
             if (album.getName().equals("Thùng rác") || album.getName().equals("RecycleBin")) {
                 binding.textNotFound.setText(R.string.empty_recycle_bin);
             } else {
@@ -227,7 +223,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         menu.clear();
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
         if (Objects.equals(nameFolder, "RecycleBin")) {
-            MenuItem item=menu.findItem(R.id.move_images);
+            MenuItem item = menu.findItem(R.id.move_images);
             item.setTitle("Khôi phục");
         }
         int size = album.getAlbumImages().size();
@@ -356,30 +352,35 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_setting) {
+
             // Click Setting
             return true;
         }
+        if (menuItem.getItemId() == R.id.detAlb_deleteAlbum) {
+            deleteAlbumAndMoveImages(album);
+            return true;
+        }
         if (menuItem.getItemId() == R.id.delete_images) {
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/RecycleBin");
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/RecycleBin");
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             onResume();
             return true;
         }
-        if (menuItem.getItemId()==R.id.move_images) {
-            Intent intent=new Intent(this, ChooseAlbumActivity.class);
-            if (Objects.equals(nameFolder, "RecycleBin")) intent.putExtra("folder","RecycleBin");
+        if (menuItem.getItemId() == R.id.move_images) {
+            Intent intent = new Intent(this, ChooseAlbumActivity.class);
+            if (Objects.equals(nameFolder, "RecycleBin")) intent.putExtra("folder", "RecycleBin");
             activityMoveLauncher.launch(intent);
             return true;
         }
-        if (menuItem.getItemId()==R.id.create_GIF) {
+        if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
         }
         return false;
     }
 
     private void toViewList(List<Image> images) {
-        if (images!=null && images.size() > 0) {
+        if (images != null && images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
             label += '.';
@@ -446,7 +447,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         for (Image image : selectedImages) {
-            Log.e("src",image.getPath());
+            Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
             String name[] = src.split("/");
@@ -463,12 +464,45 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        String name[]=dest.split("/");
-        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
-            Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
-        } else {
-            Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
-        }
+    }
+
+    private void deleteAlbumAndMoveImages(Album albumDelete) { //Dest: move all image to Pictures default
+        List<Album> albumDefaults = AlbumGallery.getPhoneAlbums(this).stream()
+                .filter(album1 -> !album1.getPath().contains(rootFolder))
+                .collect(Collectors.toCollection(ArrayList::new));
+        List<Image> imagesAlbum = albumDelete.getAlbumImages();
+        AlertDialog.Builder alert = new AlertDialog.Builder(
+                this);
+        alert.setTitle("Xóa Album");
+        alert.setMessage("Bạn có chắc muốn xóa album này không ?\nTất cả hình ảnh sẽ được chuyển ra thư mục ngoài mà không có bị xóa");
+
+        alert.setPositiveButton("YES", (dialog, which) -> {
+            for (Image image : imagesAlbum) {
+                Log.e("src", image.getPath());
+                String src = image.getPath();
+                String[] name = src.split("/");
+                Path result = null;
+                String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + albumDefaults.get(0).getName() + "/" + name[name.length - 1];
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "Xóa album không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                if (result != null) {
+                    //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Xóa album thành công", Toast.LENGTH_SHORT).show();
+                }
+            }
+            File dirName = new File(album.getPath());
+            dirName.delete();
+            finish();
+            dialog.dismiss();
+        });
+        alert.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        alert.show();
     }
 
     private Album getAlbumFavorite() {
@@ -588,8 +622,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
             cursor.close();
         }
-            return Private;
+        return Private;
     }
+
     private Album getRecycleBin() {
         Album RecycleBin = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
@@ -681,7 +716,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 return;
             }
-// Keep adding frame here
+            // Keep adding frame here
         }
         try {
             writer.finishWrite(os);
@@ -690,16 +725,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Snackbar.make(findViewById(R.id.detail_album_layout), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
             return;
         }
-// And you are done!!!
+        // And you are done!!!
         Snackbar.make(findViewById(R.id.detail_album_layout), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
     }
+
     public void inputGIF() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Tạo ảnh GIF");
-        LinearLayout layout=new LinearLayout(this);
-        final TextView textView1=new TextView(this);
+        LinearLayout layout = new LinearLayout(this);
+        final TextView textView1 = new TextView(this);
         final EditText input1 = new EditText(this); // Set an EditText view to get user input
-        final TextView textView2=new TextView(this);
+        final TextView textView2 = new TextView(this);
         final EditText input2 = new EditText(this);
         textView1.setText("Nhập tên ảnh (không cần .gif)");
         textView2.setText("Nhập thời gian delay giữa các frame (ms)");
@@ -708,9 +744,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
         layout.addView(input1);
         layout.addView(textView2);
         layout.addView(input2);
-        layout.setPadding(50,50,50,0);
+        layout.setPadding(50, 50, 50, 0);
         alert.setView(layout);
-        String dest=album.getPath()+"/";
+        String dest = album.getPath() + "/";
         File file = new File(dest);
         if (!file.exists()) {
             boolean success = file.mkdirs();
@@ -721,7 +757,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
         }
         alert.setPositiveButton("Ok", (dialog, whichButton) -> {
-            nameGIF=input1.getText().toString();
+            nameGIF = input1.getText().toString();
             if (nameGIF.isEmpty()) {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 toViewList(images);
@@ -730,8 +766,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
                 return;
             }
-            try {delay=Integer.parseInt(input2.getText().toString());}
-            catch(Exception e){
+            try {
+                delay = Integer.parseInt(input2.getText().toString());
+            } catch (Exception e) {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 toViewList(images);
                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -739,15 +776,15 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
                 return;
             }
-            File anh=new File(dest+nameGIF+".gif");
+            File anh = new File(dest + nameGIF + ".gif");
             if (anh.exists()) {
                 AlertDialog.Builder confirm = new AlertDialog.Builder(this);
                 confirm.setTitle("Đợi một chút");
                 confirm.setCancelable(true);
-                confirm.setMessage("File "+nameGIF+".gif đã tồn tại. Bạn có muốn ghi đè không?")
+                confirm.setMessage("File " + nameGIF + ".gif đã tồn tại. Bạn có muốn ghi đè không?")
                         .setPositiveButton("Có", (dialog1, id) -> {
                             try {
-                                createGIF(dest+nameGIF+".gif",delay);
+                                createGIF(dest + nameGIF + ".gif", delay);
                                 toViewList(images);
                                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
                                 imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -765,8 +802,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                             invalidateOptionsMenu();
                         })
                         .show();
-            }
-            else {
+            } else {
                 createGIF(dest + nameGIF + ".gif", delay);
                 toViewList(images);
                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -775,7 +811,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 onResume();
             }
         });
-        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {toViewList(images);
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {
+            toViewList(images);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             invalidateOptionsMenu();

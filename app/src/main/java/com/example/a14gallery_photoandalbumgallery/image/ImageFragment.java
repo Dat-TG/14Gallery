@@ -73,7 +73,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 
-
 public class ImageFragment extends Fragment implements MenuProvider {
     FragmentImageBinding binding;
 
@@ -96,14 +95,13 @@ public class ImageFragment extends Fragment implements MenuProvider {
     ActivityResultLauncher<Intent> activityResultLauncher;
     ActivityResultLauncher<Intent> activityMoveLauncher;
 
-    String nameGIF="animation";
-    int delay=500;
+    String nameGIF = "animation";
+    int delay = 500;
 
 
     public ImageFragment() {
 
     }
-
 
 
     @Override
@@ -190,7 +188,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                         if (result.getResultCode() == 123) {
                             Intent data = result.getData();
                             String dest = data.getStringExtra("DEST");
-                            Log.e("ImageFragment",dest);
+                            Log.e("ImageFragment", dest);
                             moveToAlbum(dest);
                         }
                         imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -330,7 +328,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/RecycleBin");
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/RecycleBin");
             toViewList();
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -341,14 +339,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.move_images) {
             //Show album to choose
-            Intent intent=new Intent(getActivity(), ChooseAlbumActivity.class);
+            Intent intent = new Intent(getActivity(), ChooseAlbumActivity.class);
             activityMoveLauncher.launch(intent);
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
         }
-        if (menuItem.getItemId()==R.id.create_GIF) {
+        if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
         }
         return false;
@@ -483,7 +481,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         for (Image image : selectedImages) {
-            Log.e("src",image.getPath());
+            Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
             String name[] = src.split("/");
@@ -500,7 +498,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        String name[]=dest.split("/");
+        String name[] = dest.split("/");
         if (Objects.equals(name[name.length - 1], "RecycleBin")) {
             Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {
@@ -551,13 +549,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
 // And you are done!!!
         Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
     }
+
     public void inputGIF() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert.setTitle("Tạo ảnh GIF");
-        LinearLayout layout=new LinearLayout(getContext());
-        final TextView textView1=new TextView(getContext());
+        LinearLayout layout = new LinearLayout(getContext());
+        final TextView textView1 = new TextView(getContext());
         final EditText input1 = new EditText(getContext()); // Set an EditText view to get user input
-        final TextView textView2=new TextView(getContext());
+        final TextView textView2 = new TextView(getContext());
         final EditText input2 = new EditText(getContext());
         textView1.setText("Nhập tên ảnh (không cần .gif)");
         textView2.setText("Nhập thời gian delay giữa các frame (ms)");
@@ -566,9 +565,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         layout.addView(input1);
         layout.addView(textView2);
         layout.addView(input2);
-        layout.setPadding(50,50,50,0);
+        layout.setPadding(50, 50, 50, 0);
         alert.setView(layout);
-        String dest=Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/GIF/";
+        String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/GIF/";
         File file = new File(dest);
         if (!file.exists()) {
             boolean success = file.mkdirs();
@@ -579,7 +578,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             }
         }
         alert.setPositiveButton("Ok", (dialog, whichButton) -> {
-            nameGIF=input1.getText().toString();
+            nameGIF = input1.getText().toString();
             if (nameGIF.isEmpty()) {
                 Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 toViewList();
@@ -588,8 +587,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 requireActivity().invalidateOptionsMenu();
                 return;
             }
-            try {delay=Integer.parseInt(input2.getText().toString());}
-            catch(Exception e){
+            try {
+                delay = Integer.parseInt(input2.getText().toString());
+            } catch (Exception e) {
                 Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 toViewList();
                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -597,15 +597,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 requireActivity().invalidateOptionsMenu();
                 return;
             }
-            File anh=new File(dest+nameGIF+".gif");
+            File anh = new File(dest + nameGIF + ".gif");
             if (anh.exists()) {
                 AlertDialog.Builder confirm = new AlertDialog.Builder(getContext());
                 confirm.setTitle("Đợi một chút");
                 confirm.setCancelable(true);
-                confirm.setMessage("File "+nameGIF+".gif đã tồn tại. Bạn có muốn ghi đè không?")
+                confirm.setMessage("File " + nameGIF + ".gif đã tồn tại. Bạn có muốn ghi đè không?")
                         .setPositiveButton("Có", (dialog1, id) -> {
                             try {
-                                createGIF(dest+nameGIF+".gif",delay);
+                                createGIF(dest + nameGIF + ".gif", delay);
                                 toViewList();
                                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
                                 imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -615,16 +615,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
                                 //Exception
                             }
                         })
-                .setNegativeButton("Không", (dialog12, id) -> {
-                    dialog12.cancel();
-                    toViewList();
-                    imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-                    imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-                    requireActivity().invalidateOptionsMenu();
-                })
-                .show();
-            }
-            else {
+                        .setNegativeButton("Không", (dialog12, id) -> {
+                            dialog12.cancel();
+                            toViewList();
+                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                            requireActivity().invalidateOptionsMenu();
+                        })
+                        .show();
+            } else {
                 createGIF(dest + nameGIF + ".gif", delay);
                 toViewList();
                 imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -633,11 +632,12 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 onResume();
             }
         });
-        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {toViewList();
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {
+            toViewList();
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             requireActivity().invalidateOptionsMenu();
-            });
+        });
         alert.show();
     }
 }
