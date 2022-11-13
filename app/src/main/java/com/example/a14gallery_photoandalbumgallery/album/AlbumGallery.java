@@ -89,6 +89,10 @@ public class AlbumGallery {
                     myCal.setTimeInMillis(dateTaken);
                     String dateText = formatter.format(myCal.getTime());
 
+                    if (bucketName==null) {
+                        continue;
+                    }
+
                     if (bucketName.equals("FavoriteAlbum") || bucketName.equals("PrivateAlbum") || bucketName.equals("RecycleBin")) {
                         continue;
                     }

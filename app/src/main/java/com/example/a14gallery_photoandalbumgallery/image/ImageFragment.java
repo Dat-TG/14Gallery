@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,6 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -42,15 +46,22 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MainActivity;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,6 +95,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     ActivityResultLauncher<Intent> activityResultLauncher;
     ActivityResultLauncher<Intent> activityMoveLauncher;
+
+    String nameGIF="animation";
+    int delay=500;
 
 
     public ImageFragment() {
@@ -334,6 +348,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
         }
+        if (menuItem.getItemId()==R.id.create_GIF) {
+            inputGIF();
+        }
         return false;
     }
 
@@ -489,5 +506,138 @@ public class ImageFragment extends Fragment implements MenuProvider {
         } else {
             Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private void createGIF(String dest, int delay) {
+        ArrayList<Image> selectedImages = images.stream()
+                .filter(Image::isChecked)
+                .collect(Collectors.toCollection(ArrayList::new));
+        AnimatedGIFWriter writer = new AnimatedGIFWriter(true);
+        writer.setDelay(delay);
+        OutputStream os;
+        try {
+            os = new FileOutputStream(dest);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        // Use -1 for both logical screen width and height to use the first frame dimension
+        try {
+            writer.prepareForWrite(os, -1, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        for (Image image : selectedImages) {
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getPath()); // Grab the Bitmap whatever way you can
+            try {
+                writer.writeFrame(os, bitmap);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+// Keep adding frame here
+        }
+        try {
+            writer.finishWrite(os);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+// And you are done!!!
+        Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
+    }
+    public void inputGIF() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle("Tạo ảnh GIF");
+        LinearLayout layout=new LinearLayout(getContext());
+        final TextView textView1=new TextView(getContext());
+        final EditText input1 = new EditText(getContext()); // Set an EditText view to get user input
+        final TextView textView2=new TextView(getContext());
+        final EditText input2 = new EditText(getContext());
+        textView1.setText("Nhập tên ảnh (không cần .gif)");
+        textView2.setText("Nhập thời gian delay giữa các frame (ms)");
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(textView1);
+        layout.addView(input1);
+        layout.addView(textView2);
+        layout.addView(input2);
+        layout.setPadding(50,50,50,0);
+        alert.setView(layout);
+        String dest=Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/GIF/";
+        File file = new File(dest);
+        if (!file.exists()) {
+            boolean success = file.mkdirs();
+            if (success) {
+                Log.e("RES", "Success");
+            } else {
+                Log.e("RES", "Failed");
+            }
+        }
+        alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+            nameGIF=input1.getText().toString();
+            if (nameGIF.isEmpty()) {
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                return;
+            }
+            try {delay=Integer.parseInt(input2.getText().toString());}
+            catch(Exception e){
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                return;
+            }
+            File anh=new File(dest+nameGIF+".gif");
+            if (anh.exists()) {
+                AlertDialog.Builder confirm = new AlertDialog.Builder(getContext());
+                confirm.setTitle("Đợi một chút");
+                confirm.setCancelable(true);
+                confirm.setMessage("File "+nameGIF+".gif đã tồn tại. Bạn có muốn ghi đè không?")
+                        .setPositiveButton("Có", (dialog1, id) -> {
+                            try {
+                                createGIF(dest+nameGIF+".gif",delay);
+                                toViewList();
+                                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                                requireActivity().invalidateOptionsMenu();
+                                onResume();
+                            } catch (Exception e) {
+                                //Exception
+                            }
+                        })
+                .setNegativeButton("Không", (dialog12, id) -> {
+                    dialog12.cancel();
+                    toViewList();
+                    imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                    imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                    requireActivity().invalidateOptionsMenu();
+                })
+                .show();
+            }
+            else {
+                createGIF(dest + nameGIF + ".gif", delay);
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                onResume();
+            }
+        });
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {toViewList();
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            requireActivity().invalidateOptionsMenu();
+            });
+        alert.show();
     }
 }

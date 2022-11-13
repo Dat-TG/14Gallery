@@ -30,6 +30,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/create_GIF"
+        android:title="Tạo ảnh GIF"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/slideShow"
         android:title="@string/slideshow"
         android:icon="@drawable/ic_slideshow"
