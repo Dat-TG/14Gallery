@@ -101,7 +101,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
             };
 
-            binding.recyclerDetailView.setHasFixedSize(true);
+//            binding.recyclerDetailView.setHasFixedSize(true);
             binding.recyclerDetailView.setNestedScrollingEnabled(true);
             setRecyclerViewLayoutManager(4);
             imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
@@ -132,9 +132,16 @@ public class DetailAlbumActivity extends AppCompatActivity {
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
         if (album.getAlbumImages().size() != 0) {
+            binding.recyclerDetailView.setVisibility(View.VISIBLE);
+//            binding.recyclerDetailView.setHasFixedSize(false);
+            binding.recyclerDetailView.setNestedScrollingEnabled(true);
+            setRecyclerViewLayoutManager(4);
             images = album.getAlbumImages();
             toViewList(images);
-            imageFragmentAdapter.setData(viewList);
+            imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
+            binding.textNotFound.setVisibility(View.GONE);
         }
     }
 
@@ -181,9 +188,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
             Intent intent = new Intent(this, AddItemActivity.class);
-            Gson gson = new Gson();
-            String imagesObj = gson.toJson(album);
-            intent.putExtra("album", imagesObj);
+            intent.putExtra("NAME", album.getName());
             startActivity(intent);
             return true;
         }

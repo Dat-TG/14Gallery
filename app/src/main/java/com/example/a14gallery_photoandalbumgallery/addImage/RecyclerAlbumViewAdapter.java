@@ -15,6 +15,7 @@ import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.SingleAlbumViewBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RecyclerAlbumViewAdapter extends RecyclerView.Adapter<RecyclerAlbumViewAdapter.RecyclerAlbumViewHolder> {
     List<Album> albums;
@@ -35,16 +36,23 @@ public class RecyclerAlbumViewAdapter extends RecyclerView.Adapter<RecyclerAlbum
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerAlbumViewAdapter.RecyclerAlbumViewHolder holder, int position) {
+        Album albumPos = albums.get(position);
         String albumTitle = albums.get(position).getName();
         List<Image> albumImages = albums.get(position).getAlbumImages();
 
         int albumsCount = albumImages.size();
-        if (albumsCount > 0) {
-            Glide.with(context)
-                    .load(albumImages.get(albumsCount - 1).getPath())
-                    .into(holder.binding.albumImg);
+        if (Objects.equals(albumPos.getAlbumCover(), "")) {
+            if (albumsCount > 0) {
+                Glide.with(context)
+                        .load(albumImages.get(albumImages.size() - 1).getPath())
+                        .into(holder.binding.albumImg);
+            } else {
+                holder.binding.albumImg.setImageResource(R.drawable.album_empty);
+            }
         } else {
-            holder.binding.albumImg.setImageResource(R.drawable.album_empty);
+            Glide.with(context)
+                    .load(albumPos.getAlbumCover())
+                    .into(holder.binding.albumImg);
         }
 
         holder.binding.albumTitle.setText(albumTitle);
@@ -73,10 +81,6 @@ public class RecyclerAlbumViewAdapter extends RecyclerView.Adapter<RecyclerAlbum
 
     void setClickListener(ItemClickListener itemClickListener) {
         mClickListener = itemClickListener;
-    }
-
-    Album getItem(int id) {
-        return albums.get(id);
     }
 
     public interface ItemClickListener {

@@ -156,8 +156,6 @@ public class AlbumGallery {
             if (Objects.equals(albumAddImage.getName(), album.getName())) continue;
             List<ClassifyDate> newImages = ImageGallery.getListAddImage(albumAddImage.getAlbumImages(), imagesIncluded);
             if (newImages == null) {
-                albumAddImage.setAlbumImages(imgs);
-                result.add(albumAddImage);
                 continue;
             }
             for (int j = 0; j < newImages.size(); j++) {

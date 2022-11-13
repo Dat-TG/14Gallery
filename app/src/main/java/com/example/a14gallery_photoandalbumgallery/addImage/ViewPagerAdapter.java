@@ -9,19 +9,18 @@ import com.example.a14gallery_photoandalbumgallery.album.Album;
 
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
-    Album album, albumClickDetail;
+    Album album;
 
-    public ViewPagerAdapter(FragmentActivity fa, Album album, Album albumClickDetail) {
+    public ViewPagerAdapter(FragmentActivity fa, Album album) {
         super(fa);
         this.album = album;
-        this.albumClickDetail = albumClickDetail;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) return new RecyclerImageViewFragment(album);
-        return new RecyclerAlbumViewFragment(album, albumClickDetail);
+        return new RecyclerAlbumViewFragment(album);
     }
 
     @Override

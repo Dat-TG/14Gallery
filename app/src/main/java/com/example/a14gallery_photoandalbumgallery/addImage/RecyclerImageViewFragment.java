@@ -1,6 +1,5 @@
 package com.example.a14gallery_photoandalbumgallery.addImage;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
@@ -22,6 +20,7 @@ import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -31,6 +30,8 @@ public class RecyclerImageViewFragment extends Fragment {
     LayoutManager layoutManager;
     Album album;
     List<Image> imagesInAlbum;
+    public static List<Image> selectedImage = new ArrayList<>();
+
 
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
@@ -57,27 +58,19 @@ public class RecyclerImageViewFragment extends Fragment {
         setRecyclerViewLayoutManager(4);
 
         onItemClick = (position, view1) -> {
-            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
-                if (!viewList.get(position).imageData.isChecked()) {
-                    viewList.get(position).imageData.setChecked(true);
-                    //imagesInAlbum.get(viewList.get(position).index).setChecked(true);
-                } else {
-                    viewList.get(position).imageData.setChecked(false);
-                    //imagesInAlbum.get(viewList.get(position).index).setChecked(false);
-                }
-                imageFragmentAdapter.notifyItemChanged(position);
+            if (!viewList.get(position).imageData.isChecked()) {
+                viewList.get(position).imageData.setChecked(true);
+                selectedImage.add(viewList.get(position).imageData);
+                //imagesInAlbum.get(viewList.get(position).index).setChecked(true);
             } else {
-                Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("path", viewList.get(position).imageData.getPath());
-                getContext().startActivity(intent);
+                viewList.get(position).imageData.setChecked(false);
+                selectedImage.remove(viewList.get(position).imageData);
+                //imagesInAlbum.get(viewList.get(position).index).setChecked(false);
             }
+            imageFragmentAdapter.notifyItemChanged(position);
         };
 
         onItemLongClick = (position, view1) -> {
-            //imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
-            viewList.get(position).imageData.setChecked(true);
-            //imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-            getActivity().invalidateOptionsMenu();
         };
 
         imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
@@ -86,6 +79,13 @@ public class RecyclerImageViewFragment extends Fragment {
         binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewList.forEach(image -> image.imageData.setChecked(false));
+        selectedImage = new ArrayList<>();
     }
 
     private void toViewList(List<Image> images) {
@@ -105,13 +105,16 @@ public class RecyclerImageViewFragment extends Fragment {
     }
 
     private void toViewListAdd(List<Image> images, List<Image> imagesIncluded) {
-        List<String> imagesPath = new ArrayList<>();
+        List<String> imagesName = new ArrayList<>();
         List<Image> temp = new ArrayList<>();
-        for (int i = 0; i < imagesIncluded.size(); i++)
-            imagesPath.add(imagesIncluded.get(i).getPath());
+        for (int i = 0; i < imagesIncluded.size(); i++) {
+            File nameImages = new File(imagesIncluded.get(i).getPath());
+            imagesName.add(nameImages.getName());
+        }
         if (images.size() > 0) {
             for (int i = 0; i < images.size(); i++) {
-                if (!imagesPath.contains(images.get(i).getPath())) {
+                File file = new File(images.get(i).getPath());
+                if (!imagesName.contains(file.getName())) {
                     temp.add(images.get(i));
                 }
             }
