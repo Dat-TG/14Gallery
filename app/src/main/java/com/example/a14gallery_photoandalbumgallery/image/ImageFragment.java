@@ -1,5 +1,8 @@
 package com.example.a14gallery_photoandalbumgallery.image;
 
+
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -7,6 +10,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -37,6 +46,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
+import com.example.a14gallery_photoandalbumgallery.MainActivity;
+import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
@@ -44,15 +59,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
 
 public class ImageFragment extends Fragment implements MenuProvider {
     FragmentImageBinding binding;
@@ -74,10 +94,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
     BiConsumer<Integer, View> onItemLongClick;
 
     ActivityResultLauncher<Intent> activityResultLauncher;
+    ActivityResultLauncher<Intent> activityMoveLauncher;
+
+    String nameGIF = "animation";
+    int delay = 500;
+
 
     public ImageFragment() {
 
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -155,6 +181,22 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
             }
         });
+        activityMoveLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                        if (result.getResultCode() == 123) {
+                            Intent data = result.getData();
+                            String dest = data.getStringExtra("DEST");
+                            Log.e("ImageFragment", dest);
+                            moveToAlbum(dest);
+                        }
+                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                    }
+                });
         return binding.getRoot();
     }
 
@@ -289,38 +331,26 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
-            addToTrash();
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/RecycleBin");
             toViewList();
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+            onResume();
             activity.invalidateOptionsMenu();
         }
         if (menuItem.getItemId() == R.id.move_images) {
             //Show album to choose
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-            alert.setTitle("Di chuyển đến Album");
-            alert.setMessage("Nhập tên album");
-            final EditText input = new EditText(getContext()); // Set an EditText view to get user input
-            alert.setView(input);
-            alert.setPositiveButton("Ok", (dialog, whichButton) -> {
-                String value = input.getText().toString();
-                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value);
-                if (!file.exists()) {
-                    Toast.makeText(getActivity(), "Album không tồn tại!", Toast.LENGTH_LONG).show();
-                } else {
-                    String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + value;
-                    moveToAlbum(dest);
-                }
-            });
-            alert.setNegativeButton("Cancel", (dialog, whichButton) -> {/* Canceled.*/});
-            alert.show();
-
+            Intent intent = new Intent(getActivity(), ChooseAlbumActivity.class);
+            activityMoveLauncher.launch(intent);
             toViewList();
             imageFragmentAdapter.setData(viewList);
             binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
             activity.invalidateOptionsMenu();
         }
-        if(menuItem.getItemId()==R.id.slideShow || menuItem.getItemId()==R.id.slideShow_){
+
+        if(menuItem.getItemId()==R.id.slideShow || menuItem.getItemId()==R.id.slideShow_) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 List<Image> selectedImages = images.stream()
                         .filter(Image::isChecked)
@@ -339,6 +369,10 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 SlideshowDialog ssDialog = new SlideshowDialog(images);
                 ssDialog.show(getParentFragmentManager(), "SlideShowDialog");
             }
+        }
+
+        if (menuItem.getItemId() == R.id.create_GIF) {
+            inputGIF();
         }
         return false;
     }
@@ -472,6 +506,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
         for (Image image : selectedImages) {
+            Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
             String name[] = src.split("/");
@@ -483,11 +518,151 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
-                Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        String name[] = dest.split("/");
+        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+            Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createGIF(String dest, int delay) {
+        ArrayList<Image> selectedImages = images.stream()
+                .filter(Image::isChecked)
+                .collect(Collectors.toCollection(ArrayList::new));
+        AnimatedGIFWriter writer = new AnimatedGIFWriter(true);
+        writer.setDelay(delay);
+        OutputStream os;
+        try {
+            os = new FileOutputStream(dest);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        // Use -1 for both logical screen width and height to use the first frame dimension
+        try {
+            writer.prepareForWrite(os, -1, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        for (Image image : selectedImages) {
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getPath()); // Grab the Bitmap whatever way you can
+            try {
+                writer.writeFrame(os, bitmap);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+// Keep adding frame here
+        }
+        try {
+            writer.finishWrite(os);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+// And you are done!!!
+        Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void inputGIF() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle("Tạo ảnh GIF");
+        LinearLayout layout = new LinearLayout(getContext());
+        final TextView textView1 = new TextView(getContext());
+        final EditText input1 = new EditText(getContext()); // Set an EditText view to get user input
+        final TextView textView2 = new TextView(getContext());
+        final EditText input2 = new EditText(getContext());
+        textView1.setText("Nhập tên ảnh (không cần .gif)");
+        textView2.setText("Nhập thời gian delay giữa các frame (ms)");
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(textView1);
+        layout.addView(input1);
+        layout.addView(textView2);
+        layout.addView(input2);
+        layout.setPadding(50, 50, 50, 0);
+        alert.setView(layout);
+        String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/GIF/";
+        File file = new File(dest);
+        if (!file.exists()) {
+            boolean success = file.mkdirs();
+            if (success) {
+                Log.e("RES", "Success");
+            } else {
+                Log.e("RES", "Failed");
+            }
+        }
+        alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+            nameGIF = input1.getText().toString();
+            if (nameGIF.isEmpty()) {
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                return;
+            }
+            try {
+                delay = Integer.parseInt(input2.getText().toString());
+            } catch (Exception e) {
+                Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                return;
+            }
+            File anh = new File(dest + nameGIF + ".gif");
+            if (anh.exists()) {
+                AlertDialog.Builder confirm = new AlertDialog.Builder(getContext());
+                confirm.setTitle("Đợi một chút");
+                confirm.setCancelable(true);
+                confirm.setMessage("File " + nameGIF + ".gif đã tồn tại. Bạn có muốn ghi đè không?")
+                        .setPositiveButton("Có", (dialog1, id) -> {
+                            try {
+                                createGIF(dest + nameGIF + ".gif", delay);
+                                toViewList();
+                                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                                requireActivity().invalidateOptionsMenu();
+                                onResume();
+                            } catch (Exception e) {
+                                //Exception
+                            }
+                        })
+                        .setNegativeButton("Không", (dialog12, id) -> {
+                            dialog12.cancel();
+                            toViewList();
+                            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                            requireActivity().invalidateOptionsMenu();
+                        })
+                        .show();
+            } else {
+                createGIF(dest + nameGIF + ".gif", delay);
+                toViewList();
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                requireActivity().invalidateOptionsMenu();
+                onResume();
+            }
+        });
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {
+            toViewList();
+            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+            requireActivity().invalidateOptionsMenu();
+        });
+        alert.show();
     }
 }

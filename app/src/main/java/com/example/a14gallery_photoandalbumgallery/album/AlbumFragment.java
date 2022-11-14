@@ -100,63 +100,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         favoriteAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "FavoriteAlbum clicked!", Toast.LENGTH_SHORT).show();
-                Album Favorite = new Album();
-                File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
-                File[] content = folder.listFiles();
-                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
-                folderPath = folderPath + "%";
-                Favorite.setName("Ưa thích");
-                String[] projection = new String[]{
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                        MediaStore.Images.Media.DATA,
-                        MediaStore.Images.Media._ID,
-                        MediaStore.Images.Media.DATE_TAKEN
-                };
-                String[] selectionArgs = new String[]{folderPath};
-                String selection = MediaStore.Images.Media.DATA + " like ? ";
-                Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    if (cursor.moveToFirst()) {
-                        String bucketName;
-                        String data;
-                        String imageId;
-                        long dateTaken;
-                        int bucketNameColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
-                        int imageUriColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATA);
-
-                        int imageIdColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media._ID);
-
-                        int dateTakenColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATE_TAKEN);
-                        do {
-                            Calendar myCal = Calendar.getInstance();
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
-                            // Get the field values
-                            bucketName = cursor.getString(bucketNameColumn);
-                            data = cursor.getString(imageUriColumn);
-                            imageId = cursor.getString(imageIdColumn);
-                            dateTaken = cursor.getLong(dateTakenColumn);
-                            myCal.setTimeInMillis(dateTaken);
-                            String dateText = formatter.format(myCal.getTime());
-
-                            Image image = new Image();
-                            image.setAlbumName(bucketName);
-                            image.setPath(data);
-                            image.setId(Integer.parseInt(imageId));
-                            image.setDateTaken(dateText);
-//                            image.setUri(contentUri);
-                            Favorite.getAlbumImages().add(image);
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                }
-
+                Album Favorite = getAlbumFavorite();
                 Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(Favorite);
@@ -170,7 +114,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         privateAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "PrivateAlbum clicked!", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -198,64 +141,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         recycleBin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "RecycleBin clicked!", Toast.LENGTH_SHORT).show();
-                Album RecycleBin = new Album();
-                File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
-                File[] content = folder.listFiles();
-                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
-                folderPath = folderPath + "%";
-                RecycleBin.setName("Thùng rác");
-                String[] projection = new String[]{
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                        MediaStore.Images.Media.DATA,
-                        MediaStore.Images.Media._ID,
-                        MediaStore.Images.Media.DATE_TAKEN
-                };
-                String[] selectionArgs = new String[]{folderPath};
-                String selection = MediaStore.Images.Media.DATA + " like ? ";
-                Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    if (cursor.moveToFirst()) {
-                        String bucketName;
-                        String data;
-                        String imageId;
-                        long dateTaken;
-                        int bucketNameColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
-                        int imageUriColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATA);
-
-                        int imageIdColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media._ID);
-
-                        int dateTakenColumn = cursor.getColumnIndex(
-                                MediaStore.Images.Media.DATE_TAKEN);
-                        do {
-                            Calendar myCal = Calendar.getInstance();
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
-                            // Get the field values
-                            bucketName = cursor.getString(bucketNameColumn);
-                            data = cursor.getString(imageUriColumn);
-                            imageId = cursor.getString(imageIdColumn);
-                            dateTaken = cursor.getLong(dateTakenColumn);
-                            myCal.setTimeInMillis(dateTaken);
-                            String dateText = formatter.format(myCal.getTime());
-
-                            Image image = new Image();
-                            image.setAlbumName(bucketName);
-                            image.setPath(data);
-                            image.setId(Integer.parseInt(imageId));
-                            image.setDateTaken(dateText);
-
-                            RecycleBin.getAlbumImages().add(image);
-
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                }
-
+                Album RecycleBin = getRecycleBin();
                 Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(RecycleBin);
@@ -380,6 +266,186 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             return true;
         }
         return false;
+    }
+
+    private Album getAlbumFavorite() {
+        Album Favorite = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
+        folderPath = folderPath + "%";
+        Favorite.setName("Ưa thích");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+//                            image.setUri(contentUri);
+                    Favorite.getAlbumImages().add(image);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return Favorite;
+    }
+
+    private Album getAlbumPrivate() {
+        Album Private = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
+        folderPath = folderPath + "%";
+        Private.setName("Riêng tư");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+
+                    Private.getAlbumImages().add(image);
+
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        return Private;
+    }
+
+    private Album getRecycleBin() {
+        Album RecycleBin = new Album();
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+        File[] content = folder.listFiles();
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
+        folderPath = folderPath + "%";
+        RecycleBin.setName("Thùng rác");
+        String[] projection = new String[]{
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String[] selectionArgs = new String[]{folderPath};
+        String selection = MediaStore.Images.Media.DATA + " like ? ";
+        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                String bucketName;
+                String data;
+                String imageId;
+                long dateTaken;
+                int bucketNameColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+
+                int imageUriColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATA);
+
+                int imageIdColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media._ID);
+
+                int dateTakenColumn = cursor.getColumnIndex(
+                        MediaStore.Images.Media.DATE_TAKEN);
+                do {
+                    Calendar myCal = Calendar.getInstance();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    // Get the field values
+                    bucketName = cursor.getString(bucketNameColumn);
+                    data = cursor.getString(imageUriColumn);
+                    imageId = cursor.getString(imageIdColumn);
+                    dateTaken = cursor.getLong(dateTakenColumn);
+                    myCal.setTimeInMillis(dateTaken);
+                    String dateText = formatter.format(myCal.getTime());
+
+                    Image image = new Image();
+                    image.setAlbumName(bucketName);
+                    image.setPath(data);
+                    image.setId(Integer.parseInt(imageId));
+                    image.setDateTaken(dateText);
+
+                    RecycleBin.getAlbumImages().add(image);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return RecycleBin;
     }
 
 }

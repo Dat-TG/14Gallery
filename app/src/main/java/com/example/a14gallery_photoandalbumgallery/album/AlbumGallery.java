@@ -89,6 +89,10 @@ public class AlbumGallery {
                     myCal.setTimeInMillis(dateTaken);
                     String dateText = formatter.format(myCal.getTime());
 
+                    if (bucketName == null) {
+                        continue;
+                    }
+
                     if (bucketName.equals("FavoriteAlbum") || bucketName.equals("PrivateAlbum") || bucketName.equals("RecycleBin")) {
                         continue;
                     }
@@ -98,6 +102,12 @@ public class AlbumGallery {
                     image.setPath(data);
                     image.setId(Integer.parseInt(imageId));
                     image.setDateTaken(dateText);
+
+                    String temp[] = data.split("/");
+                    String path = "";
+                    for (int i = 0; i < temp.length - 1; i++) {
+                        path += temp[i] + "/";
+                    }
 
                     if (albumsNames.contains(bucketName)) {
                         for (Album album : albums) {
@@ -112,6 +122,7 @@ public class AlbumGallery {
                         album.setName(bucketName);
                         album.setCoverUri(image.getPath());
                         album.getAlbumImages().add(image);
+                        album.setPath(path);
                         albums.add(album);
                         AlbumData albumData = AppDatabase.getInstance(context.getApplicationContext()).albumDataDao().getAlbumCoverByName(bucketName);
                         if (albumData != null) album.setAlbumCover(albumData.albumCover);
@@ -135,6 +146,7 @@ public class AlbumGallery {
                     Album album = new Album();
 //                    album.setId(image.getId());
                     album.setName(allFile.getName());
+                    album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
                     albums.add(album);

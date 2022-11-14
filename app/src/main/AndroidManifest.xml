@@ -13,16 +13,17 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/Theme.14GalleryPhotoAndAlbumGallery.NoActionBar"
         tools:targetApi="31">
         <activity android:name=".detailAlbum.DetailAlbumActivity" />
@@ -55,46 +56,34 @@
         <activity android:name=".password.ConfirmPasswordActivity" />
 
         <activity
-
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity"
-
             android:screenOrientation="portrait"
-
             android:theme="@android:style/Theme.Holo.NoActionBar" />
 
         <activity
-
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorStickerActivity"
-
             android:screenOrientation="portrait"
-
             android:theme="@android:style/Theme.Holo.NoActionBar" />
 
         <activity
-
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorTextActivity"
-
             android:screenOrientation="portrait"
-
             android:theme="@android:style/Theme.Holo.NoActionBar"
-
             android:windowSoftInputMode="adjustPan" />
 
         <activity
-
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorCropActivity"
-
             android:screenOrientation="portrait"
-
             android:theme="@android:style/Theme.Holo.NoActionBar" />
 
         <activity
-
             android:name="com.dsphotoeditor.sdk.activity.DsPhotoEditorDrawActivity"
-
             android:screenOrientation="portrait"
-
             android:theme="@android:style/Theme.Holo.NoActionBar" />
+
+        <activity android:name=".MoveImageToAlbum.DetailAlbumMoveActivity" />
+        <activity android:name=".MoveImageToAlbum.ChooseAlbumActivity" />
+
     </application>
 
 </manifest>
