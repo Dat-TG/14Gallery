@@ -21,7 +21,6 @@ import java.util.Objects;
 public class AlbumFragmentAdapter extends RecyclerView.Adapter<AlbumFragmentAdapter.AlbumFragmentViewHolder> {
     Context _context;
     List<Album> _album;
-    Album album;
 
     public AlbumFragmentAdapter(Context context, List<Album> albums) {
         this._context = context;

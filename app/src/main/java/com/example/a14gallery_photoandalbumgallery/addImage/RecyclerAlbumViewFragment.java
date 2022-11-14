@@ -21,6 +21,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.FragmentRecyclerA
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -33,7 +34,6 @@ public class RecyclerAlbumViewFragment extends Fragment implements RecyclerAlbum
     ImageFragmentAdapter imageFragmentAdapter;
 
     private ArrayList<RecyclerData> viewList = null;
-    public static List<Image> selectedInAlbum = new ArrayList<>();
     BiConsumer<Integer, View> onItemClick;
     BiConsumer<Integer, View> onItemLongClick;
     public int typeView = 4;
@@ -59,14 +59,17 @@ public class RecyclerAlbumViewFragment extends Fragment implements RecyclerAlbum
         binding.btnBack.setVisibility(View.GONE);
         binding.albumFragmentRecycleView.setAdapter(recyclerAlbumViewAdapter);
 
-        // fragment == ImageFragment -> handleClickItem
+        // if  fragment == ImageFragment -> we can handleClickItem
         onItemClick = (pos, view1) -> {
+            String selectedImageName = new File(viewList.get(pos).imageData.getPath()).getName();
             if (!viewList.get(pos).imageData.isChecked()) {
                 viewList.get(pos).imageData.setChecked(true);
-                selectedInAlbum.add(viewList.get(pos).imageData);
+                AddItemActivity.selectedAlbum.add(viewList.get(pos).imageData);
+                AddItemActivity.selectedAlbumName.add(selectedImageName);
             } else {
                 viewList.get(pos).imageData.setChecked(false);
-                selectedInAlbum.remove(viewList.get(pos).imageData);
+                AddItemActivity.selectedAlbum.remove(viewList.get(pos).imageData);
+                AddItemActivity.selectedAlbumName.remove(selectedImageName);
             }
             imageFragmentAdapter.notifyItemChanged(pos);
         };
@@ -86,7 +89,15 @@ public class RecyclerAlbumViewFragment extends Fragment implements RecyclerAlbum
         setRecyclerViewLayoutManager(4);
         getImageViewList(albumsCanAdd.get(position).getAlbumImages(), albumIncluded);
         imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
-
+        if (viewList != null) {
+            for (int i = 0; i < viewList.size(); i++) {
+                String nameFile = new File(viewList.get(i).imageData.getPath()).getName();
+                if (AddItemActivity.selectedAlbumName.contains(nameFile)) {
+                    viewList.get(i).imageData.setChecked(true);
+                    imageFragmentAdapter.notifyItemChanged(i);
+                }
+            }
+        }
 
         binding.btnBack.setVisibility(View.VISIBLE);
         binding.btnBack.setOnClickListener(view1 -> {

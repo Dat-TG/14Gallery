@@ -54,7 +54,7 @@ public class InputPasswordActivity extends AppCompatActivity {
         String message = bundle.getString("message");
         Log.e("MESSAGE", message);
 
-        mPatternLockView = (PatternLockView) findViewById(R.id.pattern_lock_view);
+        mPatternLockView = findViewById(R.id.pattern_lock_view);
         mPatternLockView.addPatternLockListener(new PatternLockViewListener() {
             @Override
             public void onStarted() {
@@ -72,8 +72,6 @@ public class InputPasswordActivity extends AppCompatActivity {
                 if (password.equals(PatternLockUtils.patternToString(mPatternLockView, pattern))) {
                     if (Objects.equals(message, "OpenPrivate")) {
                         Album Private = new Album();
-                        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
-                        File[] content = folder.listFiles();
                         String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
                         folderPath = folderPath + "%";
                         Private.setName("Riêng tư");
@@ -138,12 +136,10 @@ public class InputPasswordActivity extends AppCompatActivity {
                     }
                     if (Objects.equals(message, "AddPrivate")) {
                         String imagePath = bundle.getString("imagePath");
-                        String name[] = imagePath.split("/");
+                        String[] name = imagePath.split("/");
                         Log.e("PATH", imagePath);
                         Log.e("PATH", Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1]);
                         String imageDestPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1];
-                        File dest = new File(imageDestPath);
-                        File src = new File(imagePath);
                         moveFile(imagePath, imageDestPath);
                     }
                     finish();

@@ -39,6 +39,8 @@ public class AddItemActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
     Album album;
+    public static List<Image> selectedAlbum = new ArrayList<>();
+    public static List<String> selectedAlbumName = new ArrayList<>();
 
     @SuppressLint("StringFormatInvalid")
     @Override
@@ -86,20 +88,14 @@ public class AddItemActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.add_button) { // Click check to add image
-            List<Image> selectedImage = RecyclerImageViewFragment.selectedImage;
-            List<Image> selectedInAlbum = RecyclerAlbumViewFragment.selectedInAlbum;
-            List<Image> selected = new ArrayList<>();
-            selected.addAll(selectedImage);
-            selected.addAll(selectedInAlbum);
-            int size = selectedInAlbum.size() + selectedImage.size();
-            String message = "Bạn chắc chắn muốn thêm " + size + " ảnh vào album này ?";
+            String message = "Bạn chắc chắn muốn thêm " + selectedAlbum.size() + " ảnh vào album này ?";
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     this);
             alert.setTitle("Xác nhận");
             alert.setMessage(message);
             alert.setPositiveButton("YES", (dialog, which) -> {
                 String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + album.getName();
-                moveToAlbum(getApplicationContext(), selected, dest);
+                moveToAlbum(getApplicationContext(), selectedAlbum, dest);
                 finish();
                 dialog.dismiss();
 
@@ -116,22 +112,20 @@ public class AddItemActivity extends AppCompatActivity {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
                 .collect(Collectors.toCollection(ArrayList::new));
-        for (Image image : selectedImages) {
-            Path result = null;
-            String src = image.getPath();
-            String[] name = src.split("/");
-            try {
+        int count = 0;
+        try {
+            for (Image image : selectedImages) {
+                String src = image.getPath();
+                Path result;
+                String[] name = src.split("/");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                    if (result != null) count++;
                 }
-            } catch (IOException e) {
-                Toast.makeText(context, "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-            if (result != null) {
-                Toast.makeText(context, "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(context, "Đã di chuyển thành công " + count + " ảnh vào album", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(context, "Có lỗi xảy ra!! Chỉ di chuyển thành công " + count + "/" + selectedImages.size() + " ảnh vào album", Toast.LENGTH_SHORT).show();
         }
     }
 }

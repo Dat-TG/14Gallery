@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,8 +31,6 @@ public class RecyclerImageViewFragment extends Fragment {
     LayoutManager layoutManager;
     Album album;
     List<Image> imagesInAlbum;
-    public static List<Image> selectedImage = new ArrayList<>();
-
 
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
@@ -51,6 +50,8 @@ public class RecyclerImageViewFragment extends Fragment {
         imagesInAlbum = album.getAlbumImages();
         toViewListAdd(ImageGallery.getInstance().images, imagesInAlbum);
         layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        viewList.forEach(image -> image.imageData.setChecked(false));
+        AddItemActivity.selectedAlbum = new ArrayList<>();
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
@@ -58,21 +59,20 @@ public class RecyclerImageViewFragment extends Fragment {
         setRecyclerViewLayoutManager(4);
 
         onItemClick = (position, view1) -> {
+            String selectedImageName = new File(viewList.get(position).imageData.getPath()).getName();
             if (!viewList.get(position).imageData.isChecked()) {
                 viewList.get(position).imageData.setChecked(true);
-                selectedImage.add(viewList.get(position).imageData);
-                //imagesInAlbum.get(viewList.get(position).index).setChecked(true);
+                AddItemActivity.selectedAlbum.add(viewList.get(position).imageData);
+                AddItemActivity.selectedAlbumName.add(selectedImageName);
             } else {
                 viewList.get(position).imageData.setChecked(false);
-                selectedImage.remove(viewList.get(position).imageData);
-                //imagesInAlbum.get(viewList.get(position).index).setChecked(false);
+                AddItemActivity.selectedAlbum.remove(viewList.get(position).imageData);
+                AddItemActivity.selectedAlbumName.remove(selectedImageName);
             }
             imageFragmentAdapter.notifyItemChanged(position);
         };
 
-        onItemLongClick = (position, view1) -> {
-        };
-
+        onItemLongClick = (position, view1) -> {};
         imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
         imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
         imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -84,8 +84,15 @@ public class RecyclerImageViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        viewList.forEach(image -> image.imageData.setChecked(false));
-        selectedImage = new ArrayList<>();
+        if (viewList != null) {
+            for (int i = 0; i < viewList.size(); i++) {
+                String nameFile = new File(viewList.get(i).imageData.getPath()).getName();
+                if (AddItemActivity.selectedAlbumName.contains(nameFile)) {
+                    viewList.get(i).imageData.setChecked(true);
+                    imageFragmentAdapter.notifyItemChanged(i);
+                }
+            }
+        }
     }
 
     private void toViewList(List<Image> images) {

@@ -26,7 +26,6 @@ import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenIma
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
-import com.example.a14gallery_photoandalbumgallery.searchImage.ImageFragmentAdapterSearch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,13 +122,14 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return viewList.get(position).type == RecyclerData.Type.Label ? 1 : 1;
+                return 1;
             }
         });
         searchRecyclerView.setLayoutManager(gridLayoutManager);
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void filterList(String text) {
         List<RecyclerData> filteredList = new ArrayList<>();
         for (RecyclerData recyclerData : viewList) {
