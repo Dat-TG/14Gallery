@@ -1,10 +1,10 @@
 package com.example.a14gallery_photoandalbumgallery.addImage;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
@@ -22,6 +21,7 @@ import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -50,6 +50,8 @@ public class RecyclerImageViewFragment extends Fragment {
         imagesInAlbum = album.getAlbumImages();
         toViewListAdd(ImageGallery.getInstance().images, imagesInAlbum);
         layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        viewList.forEach(image -> image.imageData.setChecked(false));
+        AddItemActivity.selectedAlbum = new ArrayList<>();
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
@@ -57,35 +59,40 @@ public class RecyclerImageViewFragment extends Fragment {
         setRecyclerViewLayoutManager(4);
 
         onItemClick = (position, view1) -> {
-            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
-                if (!viewList.get(position).imageData.isChecked()) {
-                    viewList.get(position).imageData.setChecked(true);
-                    //imagesInAlbum.get(viewList.get(position).index).setChecked(true);
-                } else {
-                    viewList.get(position).imageData.setChecked(false);
-                    //imagesInAlbum.get(viewList.get(position).index).setChecked(false);
-                }
-                imageFragmentAdapter.notifyItemChanged(position);
+            String selectedImageName = new File(viewList.get(position).imageData.getPath()).getName();
+            if (!viewList.get(position).imageData.isChecked()) {
+                viewList.get(position).imageData.setChecked(true);
+                AddItemActivity.selectedAlbum.add(viewList.get(position).imageData);
+                AddItemActivity.selectedAlbumName.add(selectedImageName);
             } else {
-                Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("path", viewList.get(position).imageData.getPath());
-                getContext().startActivity(intent);
+                viewList.get(position).imageData.setChecked(false);
+                AddItemActivity.selectedAlbum.remove(viewList.get(position).imageData);
+                AddItemActivity.selectedAlbumName.remove(selectedImageName);
             }
+            imageFragmentAdapter.notifyItemChanged(position);
         };
 
-        onItemLongClick = (position, view1) -> {
-            //imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
-            viewList.get(position).imageData.setChecked(true);
-            //imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-            getActivity().invalidateOptionsMenu();
-        };
-
+        onItemLongClick = (position, view1) -> {};
         imageFragmentAdapter = new ImageFragmentAdapter(viewList, onItemClick, onItemLongClick);
         imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
         imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
         binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewList != null) {
+            for (int i = 0; i < viewList.size(); i++) {
+                String nameFile = new File(viewList.get(i).imageData.getPath()).getName();
+                if (AddItemActivity.selectedAlbumName.contains(nameFile)) {
+                    viewList.get(i).imageData.setChecked(true);
+                    imageFragmentAdapter.notifyItemChanged(i);
+                }
+            }
+        }
     }
 
     private void toViewList(List<Image> images) {
@@ -105,13 +112,16 @@ public class RecyclerImageViewFragment extends Fragment {
     }
 
     private void toViewListAdd(List<Image> images, List<Image> imagesIncluded) {
-        List<String> imagesPath = new ArrayList<>();
+        List<String> imagesName = new ArrayList<>();
         List<Image> temp = new ArrayList<>();
-        for (int i = 0; i < imagesIncluded.size(); i++)
-            imagesPath.add(imagesIncluded.get(i).getPath());
+        for (int i = 0; i < imagesIncluded.size(); i++) {
+            File nameImages = new File(imagesIncluded.get(i).getPath());
+            imagesName.add(nameImages.getName());
+        }
         if (images.size() > 0) {
             for (int i = 0; i < images.size(); i++) {
-                if (!imagesPath.contains(images.get(i).getPath())) {
+                File file = new File(images.get(i).getPath());
+                if (!imagesName.contains(file.getName())) {
                     temp.add(images.get(i));
                 }
             }

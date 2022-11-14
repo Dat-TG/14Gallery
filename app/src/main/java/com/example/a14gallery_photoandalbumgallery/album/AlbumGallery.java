@@ -80,7 +80,7 @@ public class AlbumGallery {
                 int dateTakenColumn = cur.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                 do {
                     Calendar myCal = Calendar.getInstance();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
                     // Get the field values
                     bucketName = cur.getString(bucketNameColumn);
                     data = cur.getString(imageUriColumn);
@@ -156,8 +156,6 @@ public class AlbumGallery {
             if (Objects.equals(albumAddImage.getName(), album.getName())) continue;
             List<ClassifyDate> newImages = ImageGallery.getListAddImage(albumAddImage.getAlbumImages(), imagesIncluded);
             if (newImages == null) {
-                albumAddImage.setAlbumImages(imgs);
-                result.add(albumAddImage);
                 continue;
             }
             for (int j = 0; j < newImages.size(); j++) {
