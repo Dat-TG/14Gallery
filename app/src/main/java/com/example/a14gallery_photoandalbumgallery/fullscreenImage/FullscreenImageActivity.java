@@ -3,10 +3,14 @@ package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -43,13 +47,17 @@ import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
+import com.example.a14gallery_photoandalbumgallery.databinding.DialogDetailsBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -57,11 +65,13 @@ import java.util.Locale;
 public class FullscreenImageActivity extends AppCompatActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     ActivityFullscreenImageBinding binding;
     DialogHashtagBinding dialogHashtagBinding;
+    DialogDetailsBinding dialogDetailsBinding;
     String imagePath;
     boolean isWritePermissionGranted = false;
     ActivityResultLauncher<String[]> permissionResultLauncher;
     MaterialAlertDialogBuilder materialAlertDialogBuilder;
     View hashtagDialogView;
+    View detailsDialogView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +109,29 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         });
     }
 
+    public long getFilePathToMediaID(String path, Context context) {
+        long id = 0;
+        ContentResolver cr = context.getContentResolver();
+
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Images.Media.DATA;
+        String[] selectionArgs = {path};
+        String[] projection = {MediaStore.Images.Media._ID};
+
+        Cursor cursor = cr.query(uri, projection, selection + "=?", selectionArgs, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                id = Long.parseLong(cursor.getString(idIndex));
+            }
+        }
+        assert cursor != null;
+        cursor.close();
+
+        return id;
+    }
+
     /* Request write permission if not granted */
     private void requestPermission() {
         boolean minSDK = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
@@ -118,8 +151,25 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         if (!permissionRequest.isEmpty()) {
             permissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
         }
+
+        Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                getFilePathToMediaID(imagePath, this));
+        List<Uri> uriList = new ArrayList<>();
+        uriList.add(uri);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            PendingIntent pi = MediaStore.createWriteRequest(getContentResolver(), uriList);
+            try {
+                this.startIntentSender(pi.getIntentSender(), null,
+                        0, 0, 0, null);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
+    /* Launch hashtag dialog */
     private void launchHashtagDialog() {
         List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[]{imagePath});
         String[] dataset = hashtagList.toArray(new String[0]);
@@ -303,9 +353,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     public boolean onMenuItemClick(MenuItem menuItem) {
         // Rename button
         if (menuItem.getItemId() == R.id.btnRename) {
-            // Request write permission
-            requestPermission();
-
             File file = new File(imagePath);
             String fileName = file.getName();
             String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
@@ -316,6 +363,9 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             if (index > 0) {
                 extension = fileName.substring(index);
             }
+
+            // Request write permission
+            requestPermission();
 
             // Text field
             final EditText editText = new EditText(this);
@@ -332,7 +382,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                         String newFileName = newFileNameWithoutExt + finalExtension;
 
                         String newPath = imagePath.replace(fileName, newFileName);
-                        Toast.makeText(this, newPath, Toast.LENGTH_SHORT).show();
                         editText.setText(newFileNameWithoutExt);
                         File newFile = new File(newPath);
 
@@ -341,35 +390,29 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                             Toast.makeText(this, "Tên đã tồn tại", Toast.LENGTH_SHORT).show();
                         } else {
                             // Rename file, if succeed then update MediaStore content
-                            if (file.renameTo(newFile)) {
-                                imagePath = newPath;
-                                Uri ImageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                            Uri ImageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL);
 
-                                // Query to get file details
-                                Cursor cursor = getContentResolver().query(ImageCollection,
-                                        new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.BUCKET_DISPLAY_NAME},
-                                        MediaStore.Images.Media.DATA + "= ?", new String[]{file.getAbsolutePath()}, null);
-                                cursor.moveToPosition(0);
-                                int dateTakenIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
-                                long dateTaken = cursor.getLong(dateTakenIndex);
-                                int bucketDisplayNameIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                                int bucketDisplayName = cursor.getInt(bucketDisplayNameIndex);
-                                cursor.close();
-
+                            // Query to check if file exists in MediaStore
+                            Cursor cursor = getContentResolver().query(ImageCollection,
+                                    new String[]{MediaStore.Images.Media.DATA},
+                                    MediaStore.Images.Media.DATA + "= ?", new String[]{file.getAbsolutePath()}, null);
+                            cursor.moveToPosition(0);
+                            if (cursor.getCount() != 0) {
                                 ContentValues values = new ContentValues();
-                                values.put(MediaStore.Images.Media.TITLE, newFileNameWithoutExt);
-                                values.put(MediaStore.Images.Media.DISPLAY_NAME, newFileName);
-                                values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-                                values.put(MediaStore.Images.Media.BUCKET_DISPLAY_NAME, bucketDisplayName);
-                                values.put(MediaStore.Images.Media.DATA, newPath);
-                                // Insert image record with new name
-                                getContentResolver().insert(ImageCollection, values);
-                                // Delete old one
-                                getContentResolver().delete(ImageCollection, MediaStore.Images.Media.DATA + "=?",
-                                        new String[]{file.getAbsolutePath()});
-                            } else {
-                                Toast.makeText(this, "Đổi tên thất bại", Toast.LENGTH_SHORT).show();
+                                long id = getFilePathToMediaID(imagePath, this);
+                                values.put(MediaStore.MediaColumns.IS_PENDING, true);
+                                getContentResolver().update(ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                        id), values, null);
+                                values.clear();
+
+                                 // Update file data
+                                values.put(MediaStore.MediaColumns.DISPLAY_NAME, newFileName);
+                                values.put(MediaStore.MediaColumns.IS_PENDING, false);
+                                getContentResolver().update(ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                        id), values, null);
                             }
+                            cursor.close();
+                            imagePath = newPath;
                         }
                     })
                     .setNeutralButton("HỦY", (dialogInterface, i) -> {/* Cancel */});
@@ -415,6 +458,32 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Details button
         if (menuItem.getItemId() == R.id.btnDetails) {
+            // Query image to get data
+            Image image = ImageGallery.getInstance().getImageByPath(this, imagePath);
+            if (image == null) {
+                Toast.makeText(this, "NULL when query image", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            // View binding for the dialog
+            dialogDetailsBinding = DialogDetailsBinding
+                    .inflate(getLayoutInflater(), binding.getRoot(), false);
+            detailsDialogView = dialogDetailsBinding.getRoot();
+
+            // Set data to view
+            File file = new File(imagePath);
+            dialogDetailsBinding.txtFileName.setText(file.getName());
+            dialogDetailsBinding.txtFilePath.setText(imagePath);
+            dialogDetailsBinding.txtTakenOn.setText(image.getDateTaken());
+            String fileSizeString = humanReadableByteCountBin(file.length())
+                    + "  " + image.getResolution();
+            dialogDetailsBinding.txtFileSize.setText(fileSizeString);
+
+            materialAlertDialogBuilder = new MaterialAlertDialogBuilder(this)
+                    .setTitle(getResources().getString(R.string.details_title))
+                    .setCancelable(true)
+                    .setView(detailsDialogView)
+                    .setNegativeButton("ĐÓNG", (dialog, which) -> dialog.dismiss());
+            materialAlertDialogBuilder.show();
             return true;
         }
 
@@ -464,5 +533,21 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
 
         return false;
+    }
+
+    // Return a readable file size. For example: 1024 -> 1.0KB
+    public String humanReadableByteCountBin(long bytes) {
+        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        if (absB < 1024) {
+            return bytes + " B";
+        }
+        long value = absB;
+        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
+        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
+            value >>= 10;
+            ci.next();
+        }
+        value *= Long.signum(bytes);
+        return String.format(Locale.UK, "%.1f %cB", value / 1024.0, ci.current());
     }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="500dp"
+    android:padding="24dp"
+    android:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/labelTakenOn"
+        android:labelFor="@id/txtTakenOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/taken_on_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtTakenOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/design_default_color_primary"
+        app:layout_constraintStart_toEndOf="@+id/labelTakenOn"
+        app:layout_constraintTop_toTopOf="@+id/labelTakenOn"
+        android:layout_marginStart="10dp"
+        tools:text="14 Tháng 11, 2022\nThứ 2 19:18" />
+
+    <TextView
+        android:id="@+id/labelFileInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:labelFor="@id/txtFileName"
+        android:text="@string/file_info_label"
+        app:layout_constraintStart_toStartOf="@+id/labelTakenOn"
+        app:layout_constraintTop_toBottomOf="@+id/labelTakenOn" />
+
+    <TextView
+        android:id="@+id/txtFileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/design_default_color_primary"
+        app:layout_constraintStart_toEndOf="@+id/labelFileInfo"
+        app:layout_constraintTop_toTopOf="@+id/labelFileInfo"
+        tools:text="IMG_20221114_191803.jpg" />
+
+    <TextView
+        android:id="@+id/txtFileSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/txtFileName"
+        app:layout_constraintTop_toBottomOf="@+id/txtFileName"
+        tools:text="3.95MB 4624x3472px" />
+
+    <TextView
+        android:id="@+id/labelLocalPath"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:labelFor="@id/txtFileName"
+        android:text="@string/local_path_label"
+        app:layout_constraintStart_toStartOf="@+id/labelFileInfo"
+        app:layout_constraintTop_toBottomOf="@+id/labelFileInfo" />
+
+    <TextView
+        android:id="@+id/txtFilePath"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/design_default_color_primary"
+        app:layout_constraintStart_toEndOf="@+id/labelLocalPath"
+        app:layout_constraintTop_toTopOf="@+id/labelLocalPath"
+        tools:text="Internal storage/DCIM/Camera/IMG_20221114_191803.jpg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
