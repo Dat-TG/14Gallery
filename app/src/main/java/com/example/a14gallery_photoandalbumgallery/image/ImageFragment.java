@@ -138,7 +138,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        activityResultLauncher.launch(intent);
+//                        activityResultLauncher.launch(intent);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(getContext(), "There is no app that support this action", Toast.LENGTH_SHORT).show();
                     }

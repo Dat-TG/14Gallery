@@ -10,6 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 rootProject.name = "14Gallery - Photo and Album Gallery"

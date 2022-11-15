@@ -20,8 +20,12 @@ import androidx.navigation.NavController;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final int STORAGE_PERMISSION_CODE = 1;
@@ -30,14 +34,12 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     NavController navController;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         replaceFragment(new ImageFragment());
-
         // Top bar menu
         toolbar = binding.topAppBar;
         setSupportActionBar(toolbar);

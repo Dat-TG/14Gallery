@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
@@ -37,6 +40,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
+import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
@@ -44,6 +49,7 @@ import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashta
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -62,6 +68,8 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     ActivityResultLauncher<String[]> permissionResultLauncher;
     MaterialAlertDialogBuilder materialAlertDialogBuilder;
     View hashtagDialogView;
+    ActivityResultLauncher<Intent> activityEditLauncher;
+    Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +105,18 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 isWritePermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
             }
         });
+
+//        activityEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+//            @Override
+//            public void onActivityResult(ActivityResult result) {
+//                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+////                      ImageGallery.getInstance().update(getApplicationContext());
+////                    ImageFragment.LoadAsyncTask loadAsyncTask = new ImageFragment.LoadAsyncTask();
+////                    loadAsyncTask.execute();
+//                }
+//            }
+//        });
+
     }
 
     /* Request write permission if not granted */
@@ -255,7 +275,18 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         //  Edit button
         if (view.getId() == R.id.btnEdit) {
-            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+            imageUri = Uri.fromFile(new File(imagePath));
+            // Set data
+            Intent editIntent = new Intent(FullscreenImageActivity.this, DsPhotoEditorActivity.class);
+            editIntent.setData(imageUri);
+            // Set output directory
+            editIntent.putExtra(DsPhotoEditorConstants.DS_PHOTO_EDITOR_OUTPUT_DIRECTORY, "Gallery14Edit");
+            // Set toolbar color
+            editIntent.putExtra(DsPhotoEditorConstants.DS_TOOL_BAR_BACKGROUND_COLOR, Color.parseColor("#FF000000"));
+            // Set background color#FF000000
+            editIntent.putExtra(DsPhotoEditorConstants.DS_MAIN_BACKGROUND_COLOR, Color.parseColor("#FF000000"));
+            // Start activity
+            startActivity(editIntent);
         }
 
         // Add Hashtag button

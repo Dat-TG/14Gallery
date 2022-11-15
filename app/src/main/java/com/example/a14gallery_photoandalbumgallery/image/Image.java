@@ -19,6 +19,10 @@ public class Image {
     private boolean checked;
     public Uri uri;
 
+    public Image() {
+        dateTaken = "14 November, 2022";
+    }
+
     public int getId() {
         return id;
     }

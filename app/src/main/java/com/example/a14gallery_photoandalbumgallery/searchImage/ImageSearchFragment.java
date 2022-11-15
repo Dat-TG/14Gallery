@@ -119,11 +119,11 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     }
 
     public void setRecyclerViewLayoutManager() {
-        gridLayoutManager = new GridLayoutManager(getContext(), 1);
+        gridLayoutManager = new GridLayoutManager(getContext(), 4);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return viewList.get(position).type == RecyclerData.Type.Label ? 1 : 1;
+                return viewList.get(position).type == RecyclerData.Type.Label ? 4 : 1;
             }
         });
         searchRecyclerView.setLayoutManager(gridLayoutManager);
@@ -133,7 +133,8 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     private void filterList(String text) {
         List<RecyclerData> filteredList = new ArrayList<>();
         for (RecyclerData recyclerData : viewList) {
-            if (recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())) {
+            if (recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())
+                || recyclerData.imageData.getPath().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(recyclerData);
             }
         }
@@ -165,10 +166,26 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
         return false;
     }
 
+//    private void toViewList() {
+//        if (images.size() > 0) {
+//            viewList = new ArrayList<>();
+//            for (int i = 0; i < images.size(); i++) {
+//                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+//            }
+//        }
+//    }
+
     private void toViewList() {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
+            String label = images.get(0).getDateTaken();
+            label += '.';
             for (int i = 0; i < images.size(); i++) {
+                String labelCur = images.get(i).getDateTaken();
+                if (!labelCur.equals(label)) {
+                    label = labelCur;
+                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                }
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
