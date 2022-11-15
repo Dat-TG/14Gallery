@@ -12,6 +12,7 @@ public class Image {
     private int id;
     private String albumName;
     private String dateTaken;
+    private String resolution;
 
     List<ImageHashtag> hashtags = new ArrayList<>();
 
@@ -77,6 +78,14 @@ public class Image {
 
     public void setUri(Uri uri) {
         this.uri = uri;
+    }
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
     }
 
 }

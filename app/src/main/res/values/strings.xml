@@ -38,9 +38,9 @@
     <string name="delete_title">Xóa</string>
     <string name="delete_description">Delete image</string>
     <string name="more_description">More option</string>
-    <string name="rename_title">Rename</string>
+    <string name="rename_title">Đổi tên</string>
     <string name="add_to_album_title">Add to album</string>
-    <string name="details_title">Details</string>
+    <string name="details_title">Chi tiết</string>
     <string name="no_image_found"><b>Không có ảnh hoặc album</b>\n\nBạn có thể chụp ảnh hoặc tạo album bằng cách thao tác ở trên</string>
     <string name="set_password_success">Set password successful!</string>
     <string name="set_password_fail">Password not match!</string>
@@ -70,6 +70,9 @@
     <string name="hashtag_textfield_hint">Hashtag name</string>
     <string name="no_added_hashtag_msg">No hashtag has been added</string>
     <string name="add">Thêm</string>
+    <string name="taken_on_label">Taken on:</string>
+    <string name="file_info_label">File info:</string>
+    <string name="local_path_label">Local path:</string>
     <string name="di_chuy_n">Di chuyển</string>
     <string name="deleteAlbum">Xóa album</string>
     <string name="create_gif">Tạo ảnh GIF</string>

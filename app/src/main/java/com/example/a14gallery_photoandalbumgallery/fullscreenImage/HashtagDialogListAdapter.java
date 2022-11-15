@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.TextDeleteButtonRowItemBinding;
 
@@ -47,9 +48,10 @@ public class HashtagDialogListAdapter extends RecyclerView.Adapter<HashtagDialog
         holder.binding.txtHashtagName.setText(hashtagName);
         holder.binding.btnClear.setOnClickListener(v -> {
             removeAt(position);
-            int id = AppDatabase.getInstance(v.getContext()).hashtagDao().findByName(hashtagName).id;
-            ImageHashtag deletingHashtag = AppDatabase.getInstance(v.getContext()).imageHashtagDao().findByPathAndId(imagePath, id);
-            AppDatabase.getInstance(v.getContext()).imageHashtagDao().delete(deletingHashtag);
+            Hashtag deletingHashtag = AppDatabase.getInstance(v.getContext()).hashtagDao().findByName(hashtags.get(position));
+            int id = deletingHashtag.id;
+            ImageHashtag deletingImgHashtag = AppDatabase.getInstance(v.getContext()).imageHashtagDao().findByPathAndId(imagePath, id);
+            AppDatabase.getInstance(v.getContext()).imageHashtagDao().delete(deletingImgHashtag);
         });
     }
 

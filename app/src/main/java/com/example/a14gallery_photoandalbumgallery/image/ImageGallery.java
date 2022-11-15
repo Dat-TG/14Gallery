@@ -4,7 +4,10 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+
+import androidx.annotation.RequiresApi;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +30,46 @@ public class ImageGallery {
             INSTANCE = new ImageGallery();
         }
         return INSTANCE;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public Image getImageByPath(Context context, String path) {
+        Image image = null;
+        Uri imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.MediaColumns.TITLE,
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.DATE_TAKEN,
+                MediaStore.Images.Media._ID,
+                MediaStore.MediaColumns.RESOLUTION
+        };
+        String selection = MediaStore.MediaColumns.DATA + "=?";
+        String[] selectionArgs = {path};
+
+        Cursor cursor = context.getContentResolver().query(imageCollection, projection,
+                selection, selectionArgs, null);
+        cursor.moveToNext();
+        int dateColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
+        int idColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+        int resolutionColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RESOLUTION);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
+        if (cursor.getCount() != 0) {
+            long dateTaken = cursor.getLong(dateColumnIndex);
+            calendar.setTimeInMillis(dateTaken);
+            String dateText = formatter.format(calendar.getTime());
+
+            int id = cursor.getInt(idColumnIndex);
+            String resolution = cursor.getString(resolutionColumnIndex);
+
+            image = new Image();
+            image.setPath(path);
+            image.setDateTaken(dateText);
+            image.setId(id);
+            image.setResolution(resolution);
+        }
+        cursor.close();
+        return image;
     }
 
     public List<Image> getListOfImages(Context context) {
@@ -69,7 +112,6 @@ public class ImageGallery {
         cursor = context.getContentResolver().query(uri, projection,
                 null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-
         dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
         int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
         Calendar myCal = Calendar.getInstance();
