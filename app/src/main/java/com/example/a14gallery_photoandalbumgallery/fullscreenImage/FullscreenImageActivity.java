@@ -32,8 +32,6 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
@@ -54,7 +52,6 @@ import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageH
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogDetailsBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
-import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
