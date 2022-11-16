@@ -7,7 +7,7 @@ public class RecyclerData {
     }
 
     public final Type type;
-    public final String labelData;
+    public String labelData;
     public final Image imageData;
     public final int index;
 
