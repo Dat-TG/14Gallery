@@ -91,7 +91,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
 
         //Tạo Thùng rác nếu chưa tạo
-        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + recycleBinFolderName);
+        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+recycleBinFolderName);
         if (!recycleBinFolder.exists()) {
             recycleBinFolder.mkdirs();
         }

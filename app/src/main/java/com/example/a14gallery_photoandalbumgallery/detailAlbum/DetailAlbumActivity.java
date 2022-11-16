@@ -201,7 +201,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-
+        if (album==null) {
+            binding.textNotFound.setText(R.string.no_image_found);
+            binding.textNotFound.setVisibility(View.VISIBLE);
+            binding.recyclerDetailView.setVisibility(View.GONE);
+            return;
+        }
+        Log.e("album này là",album.getName()+" và "+album.getPath());
         if (album.getAlbumImages().size() != 0) {
             binding.recyclerDetailView.setVisibility(View.VISIBLE);
 //            binding.recyclerDetailView.setHasFixedSize(false);
@@ -235,6 +241,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
+        if (album==null) {
+            return false;
+        }
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
         if (Objects.equals(nameFolder, "RecycleBin")) {
             MenuItem item = menu.findItem(R.id.move_images);
@@ -276,6 +285,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (menuItem.getItemId() == android.R.id.home) { // Click back button
             finish();
             return true;
+        }
+        if (album==null) {
+            return false;
         }
         if (menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
             Intent intent = new Intent(this, AddItemActivity.class);
@@ -475,6 +487,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
+            name=dest.split("/");
+            if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+                Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -494,7 +512,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 String src = image.getPath();
                 String[] name = src.split("/");
                 Path result = null;
-                String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + albumDefaults.get(0).getName() + "/" + name[name.length - 1];
+                String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
+                File Pictures=new File(dest);
+                if (!Pictures.exists()) {
+                    Pictures.mkdirs();
+                }
+                dest+="/"+name[name.length-1];
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
