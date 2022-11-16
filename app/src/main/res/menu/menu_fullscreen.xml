@@ -4,18 +4,15 @@
         android:title="Đổi tên"/>
     <item android:id="@+id/btnAddToAlbum"
         android:title="Thêm vào album"/>
-    <item android:id="@+id/btnAddPrivate"
-        android:title="Di chuyển vào Riêng tư"
-        />
     <item android:id="@+id/btnDetails"
         android:title="@string/details_title"/>
     <item android:id="@+id/btnSetAs"
-        android:title="@string/set_as_title">
+        android:title="Đặt ảnh nền">
         <menu>
             <item android:id="@+id/btnHomeWallpaper"
-                android:title="Home screen wallpaper"/>
+                android:title="Màn hình chờ"/>
             <item android:id="@+id/btnLockWallpaper"
-                android:title="Lock screen wallpaper"/>
+                android:title="Màn hình khóa"/>
         </menu>
     </item>
 </menu>
