@@ -21,7 +21,10 @@ import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityChooseAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
+import com.example.a14gallery_photoandalbumgallery.image.Image;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,6 +66,19 @@ public class ChooseAlbumActivity extends AppCompatActivity {
 
         AlbumGallery.getInstance().update(getApplicationContext());
         albums = AlbumGallery.getInstance().albums;
+        if (albums==null || albums.size()==0) {
+            Album Pictures=new Album();
+            Pictures.setName("Pictures");
+            String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
+            File Pic=new File(dest);
+            if (!Pic.exists()) {
+                Pic.mkdirs();
+            }
+            Pictures.setPath(dest);
+            List<Image> images= new ArrayList<>();
+            Pictures.setAlbumImages(images);
+            albums.add(Pictures);
+        }
         adapter = new ChooseAlbumAdapter(getApplicationContext(), albums);
         binding.ChooseAlbumRecycleView.setAdapter(adapter);
         setContentView(binding.getRoot());
