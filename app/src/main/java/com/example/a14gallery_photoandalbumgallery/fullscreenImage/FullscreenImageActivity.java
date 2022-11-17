@@ -19,11 +19,13 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,8 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
@@ -44,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
+import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
@@ -53,17 +58,26 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscree
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogDetailsBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import static  com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
 
 public class FullscreenImageActivity extends AppCompatActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     ActivityFullscreenImageBinding binding;
@@ -123,6 +137,20 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 //                }
 //            }
 //        });
+        activityMoveLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                        if (result.getResultCode() == 123) {
+                            Intent data = result.getData();
+                            String dest = data.getStringExtra("DEST");
+                            Log.e("ImageFragment", dest);
+                            moveToAlbum(dest);
+                        }
+                    }
+                });
 
     }
 
@@ -346,20 +374,16 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         //  Hide button
         if (view.getId() == R.id.btnHide) {
-            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
+            intent.putExtra("message", "AddPrivate");
+            intent.putExtra("imagePath", imagePath);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
 
         //  Delete button
         if (view.getId() == R.id.btnDelete) {
-            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
-            File file = new File(imagePath);
-            if (file.delete()) {
-                Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
-                ImageGallery.getInstance().update(this);
-                AlbumGallery.getInstance().update(this);
-            } else {
-                Toast.makeText(this, "Delete unsuccessfully", Toast.LENGTH_SHORT).show();
-            }
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath()+"/14Gallery/RecycleBin");
             finish();
         }
 
@@ -434,7 +458,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                                         id), values, null);
                                 values.clear();
 
-                                 // Update file data
+                                // Update file data
                                 values.put(MediaStore.MediaColumns.DISPLAY_NAME, newFileName);
                                 values.put(MediaStore.MediaColumns.IS_PENDING, false);
                                 getContentResolver().update(ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -470,18 +494,12 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
-        // Add image to private album
-        if (menuItem.getItemId() == R.id.btnAddPrivate) {
-            Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
-            intent.putExtra("message", "AddPrivate");
-            intent.putExtra("imagePath", imagePath);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        }
 
         // Add to album button
         if (menuItem.getItemId() == R.id.btnAddToAlbum) {
+            //Show album to choose
+            Intent intent = new Intent(this, ChooseAlbumActivity.class);
+            activityMoveLauncher.launch(intent);
             return true;
         }
 
@@ -578,5 +596,31 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
         value *= Long.signum(bytes);
         return String.format(Locale.UK, "%.1f %cB", value / 1024.0, ci.current());
+    }
+
+    private void moveToAlbum(String dest) {
+        Path result = null;
+        String src = imagePath;
+        String name[] = src.split("/");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        if (result != null) {
+            ImageGallery.getInstance().update(this);
+            AlbumGallery.getInstance().update(this);
+            //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+        }
+        name = dest.split("/");
+        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+            Snackbar.make(findViewById(R.id.full_screen_image_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(findViewById(R.id.full_screen_image_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        }
     }
 }

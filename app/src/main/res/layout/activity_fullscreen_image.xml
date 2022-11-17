@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fullscreenImage.FullscreenImageActivity">
+    tools:context=".fullscreenImage.FullscreenImageActivity"
+    android:id="@+id/full_screen_image_layout">
 
     <ImageView
         android:id="@+id/imageView"
@@ -54,7 +55,8 @@
                     android:contentDescription="@string/share_description"
                     android:drawableTop="@drawable/ic_outline_share_24"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Chia sẻ"/>
 
                 <Button
                     android:id="@+id/btnHide"
@@ -65,7 +67,8 @@
                     android:contentDescription="@string/hide_description"
                     android:drawableTop="@drawable/ic_outline_hide_24"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Di chuyển vào Riêng tư"/>
 
                 <Button
                     android:id="@+id/btnEdit"
@@ -76,7 +79,8 @@
                     android:contentDescription="@string/edit_description"
                     android:drawableTop="@drawable/ic_outline_edit_24"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Chỉnh sửa ảnh"/>
 
                 <Button
                     android:id="@+id/btnDelete"
@@ -87,7 +91,8 @@
                     android:contentDescription="@string/delete_description"
                     android:drawableTop="@drawable/ic_outline_delete_24"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Xóa ảnh"/>
                 <Button
                     android:id="@+id/btnHashtag"
                     style="?android:attr/buttonBarButtonStyle"
@@ -97,7 +102,8 @@
                     android:contentDescription="@string/add_hashtag_description"
                     android:drawableTop="@drawable/ic_hashtag_24"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Hashtag"/>
 
                 <Button
                     android:id="@+id/btnMore"
@@ -108,7 +114,8 @@
                     android:contentDescription="@string/more_description"
                     android:drawableTop="@drawable/ic_menu_24dp"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:tooltipText="Thêm"/>
 
             </LinearLayout>
         </com.google.android.material.appbar.MaterialToolbar>
