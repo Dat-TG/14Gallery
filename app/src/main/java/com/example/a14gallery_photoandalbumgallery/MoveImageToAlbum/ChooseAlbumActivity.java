@@ -39,8 +39,8 @@ public class ChooseAlbumActivity extends AppCompatActivity {
         binding.ChooseAlbumRecycleView.setHasFixedSize(true);
         binding.ChooseAlbumRecycleView.setLayoutManager(layoutManager);
         binding.ChooseAlbumRecycleView.setNestedScrollingEnabled(false);
-        String folderFrom=getIntent().getStringExtra("folder");
-        if (Objects.equals(folderFrom, "RecycleBin")) {
+        String folderFrom = getIntent().getStringExtra("folder");
+        if (Objects.equals(folderFrom, AlbumGallery.recycleBinFolderName)) {
             binding.ChooseAlbumText.setText("Chọn nơi lưu ảnh sau khi khôi phục");
         }
         activityMoveLauncher = registerForActivityResult(
@@ -52,9 +52,9 @@ public class ChooseAlbumActivity extends AppCompatActivity {
                         if (result.getResultCode() == 123) {
                             Intent data = result.getData();
                             String dest = data.getStringExtra("DEST");
-                            Log.e("ChooseAlbumActivity",dest);
-                            Intent intent=new Intent();
-                            intent.putExtra("DEST",dest);
+                            Log.e("ChooseAlbumActivity", dest);
+                            Intent intent = new Intent();
+                            intent.putExtra("DEST", dest);
                             setResult(123, intent);
                             finish();
                         }

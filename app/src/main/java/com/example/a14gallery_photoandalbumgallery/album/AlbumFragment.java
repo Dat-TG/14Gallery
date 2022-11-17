@@ -50,10 +50,6 @@ public class AlbumFragment extends Fragment implements MenuProvider {
     private static final int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
     FragmentAlbumBinding binding;
     List<Album> albums;
-    String rootFolder = "/14Gallery/";
-    String favoriteAlbumFolderName = "FavoriteAlbum";
-    String privateAlbumFolderName = "PrivateAlbum";
-    String recycleBinFolderName = "RecycleBin";
     AlbumFragmentAdapter adapter;
 
     @Override
@@ -79,19 +75,19 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         ImageView recycleBin = binding.getRoot().findViewById(R.id.recycleBin);
 
         //Tạo album Ưa thích nếu chưa tạo
-        File favoriteAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+        File favoriteAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
         if (!favoriteAlbumFolder.exists()) {
             favoriteAlbumFolder.mkdirs();
         }
 
         //Tạo album Riêng tư nếu chưa tạo
-        File privateAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
+        File privateAlbumFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName);
         if (!privateAlbumFolder.exists()) {
             privateAlbumFolder.mkdirs();
         }
 
         //Tạo Thùng rác nếu chưa tạo
-        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder+recycleBinFolderName);
+        File recycleBinFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
         if (!recycleBinFolder.exists()) {
             recycleBinFolder.mkdirs();
         }
@@ -105,7 +101,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(Favorite);
                 intent.putExtra("ALBUM", imagesObj);
-                intent.putExtra("NAME", favoriteAlbumFolderName);
+                intent.putExtra("NAME", AlbumGallery.favoriteAlbumFolderName);
                 startActivity(intent);
             }
 
@@ -146,7 +142,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                 Gson gson = new Gson();
                 String imagesObj = gson.toJson(RecycleBin);
                 intent.putExtra("ALBUM", imagesObj);
-                intent.putExtra("NAME", recycleBinFolderName);
+                intent.putExtra("NAME", AlbumGallery.recycleBinFolderName);
                 getActivity().startActivity(intent);
             }
         });
@@ -195,7 +191,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                     alert.setPositiveButton("Ok", (dialog, whichButton) -> {
                         String value = input.getText().toString();
                         // Do something with value!
-                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + value);
+                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + value);
 
                         Log.e("DIR", Environment.getExternalStorageDirectory().toString());
                         if (!file.exists()) {
@@ -270,9 +266,9 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
     private Album getAlbumFavorite() {
         Album Favorite = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName + '/';
         folderPath = folderPath + "%";
         Favorite.setName("Ưa thích");
         String[] projection = new String[]{
@@ -329,9 +325,9 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
     private Album getAlbumPrivate() {
         Album Private = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName + '/';
         folderPath = folderPath + "%";
         Private.setName("Riêng tư");
         String[] projection = new String[]{
@@ -390,9 +386,9 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
     private Album getRecycleBin() {
         Album RecycleBin = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName + '/';
         folderPath = folderPath + "%";
         RecycleBin.setName("Thùng rác");
         String[] projection = new String[]{

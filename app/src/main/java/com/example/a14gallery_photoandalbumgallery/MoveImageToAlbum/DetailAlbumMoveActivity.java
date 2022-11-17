@@ -66,7 +66,7 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         nameFolder = getIntent().getStringExtra("NAME");
-        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
+        if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             Gson gson = new Gson();
             album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
         } else {
@@ -124,14 +124,14 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
             }
             binding.recyclerDetailView.setVisibility(View.GONE);
         }
-        okButton=binding.getRoot().findViewById(R.id.ok_button);
-        cancleButton=binding.getRoot().findViewById(R.id.cancel_move_button);
+        okButton = binding.getRoot().findViewById(R.id.ok_button);
+        cancleButton = binding.getRoot().findViewById(R.id.cancel_move_button);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("DESTPATH",album.getPath());
-                Intent intent=new Intent();
-                intent.putExtra("DEST",album.getPath());
+                Log.e("DESTPATH", album.getPath());
+                Intent intent = new Intent();
+                intent.putExtra("DEST", album.getPath());
                 setResult(123, intent);
                 finish();
             }
@@ -149,7 +149,7 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         AlbumGallery.getInstance().update(this);
-        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
+        if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             Gson gson = new Gson();
             album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
         } else {

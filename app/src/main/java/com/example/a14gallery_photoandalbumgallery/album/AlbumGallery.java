@@ -23,6 +23,12 @@ import java.util.Objects;
 public class AlbumGallery {
     private static AlbumGallery INSTANCE = null;
     private boolean loaded = false;
+
+    public static final String rootFolder = "/14Gallery/";
+    public static final String favoriteAlbumFolderName = "FavoriteAlbum";
+    public static final String privateAlbumFolderName = "PrivateAlbum";
+    public static final String recycleBinFolderName = "RecycleBin";
+
     public List<Album> albums;
 
     public static AlbumGallery getInstance() {
@@ -93,7 +99,7 @@ public class AlbumGallery {
                         continue;
                     }
 
-                    if (bucketName.equals("FavoriteAlbum") || bucketName.equals("PrivateAlbum") || bucketName.equals("RecycleBin")) {
+                    if (bucketName.equals(AlbumGallery.favoriteAlbumFolderName) || bucketName.equals(AlbumGallery.privateAlbumFolderName) || bucketName.equals(AlbumGallery.recycleBinFolderName)) {
                         continue;
                     }
 
@@ -133,20 +139,20 @@ public class AlbumGallery {
 
             cur.close();
         }
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/");
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder);
         File[] allFiles = folder.listFiles();
         if (folder.exists()) {
             assert allFiles != null;
             for (File allFile : allFiles) {
                 File[] content = allFile.listFiles();
-                if (allFile.getName().equals("FavoriteAlbum") || allFile.getName().equals("PrivateAlbum") || allFile.getName().equals("RecycleBin")) {
+                if (allFile.getName().equals(AlbumGallery.favoriteAlbumFolderName) || allFile.getName().equals(AlbumGallery.privateAlbumFolderName) || allFile.getName().equals(AlbumGallery.recycleBinFolderName)) {
                     continue;
                 }
                 if (content == null || content.length == 0) {
                     Album album = new Album();
 //                    album.setId(image.getId());
                     album.setName(allFile.getName());
-                    album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + allFile.getName());
+                    album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + allFile.getName());
                     //album.setCoverUri(image.getimageUri());
                     //album.getAlbumimages().add(image);
                     albums.add(album);

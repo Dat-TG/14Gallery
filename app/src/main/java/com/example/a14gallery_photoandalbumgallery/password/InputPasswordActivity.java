@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
@@ -35,8 +36,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class InputPasswordActivity extends AppCompatActivity {
-    String rootFolder = "/14Gallery/";
-    String privateAlbumFolderName = "PrivateAlbum";
 
     PatternLockView mPatternLockView;
     String password;
@@ -72,7 +71,7 @@ public class InputPasswordActivity extends AppCompatActivity {
                 if (password.equals(PatternLockUtils.patternToString(mPatternLockView, pattern))) {
                     if (Objects.equals(message, "OpenPrivate")) {
                         Album Private = new Album();
-                        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
+                        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName + '/';
                         folderPath = folderPath + "%";
                         Private.setName("Riêng tư");
                         String[] projection = new String[]{
@@ -130,7 +129,7 @@ public class InputPasswordActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), DetailAlbumActivity.class);
                         Gson gson = new Gson();
                         String imagesObj = gson.toJson(Private);
-                        intent.putExtra("NAME", privateAlbumFolderName);
+                        intent.putExtra("NAME", AlbumGallery.privateAlbumFolderName);
                         intent.putExtra("ALBUM", imagesObj);
                         startActivity(intent);
                     }
@@ -138,8 +137,8 @@ public class InputPasswordActivity extends AppCompatActivity {
                         String imagePath = bundle.getString("imagePath");
                         String[] name = imagePath.split("/");
                         Log.e("PATH", imagePath);
-                        Log.e("PATH", Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1]);
-                        String imageDestPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + "/" + name[name.length - 1];
+                        Log.e("PATH", Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName + "/" + name[name.length - 1]);
+                        String imageDestPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName + "/" + name[name.length - 1];
                         moveFile(imagePath, imageDestPath);
                     }
                     finish();

@@ -81,10 +81,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
     boolean upToDown = true;
     boolean sortByDate = true;
     ActivityResultLauncher<Intent> activityMoveLauncher;
-    String rootFolder = "/14Gallery/";
-    String favoriteAlbumFolderName = "FavoriteAlbum";
-    String privateAlbumFolderName = "PrivateAlbum";
-    String recycleBinFolderName = "RecycleBin";
     String nameGIF = "animation";
     int delay = 500;
 
@@ -102,7 +98,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         nameFolder = getIntent().getStringExtra("NAME");
-        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
+        if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName)) {
             Gson gson = new Gson();
             album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
         } else {
@@ -189,10 +185,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
         super.onResume();
         AlbumGallery.getInstance().update(this);
         nameFolder = getIntent().getStringExtra("NAME");
-        if (nameFolder.equals("FavoriteAlbum") || nameFolder.equals("PrivateAlbum") || nameFolder.equals("RecycleBin")) {
-            if (nameFolder.equals("FavoriteAlbum")) {
+        if (nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
+            if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
                 album = getAlbumFavorite();
-            } else if (nameFolder.equals("PrivateAlbum")) {
+            } else if (nameFolder.equals(AlbumGallery.privateAlbumFolderName)) {
                 album = getAlbumPrivate();
             } else {
                 album = getRecycleBin();
@@ -201,13 +197,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-        if (album==null) {
+        if (album == null) {
             binding.textNotFound.setText(R.string.no_image_found);
             binding.textNotFound.setVisibility(View.VISIBLE);
             binding.recyclerDetailView.setVisibility(View.GONE);
             return;
         }
-        Log.e("album này là",album.getName()+" và "+album.getPath());
+        Log.e("album này là", album.getName() + " và " + album.getPath());
         if (album.getAlbumImages().size() != 0) {
             binding.recyclerDetailView.setVisibility(View.VISIBLE);
 //            binding.recyclerDetailView.setHasFixedSize(false);
@@ -228,7 +224,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             toViewList(images);
             imageFragmentAdapter.setData(viewList);
         } else {
-            if (album.getName().equals("Thùng rác") || album.getName().equals("RecycleBin")) {
+            if (album.getName().equals("Thùng rác") || album.getName().equals(AlbumGallery.recycleBinFolderName)) {
                 binding.textNotFound.setText(R.string.empty_recycle_bin);
             } else {
                 binding.textNotFound.setText(R.string.no_image_found);
@@ -241,11 +237,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
-        if (album==null) {
+        if (album == null) {
             return false;
         }
         getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
-        if (Objects.equals(nameFolder, "RecycleBin")) {
+        if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName)) {
             MenuItem item = menu.findItem(R.id.move_images);
             item.setTitle("Khôi phục");
         }
@@ -286,7 +282,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             return true;
         }
-        if (album==null) {
+        if (album == null) {
             return false;
         }
         if (menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
@@ -385,7 +381,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/RecycleBin");
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
             onResume();
@@ -393,7 +389,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.move_images) {
             Intent intent = new Intent(this, ChooseAlbumActivity.class);
-            if (Objects.equals(nameFolder, "RecycleBin")) intent.putExtra("folder", "RecycleBin");
+            if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName))
+                intent.putExtra("folder", AlbumGallery.recycleBinFolderName);
             activityMoveLauncher.launch(intent);
             return true;
         }
@@ -487,8 +484,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
-            name=dest.split("/");
-            if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+            name = dest.split("/");
+            if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
             } else {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
@@ -498,7 +495,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     private void deleteAlbumAndMoveImages(Album albumDelete) { //Dest: move all image to Pictures default
         List<Album> albumDefaults = AlbumGallery.getPhoneAlbums(this).stream()
-                .filter(album1 -> !album1.getPath().contains(rootFolder))
+                .filter(album1 -> !album1.getPath().contains(AlbumGallery.rootFolder))
                 .collect(Collectors.toCollection(ArrayList::new));
         List<Image> imagesAlbum = albumDelete.getAlbumImages();
         AlertDialog.Builder alert = new AlertDialog.Builder(
@@ -513,11 +510,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 String[] name = src.split("/");
                 Path result = null;
                 String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
-                File Pictures=new File(dest);
+                File Pictures = new File(dest);
                 if (!Pictures.exists()) {
                     Pictures.mkdirs();
                 }
-                dest+="/"+name[name.length-1];
+                dest += "/" + name[name.length - 1];
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
@@ -542,9 +539,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     private Album getAlbumFavorite() {
         Album Favorite = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName + '/';
         folderPath = folderPath + "%";
         Favorite.setName("Ưa thích");
         String[] projection = new String[]{
@@ -601,9 +598,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     private Album getAlbumPrivate() {
         Album Private = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName + '/';
         folderPath = folderPath + "%";
         Private.setName("Riêng tư");
         String[] projection = new String[]{
@@ -662,9 +659,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     private Album getRecycleBin() {
         Album RecycleBin = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
+        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
         File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName + '/';
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName + '/';
         folderPath = folderPath + "%";
         RecycleBin.setName("Thùng rác");
         String[] projection = new String[]{

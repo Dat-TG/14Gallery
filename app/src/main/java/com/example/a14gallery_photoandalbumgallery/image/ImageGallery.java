@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -121,7 +123,7 @@ public class ImageGallery {
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
-            if (absolutePathOfImage.contains("/PrivateAlbum/") || absolutePathOfImage.contains("/RecycleBin/")) {
+            if (absolutePathOfImage.contains("/" + AlbumGallery.privateAlbumFolderName + "/") || absolutePathOfImage.contains("/" + AlbumGallery.recycleBinFolderName + "/")) {
                 continue;
             }
             dateTaken = cursor.getLong(dateIndex);

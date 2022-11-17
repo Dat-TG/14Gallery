@@ -331,7 +331,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/RecycleBin");
+            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
             toViewList();
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -350,7 +350,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             activity.invalidateOptionsMenu();
         }
 
-        if(menuItem.getItemId()==R.id.slideShow || menuItem.getItemId()==R.id.slideShow_) {
+        if (menuItem.getItemId() == R.id.slideShow || menuItem.getItemId() == R.id.slideShow_) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 List<Image> selectedImages = images.stream()
                         .filter(Image::isChecked)
@@ -524,7 +524,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             }
         }
         String name[] = dest.split("/");
-        if (Objects.equals(name[name.length - 1], "RecycleBin")) {
+        if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
             Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {
             Snackbar.make(requireView(), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
@@ -592,7 +592,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         layout.addView(input2);
         layout.setPadding(50, 50, 50, 0);
         alert.setView(layout);
-        String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/GIF/";
+        String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + "GIF/";
         File file = new File(dest);
         if (!file.exists()) {
             boolean success = file.mkdirs();
