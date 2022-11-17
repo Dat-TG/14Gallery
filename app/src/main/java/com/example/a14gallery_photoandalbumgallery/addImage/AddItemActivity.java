@@ -76,6 +76,13 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        selectedAlbumName = new ArrayList<>();
+        selectedAlbum = new ArrayList<>();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_bar_menu_add_image, menu);
         return true;
