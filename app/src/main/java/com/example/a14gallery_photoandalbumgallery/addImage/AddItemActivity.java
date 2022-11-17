@@ -84,6 +84,8 @@ public class AddItemActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
         if (item.getItemId() == android.R.id.home) { // Click back button
+            selectedAlbumName = new ArrayList<>();
+            selectedAlbum = new ArrayList<>();
             finish();
             return true;
         }
