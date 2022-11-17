@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/clear_choose"
-        android:title=""
         android:icon="@drawable/ic_clear"
+        android:title="@string/remove_selected"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/detAlb_camera"
@@ -13,21 +13,38 @@
         android:title="@string/camera_title"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/detAlb_add_image"
+        android:contentDescription="@string/add_image"
+        android:icon="@drawable/ic_add_image"
+        android:title="@string/add_image_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_choose"
+        android:icon="@drawable/select_all_icon"
+        android:title="@string/choose_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_coverAlbum"
+        android:title="@string/change_cover_album"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_deleteAlbum"
+        android:title="@string/deleteAlbum"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/create_GIF"
+        android:title="@string/create_gif"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/move_images"
+        android:title="@string/di_chuy_n"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/detAlb_more"
         android:contentDescription="@string/icon_menu_description"
-        android:icon="@drawable/ic_menu_24dp"
         android:title="@string/more_title"
         app:showAsAction="ifRoom">
         <menu>
-            <item
-                android:id="@+id/detAlb_add_image"
-                android:title="@string/add_image_title" />
-            <item
-                android:id="@+id/detAlb_choose"
-                android:title="@string/choose_title" />
-            <item
-                android:id="@+id/detAlb_coverAlbum"
-                android:title="@string/change_cover_album" />
             <item
                 android:id="@+id/detAlb_grid"
                 android:title="@string/grid_columns">
@@ -46,7 +63,6 @@
                         android:title="@string/grid_column_5" />
                 </menu>
             </item>
-
             <item
                 android:id="@+id/detAlb_view_mode"
                 android:title="@string/view_mode">
@@ -66,10 +82,15 @@
                 </menu>
             </item>
             <item
+                android:id="@+id/slideShow"
+                android:title="@string/slideshow" />
+            <item
                 android:id="@+id/detAlb_setting"
                 android:title="@string/setting_title" />
         </menu>
-
     </item>
-
+    <item
+        android:id="@id/detAlb_deleteAlbum"
+        android:title="@string/delete_images"
+        app:showAsAction="ifRoom" />
 </menu>

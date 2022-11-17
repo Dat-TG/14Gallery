@@ -3,11 +3,13 @@ package com.example.a14gallery_photoandalbumgallery.albumCover;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -63,19 +65,15 @@ public class AlbumCoverActivity extends AppCompatActivity {
             toViewList(images);
             onItemClick = (position, view1) -> {
                 if (imageFragmentAdapter.getState() != ImageFragmentAdapter.State.MultipleSelect) {
-                    Intent intent = new Intent(this, DetailAlbumActivity.class);
-                    intent.putExtra("NAME", album.getName());
                     AlbumData data = AppDatabase.getInstance(this).albumDataDao().getAlbumCoverByName(album.getName());
                     AlbumData albumData = new AlbumData(album.getName(), viewList.get(position).imageData.getPath());
-
                     if (data != null)
                         AppDatabase.getInstance(this).albumDataDao().updateAlbum(albumData);
                     else
                         AppDatabase.getInstance(this).albumDataDao().insertAlbumCover(albumData);
                     AlbumGallery.getInstance().update(this);
                     Toast.makeText(this, "Đổi ảnh bìa thành công", Toast.LENGTH_SHORT).show();
-                    this.startActivity(intent);
-                    AlbumCoverActivity.this.finish();
+                    finish();
                 }
             };
             onItemLongClick = (position, view1) -> {
@@ -119,5 +117,15 @@ public class AlbumCoverActivity extends AppCompatActivity {
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
     }
 }

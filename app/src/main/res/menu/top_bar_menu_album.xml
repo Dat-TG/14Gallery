@@ -8,59 +8,12 @@
         android:title="@string/add_title"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/alb_camera"
-        android:contentDescription="@string/icon_camera_description"
-        android:icon="@drawable/ic_baseline_camera_enhance_24"
-        android:title="@string/camera_title"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/alb_more"
         android:contentDescription="@string/icon_menu_description"
         android:icon="@drawable/ic_menu_24dp"
         android:title="@string/more_title"
         app:showAsAction="ifRoom">
         <menu>
-            <item
-                android:id="@+id/alb_choose"
-                android:title="@string/choose_title" />
-
-            <item
-                android:id="@+id/alb_grid"
-                android:title="@string/grid_columns">
-                <menu>
-                    <item
-                        android:id="@+id/alb_grid_col_2"
-                        android:title="@string/grid_column_2" />
-                    <item
-                        android:id="@+id/alb_grid_col_3"
-                        android:title="@string/grid_column_3" />
-                    <item
-                        android:id="@+id/alb_grid_col_4"
-                        android:title="@string/grid_column_4" />
-                    <item
-                        android:id="@+id/alb_grid_col_5"
-                        android:title="@string/grid_column_5" />
-                </menu>
-            </item>
-
-            <item
-                android:id="@+id/alb_view_mode"
-                android:title="@string/view_mode">
-                <menu>
-                    <item
-                        android:id="@+id/alb_view_mode_normal"
-                        android:title="@string/view_mode_normal" />
-                    <item
-                        android:id="@+id/alb_view_mode_convert"
-                        android:title="@string/view_mode_convert" />
-                    <item
-                        android:id="@+id/alb_view_mode_day"
-                        android:title="@string/view_mode_day" />
-                    <item
-                        android:id="@+id/alb_view_mode_month"
-                        android:title="@string/view_mode_month" />
-                </menu>
-            </item>
             <item
                 android:id="@+id/alb_setting"
                 android:title="@string/setting_title" />

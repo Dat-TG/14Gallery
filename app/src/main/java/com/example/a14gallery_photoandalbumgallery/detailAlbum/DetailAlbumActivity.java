@@ -1,7 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -21,7 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Environment;
-import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -119,6 +117,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         Log.e("result code image frag", Integer.toString(result.getResultCode()));
                         if (result.getResultCode() == 123) {
                             Intent data = result.getData();
+                            assert data != null;
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment", dest);
                             moveToAlbum(dest);
@@ -201,13 +200,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
-        if (album==null) {
+        if (album == null) {
             binding.textNotFound.setText(R.string.no_image_found);
             binding.textNotFound.setVisibility(View.VISIBLE);
             binding.recyclerDetailView.setVisibility(View.GONE);
             return;
         }
-        Log.e("album này là",album.getName()+" và "+album.getPath());
+        Log.e("album này là", album.getName() + " và " + album.getPath());
         if (album.getAlbumImages().size() != 0) {
             binding.recyclerDetailView.setVisibility(View.VISIBLE);
 //            binding.recyclerDetailView.setHasFixedSize(false);
@@ -241,40 +240,51 @@ public class DetailAlbumActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         menu.clear();
-        if (album==null) {
+        if (album == null) {
             return false;
         }
-        getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
+        getMenuInflater().inflate(R.menu.top_bar_menu_detail_album, menu);
         if (Objects.equals(nameFolder, "RecycleBin")) {
             MenuItem item = menu.findItem(R.id.move_images);
             item.setTitle("Khôi phục");
         }
         int size = album.getAlbumImages().size();
+
         if (size != 0) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 menu.getItem(0).setVisible(true);
-                menu.getItem(6).setVisible(false);
-                menu.getItem(2).setVisible(true);
                 menu.getItem(3).setVisible(true);
-                menu.getItem(4).setVisible(true);
-                menu.getItem(5).setVisible(true);
+                menu.getItem(1).setVisible(false);
+                menu.getItem(2).setVisible(false);
+                menu.getItem(4).setVisible(false);
+                menu.getItem(5).setVisible(false);
+                menu.getItem(6).setVisible(true);
+                menu.getItem(7).setVisible(true);
+                menu.getItem(8).setVisible(false);
+                menu.getItem(9).setVisible(true);
             } else {
                 menu.getItem(0).setVisible(false);
                 menu.getItem(1).setVisible(true);
-                menu.getItem(6).setVisible(true);
-                menu.getItem(2).setVisible(false);
-                menu.getItem(3).setVisible(false);
-                menu.getItem(4).setVisible(false);
-                menu.getItem(5).setVisible(false);
+                menu.getItem(3).setVisible(true);
+                menu.getItem(4).setVisible(true);
+                menu.getItem(5).setVisible(true);
+                menu.getItem(6).setVisible(false);
+                menu.getItem(7).setVisible(false);
+                menu.getItem(8).setVisible(true);
+                menu.getItem(2).setVisible(true);
+                menu.getItem(9).setVisible(false);
             }
         } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
-            menu.getItem(6).setVisible(true);
-            menu.getItem(2).setVisible(false);
+            menu.getItem(2).setVisible(true);
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
-            menu.getItem(5).setVisible(false);
+            menu.getItem(5).setVisible(true);
+            menu.getItem(6).setVisible(false);
+            menu.getItem(7).setVisible(false);
+            menu.getItem(8).setVisible(true);
+            menu.getItem(9).setVisible(false);
         }
         return true;
     }
@@ -286,7 +296,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             return true;
         }
-        if (album==null) {
+        if (album == null) {
             return false;
         }
         if (menuItem.getItemId() == R.id.detAlb_add_image) { // add Image
@@ -300,7 +310,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_choose) {
+        if (menuItem.getItemId() == R.id.detAlb_choose) {
             images.forEach(imageData -> imageData.setChecked(true));
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -317,26 +327,26 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), AlbumCoverActivity.class);
             intent.putExtra("NAME", album.getName());
             startActivity(intent);
-            DetailAlbumActivity.this.finish();
+            return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_2) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_2) {
             setRecyclerViewLayoutManager(2);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_3) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_3) {
             setRecyclerViewLayoutManager(3);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_4) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_4) {
             setRecyclerViewLayoutManager(4);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_5) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_5) {
             setRecyclerViewLayoutManager(5);
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_view_mode_normal) {
-            // Click { sort UP-TO-DOWN
+            // Click sort UP-TO-DOWN
             if (!upToDown) {
                 toViewList(images);
                 imageFragmentAdapter.setData(viewList);
@@ -346,7 +356,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_view_mode_convert) {
-            // Click { sort DOWN-TO-UP
+            // Click sort DOWN-TO-UP
             if (upToDown) {
                 setDownToUp();
                 imageFragmentAdapter.setData(viewList);
@@ -376,7 +386,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_setting) {
-
             // Click Setting
             return true;
         }
@@ -474,7 +483,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
-            String name[] = src.split("/");
+            String[] name = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
@@ -482,12 +491,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-            if (result != null) {
-                //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
-            }
-            name=dest.split("/");
+            name = dest.split("/");
             if (Objects.equals(name[name.length - 1], "RecycleBin")) {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
             } else {
@@ -513,11 +517,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 String[] name = src.split("/");
                 Path result = null;
                 String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
-                File Pictures=new File(dest);
+                File Pictures = new File(dest);
                 if (!Pictures.exists()) {
                     Pictures.mkdirs();
                 }
-                dest+="/"+name[name.length-1];
+                dest += "/" + name[name.length - 1];
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         result = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
