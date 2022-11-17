@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -74,6 +75,13 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
         }
 
+        if (album==null) {
+            album=new Album();
+            album.setName("Pictures");
+            List<Image>images=new ArrayList<>();
+            album.setAlbumImages(images);
+            album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures");
+        }
         int size = album.getAlbumImages().size();
 
         binding.appBarDetail.setTitle(album.getName());
@@ -155,6 +163,13 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
+        }
+        if (album==null) {
+            album=new Album();
+            album.setName("Pictures");
+            List<Image>images=new ArrayList<>();
+            album.setAlbumImages(images);
+            album.setPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures");
         }
         if (album.getAlbumImages().size() != 0) {
             images = album.getAlbumImages();
