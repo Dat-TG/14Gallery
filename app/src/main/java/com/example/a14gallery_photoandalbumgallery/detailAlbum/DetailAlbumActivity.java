@@ -305,6 +305,47 @@ public class DetailAlbumActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+        if (menuItem.getItemId()==R.id.detAlb_rename) {//Rename album
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Đổi tên album");
+            LinearLayout layout = new LinearLayout(this);
+            final TextView textView = new TextView(this);
+            final EditText input = new EditText(this);
+            textView.setText("Nhập tên album mới");
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.addView(textView);
+            layout.addView(input);
+            layout.setPadding(50, 50, 50, 0);
+            alert.setView(layout);
+            alert.setPositiveButton("ĐỒNG Ý", (dialog, whichButton) -> {
+                String nameAlb = input.getText().toString();
+                if (nameAlb.isEmpty()) {
+                    Snackbar.make(findViewById(R.id.detail_album_layout), "Tên album không hợp lệ", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                File sourceFile = new File(album.getPath());
+                String name[]=album.getPath().split("/");
+                String dest="";
+                for (int i=0;i<name.length-1;i++) {
+                    dest += name[i] + "/";
+                }
+                dest+=nameAlb;
+                File destFile = new File(dest);
+                if (sourceFile.renameTo(destFile)) {
+                    Snackbar.make(findViewById(R.id.detail_album_layout), "Đổi tên album thành công", Snackbar.LENGTH_SHORT).show();
+                    binding.appBarDetail.setTitle(nameAlb);
+                }
+                else {
+                    Snackbar.make(findViewById(R.id.detail_album_layout), "Đổi tên album không thành công", Snackbar.LENGTH_SHORT).show();
+                }
+                AlbumGallery.getInstance().update(this);
+                setContentView(binding.getRoot());
+            });
+            alert.setNegativeButton("HỦY", (dialog, whichButton) -> {
+            });
+            alert.show();
+            return true;
+        }
         if (menuItem.getItemId() == R.id.detAlb_camera) { // Click Camera
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
             startActivity(intent);
