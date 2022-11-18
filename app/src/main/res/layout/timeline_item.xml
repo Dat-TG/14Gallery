@@ -10,9 +10,14 @@
         android:id="@+id/timelineItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance = "?attr/textAppearanceBody1"
-        android:textSize="18sp"
         android:layout_marginStart="5dp"
-         />
+        android:fontFamily="serif"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textSize="18dp"
+        android:text="November"
+        />
 
 </LinearLayout>
+
+
+    <!--        android:textStyle="bold"-->

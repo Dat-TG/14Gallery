@@ -78,4 +78,5 @@
     <string name="create_gif">Tạo ảnh GIF</string>
     <string name="remove_selected">Bỏ chọn</string>
     <string name="delete_images">Xoá ảnh</string>
+    <string name="no_matching_image">Không tìm thấy ảnh phù hợp</string>
 </resources>

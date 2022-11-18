@@ -36,7 +36,6 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     List<Image> images;
     RecyclerView searchRecyclerView;
     GridLayoutManager gridLayoutManager;
-    RecyclerView.LayoutManager linearLayout;
     TextView textNotImageFound;
     private SearchView searchView;
 
@@ -110,7 +109,7 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
             activity.invalidateOptionsMenu();
         };
 
-        imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList, onItemClick, onItemLongClick);
+        imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList,onItemClick,onItemLongClick);
         imageFragmentAdapterSearch.setState(ImageFragmentAdapterSearch.State.Normal);
         searchRecyclerView.setAdapter(imageFragmentAdapterSearch);
 
@@ -118,32 +117,30 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     }
 
     public void setRecyclerViewLayoutManager() {
-        gridLayoutManager = new GridLayoutManager(getContext(), 4);
+        gridLayoutManager = new GridLayoutManager(getContext(), 1);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return viewList.get(position).type == RecyclerData.Type.Label ? 4 : 1;
-
+                return viewList.get(position).type == RecyclerData.Type.Label ? 1 : 1;
             }
         });
         searchRecyclerView.setLayoutManager(gridLayoutManager);
     }
 
 
-    @SuppressLint("SetTextI18n")
     private void filterList(String text) {
-        List<RecyclerData> filteredList = new ArrayList<>();
-        for (RecyclerData recyclerData : viewList) {
-            if (recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())
-                    || recyclerData.imageData.getPath().toLowerCase().contains(text.toLowerCase())) {
+        List<RecyclerData>  filteredList = new ArrayList<>();
+        for(RecyclerData recyclerData: viewList){
+            if(recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())){
                 filteredList.add(recyclerData);
             }
         }
-        if (filteredList.isEmpty()) {
+        if(filteredList.isEmpty()){
 //            Toast.makeText(getContext(), "No matching image found", Toast.LENGTH_SHORT).show();
             textNotImageFound.setVisibility(TextView.VISIBLE);
-            textNotImageFound.setText("Không tìm thấy ảnh phù hợp!");
-        } else {
+            textNotImageFound.setText(R.string.no_matching_image);
+        }
+        else{
             textNotImageFound.setVisibility(TextView.INVISIBLE);
         }
         imageFragmentAdapterSearch.setFilteredList(filteredList);
@@ -167,26 +164,10 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
         return false;
     }
 
-//    private void toViewList() {
-//        if (images.size() > 0) {
-//            viewList = new ArrayList<>();
-//            for (int i = 0; i < images.size(); i++) {
-//                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
-//            }
-//        }
-//    }
-
     private void toViewList() {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
-            String label = images.get(0).getDateTaken();
-            label += '.';
             for (int i = 0; i < images.size(); i++) {
-                String labelCur = images.get(i).getDateTaken();
-                if (!labelCur.equals(label)) {
-                    label = labelCur;
-                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
-                }
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
