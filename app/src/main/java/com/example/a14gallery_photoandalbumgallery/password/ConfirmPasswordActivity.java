@@ -30,7 +30,7 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
 
         // shared preference when user comes second time to the app
         SharedPreferences sharedPreferences = getSharedPreferences("PREFS", 0);
-        password = sharedPreferences.getString("password", "0");
+        password = sharedPreferences.getString("password-create", "0");
 
         mPatternLockView = findViewById(R.id.pattern_lock_view);
         confirmPassWord = findViewById(R.id.textResult);
@@ -74,6 +74,12 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 }
 

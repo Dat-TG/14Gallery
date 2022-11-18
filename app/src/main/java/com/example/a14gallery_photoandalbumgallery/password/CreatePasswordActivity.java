@@ -39,7 +39,7 @@ public class CreatePasswordActivity extends AppCompatActivity {
                 // Shared Preferences to save state
                 SharedPreferences sharedPreferences = getSharedPreferences("PREFS", 0);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("password", PatternLockUtils.patternToString(mPatternLockView, pattern));
+                editor.putString("password-create", PatternLockUtils.patternToString(mPatternLockView, pattern));
                 editor.apply();
 
                 // Intent to navigate to home screen when password added is true
