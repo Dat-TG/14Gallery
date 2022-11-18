@@ -6,12 +6,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,15 +51,23 @@ public class ImageGallery {
 
         Cursor cursor = context.getContentResolver().query(imageCollection, projection,
                 selection, selectionArgs, null);
+
         cursor.moveToNext();
         int dateColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
         int idColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         int resolutionColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RESOLUTION);
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
+
+        Date lastModDate;
+
         if (cursor.getCount() != 0) {
-            long dateTaken = cursor.getLong(dateColumnIndex);
-            calendar.setTimeInMillis(dateTaken);
+//            long dateTaken = cursor.getLong(dateColumnIndex);
+//            calendar.setTimeInMillis(dateTaken);
+//            String dateText = formatter.format(calendar.getTime());
+            File file = new File(path);
+            lastModDate = new Date(file.lastModified());
+            calendar.setTimeInMillis(lastModDate.getTime());
             String dateText = formatter.format(calendar.getTime());
 
             int id = cursor.getInt(idColumnIndex);
@@ -95,10 +106,9 @@ public class ImageGallery {
     public static ArrayList<Image> listOfImages(Context context) {
         Uri uri;
         Cursor cursor;
-        int column_index_data, dateIndex;
+        int column_index_data ;
         ArrayList<Image> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
-        long dateTaken;
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String[] projection = {MediaStore.MediaColumns.DATA,
@@ -108,25 +118,28 @@ public class ImageGallery {
                 MediaStore.Images.Media._ID
         };
 
-        String orderBy = MediaStore.Video.Media.DATE_TAKEN;
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
         cursor = context.getContentResolver().query(uri, projection,
                 null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        dateIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
+
         int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED);
         Calendar myCal = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
         // Get folder name
         // column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+        Date lastModDate;
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
             if (absolutePathOfImage.contains("/PrivateAlbum/") || absolutePathOfImage.contains("/RecycleBin/")) {
                 continue;
             }
-            dateTaken = cursor.getLong(dateIndex);
-            myCal.setTimeInMillis(dateTaken);
+            File file = new File(absolutePathOfImage);
+            lastModDate = new Date(file.lastModified());
+            myCal.setTimeInMillis(lastModDate.getTime());
             String dateText = formatter.format(myCal.getTime());
+
 
             Image image = new Image();
             image.setPath(absolutePathOfImage);
@@ -136,7 +149,12 @@ public class ImageGallery {
             long id = cursor.getLong(idColumn);
             Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
             image.setUri(contentUri);
+            if(image.getPath()==""){
+                continue;
+            }
+            Log.d("Path file: ",image.getPath());
             listOfAllImages.add(image);
+            Log.d("PHOTO DATE", "Last Mod : "+ lastModDate.toString()+" Date taken: " + image.getDateTaken());
         }
 
         cursor.close();
@@ -176,7 +194,6 @@ public class ImageGallery {
                 if (!images.get(i).getDateTaken().substring(beg)
                         .equals(images.get(i - 1).getDateTaken().substring(beg))) {
                     nameClassify = images.get(i).getDateTaken().substring(beg);
-//                    Log.d("Name: ", nameClassify);
                     ClassifyDateList.add(new ClassifyDate(nameClassify, new ArrayList<>()));
                     ClassifyDateCount++;
                 }

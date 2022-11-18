@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Environment;
@@ -57,6 +59,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -85,6 +88,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
     String recycleBinFolderName = "RecycleBin";
     String nameGIF = "animation";
     int delay = 500;
+
+    ActivityResultLauncher<Intent> cameraResultLauncher;
+    Uri imageUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +135,34 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         onResume();
                     }
                 });
+
+        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String imagePath = getPathFromURI(imageUri);
+                    Log.e("src", imagePath);
+                    Path resultPath = null;
+                    String src = imagePath;
+                    String name[] = src.split("/");
+                    // Log.d("Path Album ", album.getName() + " và " + album.getPath() + " NameFolder: " + nameFolder);
+                    // D/Path Album: Gallery14Edit và /storage/emulated/0/Pictures/Gallery14Edit/NameFolder: Gallery14Edit
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            resultPath = Files.move(Paths.get(src), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    if (resultPath != null) {
+                        //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        });
 
         int size = album.getAlbumImages().size();
 
@@ -306,8 +340,14 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_camera) { // Click Camera
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivity(intent);
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "New Picture");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+            imageUri = getApplicationContext().getContentResolver().insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            cameraResultLauncher.launch(intent);
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_choose) {
@@ -545,6 +585,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getAlbumFavorite() {
+        Date lastModDate;
         Album Favorite = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + favoriteAlbumFolderName);
         File[] content = folder.listFiles();
@@ -560,7 +601,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -585,8 +627,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -604,6 +650,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getAlbumPrivate() {
+        Date lastModDate;
         Album Private = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + privateAlbumFolderName);
         File[] content = folder.listFiles();
@@ -619,7 +666,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -644,8 +692,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -665,6 +717,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getRecycleBin() {
+        Date lastModDate;
         Album RecycleBin = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + rootFolder + recycleBinFolderName);
         File[] content = folder.listFiles();
@@ -680,7 +733,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -705,8 +759,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -857,6 +915,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         });
         alert.show();
+    }
+
+    private String getPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
 }

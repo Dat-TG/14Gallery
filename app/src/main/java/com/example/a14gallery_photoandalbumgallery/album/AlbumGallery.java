@@ -16,6 +16,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -58,14 +59,16 @@ public class AlbumGallery {
     public static List<Album> getPhoneAlbums(Context context) {
         List<Album> albums = new ArrayList<>();
         List<String> albumsNames = new ArrayList<>();
-
+        Date lastModDate;
         // which image properties are we querying
         String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID, MediaStore.Images.Media.DATE_TAKEN};
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
         Cursor cur = context.getContentResolver().query(images, projection, // Which columns to return
                 null,       // Which rows to return (all rows)
                 null,       // Selection arguments (none)
-                null        // Ordering
+                orderBy + " DESC"        // Ordering
         );
 
         if (cur != null && cur.getCount() > 0) {
@@ -77,7 +80,6 @@ public class AlbumGallery {
                 int bucketNameColumn = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
                 int imageUriColumn = cur.getColumnIndex(MediaStore.Images.Media.DATA);
                 int imageIdColumn = cur.getColumnIndex(MediaStore.Images.Media._ID);
-                int dateTakenColumn = cur.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                 do {
                     Calendar myCal = Calendar.getInstance();
                     SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
@@ -85,9 +87,12 @@ public class AlbumGallery {
                     bucketName = cur.getString(bucketNameColumn);
                     data = cur.getString(imageUriColumn);
                     imageId = cur.getString(imageIdColumn);
-                    dateTaken = cur.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
+
 
                     if (bucketName == null) {
                         continue;
