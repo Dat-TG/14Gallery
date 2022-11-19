@@ -19,6 +19,10 @@
         android:title="@string/add_image_title"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/detAlb_rename"
+        android:title="Đổi tên album"
+        />
+    <item
         android:id="@+id/detAlb_choose"
         android:icon="@drawable/select_all_icon"
         android:title="@string/choose_title"
