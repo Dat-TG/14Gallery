@@ -396,15 +396,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
     }
 
     private void toViewListMonth() {
+        int beg = 3;
         if (images.size() > 0) {
-            int beg = 3;
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
-            label = label.substring(beg, label.length() - 6);
+            label = label.substring(beg, label.length());
             label += '.';
             for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
-                labelCur = labelCur.substring(beg, labelCur.length() - 6);
+                labelCur = labelCur.substring(beg, labelCur.length());
                 if (!labelCur.equals(label)) {
                     label = labelCur;
                     viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -414,53 +414,53 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         for(int i=0;i<viewList.size();i++){
             if(viewList.get(i).type==RecyclerData.Type.Label){
-                switch (viewList.get(i).labelData) {
+                switch (viewList.get(i).labelData.substring(0, viewList.get(i).labelData.length()-6)) {
                     case "January": {
-                        viewList.get(i).labelData = "Tháng 1";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 1");
                         break;
                     }
                     case "February": {
-                        viewList.get(i).labelData = "Tháng 2";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 2");
                         break;
                     }
                     case "March": {
-                        viewList.get(i).labelData = "Tháng 3";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 3");
                         break;
                     }
                     case "April": {
-                        viewList.get(i).labelData = "Tháng 4";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 4");
                         break;
                     }
                     case "May": {
-                        viewList.get(i).labelData = "Tháng 5";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 5");
                         break;
                     }
                     case "June": {
-                        viewList.get(i).labelData = "Tháng 6";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 6");
                         break;
                     }
                     case "July": {
-                        viewList.get(i).labelData = "Tháng 7";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 7");
                         break;
                     }
                     case "August": {
-                        viewList.get(i).labelData = "Tháng 8";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 8");
                         break;
                     }
                     case "September": {
-                        viewList.get(i).labelData = "Tháng 9";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 9");
                         break;
                     }
                     case "October": {
-                        viewList.get(i).labelData = "Tháng 10";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 10");
                         break;
                     }
                     case "November": {
-                        viewList.get(i).labelData = "Tháng 11";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 11");
                         break;
                     }
                     case "December": {
-                        viewList.get(i).labelData = "Tháng 12";
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 12");
                         break;
                     }
                     default:
@@ -483,63 +483,63 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
-        }
-        int beg=3;
-        for(int i=0;i<viewList.size();i++){
-            if(viewList.get(i).type==RecyclerData.Type.Label){
-                switch (viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6)) {
-                    case "January": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 1");
-                        break;
+            int beg=3;
+            for(int i=0;i<viewList.size();i++){
+                if(viewList.get(i).type==RecyclerData.Type.Label){
+                    switch (viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6)) {
+                        case "January": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 1");
+                            break;
+                        }
+                        case "February": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 2");
+                            break;
+                        }
+                        case "March": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 3");
+                            break;
+                        }
+                        case "April": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 4");
+                            break;
+                        }
+                        case "May": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 5");
+                            break;
+                        }
+                        case "June": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 6");
+                            break;
+                        }
+                        case "July": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 7");
+                            break;
+                        }
+                        case "August": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 8");
+                            break;
+                        }
+                        case "September": {
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 9");
+                            break;
+                        }
+                        case "October":{
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 10");
+                            break;
+                        }
+                        case "November":{
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 11");
+                            break;
+                        }
+                        case "December":{
+                            viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 12");
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    case "February": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 2");
-                        break;
-                    }
-                    case "March": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 3");
-                        break;
-                    }
-                    case "April": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 4");
-                        break;
-                    }
-                    case "May": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 5");
-                        break;
-                    }
-                    case "June": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 6");
-                        break;
-                    }
-                    case "July": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 7");
-                        break;
-                    }
-                    case "August": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 8");
-                        break;
-                    }
-                    case "September": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 9");
-                        break;
-                    }
-                    case "October":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 10");
-                        break;
-                    }
-                    case "November":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 11");
-                        break;
-                    }
-                    case "December":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 12");
-                        break;
-                    }
-                    default:
-                        break;
-                }
 
+                }
             }
         }
     }
@@ -550,11 +550,11 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 int beg = 3;
                 viewList = new ArrayList<>();
                 String label = images.get(0).getDateTaken();
-                label = label.substring(beg, label.length() - 6);
+                label = label.substring(beg, label.length());
                 label += '.';
                 for (int i = images.size()-1; i >=0; i--) {
                     String labelCur = images.get(i).getDateTaken();
-                    labelCur = labelCur.substring(beg, labelCur.length() - 6);
+                    labelCur = labelCur.substring(beg, labelCur.length());
                     if (!labelCur.equals(label)) {
                         label = labelCur;
                         viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -563,53 +563,53 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
                 for(int i=0;i<viewList.size();i++) {
                     if (viewList.get(i).type == RecyclerData.Type.Label) {
-                        switch (viewList.get(i).labelData) {
+                        switch (viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6)) {
                             case "January": {
-                                viewList.get(i).labelData = "Tháng 1";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 1");
                                 break;
                             }
                             case "February": {
-                                viewList.get(i).labelData = "Tháng 2";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 2");
                                 break;
                             }
                             case "March": {
-                                viewList.get(i).labelData = "Tháng 3";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 3");
                                 break;
                             }
                             case "April": {
-                                viewList.get(i).labelData = "Tháng 4";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 4");
                                 break;
                             }
                             case "May": {
-                                viewList.get(i).labelData = "Tháng 5";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 5");
                                 break;
                             }
                             case "June": {
-                                viewList.get(i).labelData = "Tháng 6";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 6");
                                 break;
                             }
                             case "July": {
-                                viewList.get(i).labelData = "Tháng 7";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 7");
                                 break;
                             }
                             case "August": {
-                                viewList.get(i).labelData = "Tháng 8";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 8");
                                 break;
                             }
                             case "September": {
-                                viewList.get(i).labelData = "Tháng 9";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 9");
                                 break;
                             }
                             case "October": {
-                                viewList.get(i).labelData = "Tháng 10";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 10");
                                 break;
                             }
                             case "November": {
-                                viewList.get(i).labelData = "Tháng 11";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 11");
                                 break;
                             }
                             case "December": {
-                                viewList.get(i).labelData = "Tháng 12";
+                                viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(0,viewList.get(i).labelData.length()-6),"Tháng 12");
                                 break;
                             }
                             default:
