@@ -1,5 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 
+import static com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -34,8 +36,6 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
@@ -43,7 +43,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
@@ -58,7 +57,6 @@ import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscree
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogDetailsBinding;
 import com.example.a14gallery_photoandalbumgallery.databinding.DialogHashtagBinding;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
-import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -76,9 +74,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
 
 public class FullscreenImageActivity extends AppCompatActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     ActivityFullscreenImageBinding binding;
@@ -140,16 +136,14 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 //        });
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
-                        if (result.getResultCode() == 123) {
-                            Intent data = result.getData();
-                            String dest = data.getStringExtra("DEST");
-                            Log.e("ImageFragment", dest);
-                            moveToAlbum(dest);
-                        }
+                result -> {
+                    Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                    if (result.getResultCode() == 123) {
+                        Intent data = result.getData();
+                        assert data != null;
+                        String dest = data.getStringExtra("DEST");
+                        Log.e("ImageFragment", dest);
+                        moveToAlbum(dest);
                     }
                 });
 
@@ -219,8 +213,10 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     private void launchHashtagDialog() {
         List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[]{imagePath});
         String[] dataset = hashtagList.toArray(new String[0]);
-        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset);
+        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset, dialogHashtagBinding.txtNumberOfHashtag);
         dialogHashtagBinding.listAddedHashtag.setLayoutManager(new LinearLayoutManager(this));
+
+        // Hide hashtag recyclerview when typing
         dialogHashtagBinding.editTextHashtag.setOnClickListener(v -> dialogHashtagBinding.listAddedHashtag.setVisibility(View.GONE));
         dialogHashtagBinding.editTextHashtag.setOnEditorActionListener((v, actionId, event) -> {
             if (event != null &&
@@ -234,29 +230,17 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             dialogHashtagBinding.listAddedHashtag.setVisibility(View.VISIBLE);
             return false;
         });
+
+        // Count hashtag items
         final int[] nItem = {dialogListAdapter.getItemCount()};
         if (nItem[0] != 0)
             dialogHashtagBinding.txtNumberOfHashtag.setText(
-                    String.format(Locale.ENGLISH, "Added hashtag: %d", nItem[0])
+                    String.format(Locale.ENGLISH, "Số lượng hashtag đã thêm: %d", nItem[0])
             );
         else {
             dialogHashtagBinding.txtNumberOfHashtag.setText(R.string.no_added_hashtag_msg);
         }
 
-        dialogListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                nItem[0] = dialogListAdapter.getItemCount();
-                if (nItem[0] != 0)
-                    dialogHashtagBinding.txtNumberOfHashtag.setText(
-                            String.format(Locale.ENGLISH, "Added hashtag: %d", nItem[0])
-                    );
-                else {
-                    dialogHashtagBinding.txtNumberOfHashtag.setText(R.string.no_added_hashtag_msg);
-                }
-            }
-        });
         dialogHashtagBinding.listAddedHashtag.setAdapter(dialogListAdapter);
 
         // Set click on listener for buttons
@@ -275,10 +259,13 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 }
                 dialogHashtagBinding.editTextHashtag.setText("");
             }
+            else {
+                Toast.makeText(this, "Hashtag không được để trống", Toast.LENGTH_SHORT).show();
+            }
         });
 
         materialAlertDialogBuilder.setView(hashtagDialogView)
-                .setTitle("Add Hashtag")
+                .setTitle("Thêm Hashtag")
                 .setNeutralButton("THOÁT", (dialog, which) -> dialog.dismiss())
                 .show();
     }
@@ -602,7 +589,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     private void moveToAlbum(String dest) {
         Path result = null;
         String src = imagePath;
-        String name[] = src.split("/");
+        String[] name = src.split("/");
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
