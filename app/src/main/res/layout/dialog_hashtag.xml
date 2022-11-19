@@ -17,7 +17,7 @@
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Added hashtag: 5" />
+        tools:text="Số lượng hashtag đã thêm: 5" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listAddedHashtag"

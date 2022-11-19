@@ -67,7 +67,7 @@
     <string name="empty">Empty</string>
     <string name="change_cover_album">Đổi ảnh bìa</string>
     <string name="add_hashtag_description">Add hashtag</string>
-    <string name="hashtag_textfield_hint">Hashtag name</string>
+    <string name="hashtag_textfield_hint">Tên hashtag</string>
     <string name="no_added_hashtag_msg">No hashtag has been added</string>
     <string name="add">Thêm</string>
     <string name="taken_on_label">Taken on:</string>
@@ -76,4 +76,5 @@
     <string name="di_chuy_n">Di chuyển</string>
     <string name="deleteAlbum">Xóa album</string>
     <string name="create_gif">Tạo ảnh GIF</string>
+    <string name="no_hashtag_message">Chưa có hashtag nào được thêm</string>
 </resources>
