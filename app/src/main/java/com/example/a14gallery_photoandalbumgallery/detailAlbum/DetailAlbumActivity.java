@@ -1,7 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,10 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Environment;
-import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -59,6 +59,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -83,6 +84,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> activityMoveLauncher;
     String nameGIF = "animation";
     int delay = 500;
+
+    ActivityResultLauncher<Intent> cameraResultLauncher;
+    Uri imageUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +119,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         Log.e("result code image frag", Integer.toString(result.getResultCode()));
                         if (result.getResultCode() == 123) {
                             Intent data = result.getData();
+                            assert data != null;
                             String dest = data.getStringExtra("DEST");
                             Log.e("ImageFragment", dest);
                             moveToAlbum(dest);
@@ -126,6 +131,34 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         onResume();
                     }
                 });
+
+        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String imagePath = getPathFromURI(imageUri);
+                    Log.e("src", imagePath);
+                    Path resultPath = null;
+                    String src = imagePath;
+                    String name[] = src.split("/");
+                    // Log.d("Path Album ", album.getName() + " và " + album.getPath() + " NameFolder: " + nameFolder);
+                    // D/Path Album: Gallery14Edit và /storage/emulated/0/Pictures/Gallery14Edit/NameFolder: Gallery14Edit
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            resultPath = Files.move(Paths.get(src), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    if (resultPath != null) {
+                        //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        });
 
         int size = album.getAlbumImages().size();
 
@@ -240,37 +273,48 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (album == null) {
             return false;
         }
-        getMenuInflater().inflate(R.menu.top_bar_menu_image, menu);
+        getMenuInflater().inflate(R.menu.top_bar_menu_detail_album, menu);
         if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName)) {
             MenuItem item = menu.findItem(R.id.move_images);
             item.setTitle("Khôi phục");
         }
         int size = album.getAlbumImages().size();
+
         if (size != 0) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
                 menu.getItem(0).setVisible(true);
-                menu.getItem(6).setVisible(false);
-                menu.getItem(2).setVisible(true);
                 menu.getItem(3).setVisible(true);
-                menu.getItem(4).setVisible(true);
-                menu.getItem(5).setVisible(true);
+                menu.getItem(1).setVisible(false);
+                menu.getItem(2).setVisible(false);
+                menu.getItem(4).setVisible(false);
+                menu.getItem(5).setVisible(false);
+                menu.getItem(6).setVisible(true);
+                menu.getItem(7).setVisible(true);
+                menu.getItem(8).setVisible(false);
+                menu.getItem(9).setVisible(true);
             } else {
                 menu.getItem(0).setVisible(false);
                 menu.getItem(1).setVisible(true);
-                menu.getItem(6).setVisible(true);
-                menu.getItem(2).setVisible(false);
-                menu.getItem(3).setVisible(false);
-                menu.getItem(4).setVisible(false);
-                menu.getItem(5).setVisible(false);
+                menu.getItem(3).setVisible(true);
+                menu.getItem(4).setVisible(true);
+                menu.getItem(5).setVisible(true);
+                menu.getItem(6).setVisible(false);
+                menu.getItem(7).setVisible(false);
+                menu.getItem(8).setVisible(true);
+                menu.getItem(2).setVisible(true);
+                menu.getItem(9).setVisible(false);
             }
         } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
-            menu.getItem(6).setVisible(true);
-            menu.getItem(2).setVisible(false);
+            menu.getItem(2).setVisible(true);
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
-            menu.getItem(5).setVisible(false);
+            menu.getItem(5).setVisible(true);
+            menu.getItem(6).setVisible(false);
+            menu.getItem(7).setVisible(false);
+            menu.getItem(8).setVisible(true);
+            menu.getItem(9).setVisible(false);
         }
         return true;
     }
@@ -292,11 +336,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_camera) { // Click Camera
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivity(intent);
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "New Picture");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+            imageUri = getApplicationContext().getContentResolver().insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            cameraResultLauncher.launch(intent);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_choose) {
+        if (menuItem.getItemId() == R.id.detAlb_choose) {
             images.forEach(imageData -> imageData.setChecked(true));
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.MultipleSelect);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -313,26 +363,26 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), AlbumCoverActivity.class);
             intent.putExtra("NAME", album.getName());
             startActivity(intent);
-            DetailAlbumActivity.this.finish();
+            return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_2) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_2) {
             setRecyclerViewLayoutManager(2);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_3) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_3) {
             setRecyclerViewLayoutManager(3);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_4) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_4) {
             setRecyclerViewLayoutManager(4);
             return true;
         }
-        if (menuItem.getItemId() == R.id.img_grid_col_5) {
+        if (menuItem.getItemId() == R.id.detAlb_grid_col_5) {
             setRecyclerViewLayoutManager(5);
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_view_mode_normal) {
-            // Click { sort UP-TO-DOWN
+            // Click sort UP-TO-DOWN
             if (!upToDown) {
                 toViewList(images);
                 imageFragmentAdapter.setData(viewList);
@@ -342,7 +392,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_view_mode_convert) {
-            // Click { sort DOWN-TO-UP
+            // Click sort DOWN-TO-UP
             if (upToDown) {
                 setDownToUp();
                 imageFragmentAdapter.setData(viewList);
@@ -372,7 +422,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_setting) {
-
             // Click Setting
             return true;
         }
@@ -471,7 +520,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
-            String name[] = src.split("/");
+            String[] name = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
@@ -479,6 +528,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
             if (result != null) {
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
@@ -486,6 +536,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
             name = dest.split("/");
             if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
+
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
             } else {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
@@ -538,6 +589,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getAlbumFavorite() {
+        Date lastModDate;
         Album Favorite = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
         File[] content = folder.listFiles();
@@ -553,7 +605,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -578,8 +631,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -597,6 +654,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getAlbumPrivate() {
+        Date lastModDate;
         Album Private = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.privateAlbumFolderName);
         File[] content = folder.listFiles();
@@ -612,7 +670,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -637,8 +696,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -658,6 +721,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private Album getRecycleBin() {
+        Date lastModDate;
         Album RecycleBin = new Album();
         File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
         File[] content = folder.listFiles();
@@ -673,7 +737,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
         String[] selectionArgs = new String[]{folderPath};
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, null);
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 String bucketName;
@@ -698,8 +763,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     bucketName = cursor.getString(bucketNameColumn);
                     data = cursor.getString(imageUriColumn);
                     imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
+//                    dateTaken = cursor.getLong(dateTakenColumn);
+//                    myCal.setTimeInMillis(dateTaken);
+//                    String dateText = formatter.format(myCal.getTime());
+                    File file = new File(data);
+                    lastModDate = new Date(file.lastModified());
+                    myCal.setTimeInMillis(lastModDate.getTime());
                     String dateText = formatter.format(myCal.getTime());
 
                     Image image = new Image();
@@ -850,6 +919,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         });
         alert.show();
+    }
+
+    private String getPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
 }

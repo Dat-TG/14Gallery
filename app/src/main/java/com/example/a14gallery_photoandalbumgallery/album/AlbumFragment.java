@@ -216,47 +216,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             }
             return true;
         }
-        if (menuItem.getItemId() == R.id.alb_camera) {  // Click camera
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivity(intent);
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_choose) {
-            // Click choose(Lựa chọn)
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_grid_col_2) {
-            // Click grid_col_2
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_grid_col_3) {
-            // Click grid_col_3
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_grid_col_4) {
-            // Click grid_col_4
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_grid_col_5) {
-            // Click grid_col_5
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_view_mode_normal) {
-            // Click Lên rồi xuống
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_view_mode_convert) {
-            // Click Đảo ngược
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_view_mode_day) {
-            // Click Xếp theo ngày
-            return true;
-        }
-        if (menuItem.getItemId() == R.id.alb_view_mode_month) {
-            // Click Xếp theo tháng
-            return true;
-        }
+
         if (menuItem.getItemId() == R.id.alb_setting) {
             // Click Setting
             return true;

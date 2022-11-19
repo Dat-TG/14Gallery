@@ -4,18 +4,12 @@
     <item
         android:id="@+id/clear_choose"
         android:icon="@drawable/ic_clear"
-        android:title=""
+        android:title="@string/remove_selected"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/img_camera"
         android:icon="@drawable/ic_baseline_camera_enhance_24"
         android:title="@string/camera_title"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/importAlbums"
-        android:icon="@drawable/ic_album"
-        android:title="@string/import_album"
         app:showAsAction="ifRoom" />
 
     <item
@@ -54,19 +48,9 @@
         app:showAsAction="ifRoom">
         <menu>
             <item
-                android:id="@+id/detAlb_add_image"
-                android:title="@string/add_image_title" />
-            <item
                 android:id="@+id/img_choose"
                 android:title="@string/choose_title" />
 
-            <!--            Để tạm thời cần phải chuyển qua bên detail image sau khi fix lỗi-->
-            <item
-                android:id="@+id/detAlb_coverAlbum"
-                android:title="@string/change_cover_album" />
-            <item
-                android:id="@+id/detAlb_deleteAlbum"
-                android:title="@string/deleteAlbum" />
             <item
                 android:id="@+id/img_grid"
                 android:title="@string/grid_columns">
