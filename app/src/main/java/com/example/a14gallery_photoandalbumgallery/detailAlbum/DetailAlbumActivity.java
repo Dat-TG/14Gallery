@@ -449,6 +449,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = true;
+                upToDown=true;
             }
             return true;
         }
@@ -459,6 +460,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = false;
+                upToDown=true;
             }
             return true;
         }
@@ -490,22 +492,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
         return false;
     }
 
-    private void toViewList(List<Image> images) {
-        if (images != null && images.size() > 0) {
-            viewList = new ArrayList<>();
-            String label = images.get(0).getDateTaken();
-            label += '.';
-            for (int i = 0; i < images.size(); i++) {
-                String labelCur = images.get(i).getDateTaken();
-                if (!labelCur.equals(label)) {
-                    label = labelCur;
-                    viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
-                }
-                viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
-            }
-        }
-    }
-
     private void toViewListMonth() {
         if (images.size() > 0) {
             int beg = 3;
@@ -523,20 +509,281 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
+        for(int i=0;i<viewList.size();i++){
+            if(viewList.get(i).type==RecyclerData.Type.Label){
+                switch (viewList.get(i).labelData) {
+                    case "January": {
+                        viewList.get(i).labelData = "Tháng 1";
+                        break;
+                    }
+                    case "February": {
+                        viewList.get(i).labelData = "Tháng 2";
+                        break;
+                    }
+                    case "March": {
+                        viewList.get(i).labelData = "Tháng 3";
+                        break;
+                    }
+                    case "April": {
+                        viewList.get(i).labelData = "Tháng 4";
+                        break;
+                    }
+                    case "May": {
+                        viewList.get(i).labelData = "Tháng 5";
+                        break;
+                    }
+                    case "June": {
+                        viewList.get(i).labelData = "Tháng 6";
+                        break;
+                    }
+                    case "July": {
+                        viewList.get(i).labelData = "Tháng 7";
+                        break;
+                    }
+                    case "August": {
+                        viewList.get(i).labelData = "Tháng 8";
+                        break;
+                    }
+                    case "September": {
+                        viewList.get(i).labelData = "Tháng 9";
+                        break;
+                    }
+                    case "October": {
+                        viewList.get(i).labelData = "Tháng 10";
+                        break;
+                    }
+                    case "November": {
+                        viewList.get(i).labelData = "Tháng 11";
+                        break;
+                    }
+                    case "December": {
+                        viewList.get(i).labelData = "Tháng 12";
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        }
     }
 
-    private void setDownToUp() {
+    private void toViewList(List<Image>images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
             label += '.';
-            for (int i = images.size() - 1; i >= 0; i--) {
+            for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
                 if (!labelCur.equals(label)) {
                     label = labelCur;
                     viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
                 }
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+            }
+        }
+        int beg=3;
+        for(int i=0;i<viewList.size();i++){
+            if(viewList.get(i).type==RecyclerData.Type.Label){
+                switch (viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6)) {
+                    case "January": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 1");
+                        break;
+                    }
+                    case "February": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 2");
+                        break;
+                    }
+                    case "March": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 3");
+                        break;
+                    }
+                    case "April": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 4");
+                        break;
+                    }
+                    case "May": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 5");
+                        break;
+                    }
+                    case "June": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 6");
+                        break;
+                    }
+                    case "July": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 7");
+                        break;
+                    }
+                    case "August": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 8");
+                        break;
+                    }
+                    case "September": {
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 9");
+                        break;
+                    }
+                    case "October":{
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 10");
+                        break;
+                    }
+                    case "November":{
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 11");
+                        break;
+                    }
+                    case "December":{
+                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 12");
+                        break;
+                    }
+                    default:
+                        break;
+                }
+
+            }
+        }
+    }
+
+    private void setDownToUp() {
+        if (images.size() > 0) {
+            if(!upToDown && !sortByDate){
+                int beg = 3;
+                viewList = new ArrayList<>();
+                String label = images.get(0).getDateTaken();
+                label = label.substring(beg, label.length() - 6);
+                label += '.';
+                for (int i = images.size()-1; i >=0; i--) {
+                    String labelCur = images.get(i).getDateTaken();
+                    labelCur = labelCur.substring(beg, labelCur.length() - 6);
+                    if (!labelCur.equals(label)) {
+                        label = labelCur;
+                        viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                    }
+                    viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+                }
+                for(int i=0;i<viewList.size();i++) {
+                    if (viewList.get(i).type == RecyclerData.Type.Label) {
+                        switch (viewList.get(i).labelData) {
+                            case "January": {
+                                viewList.get(i).labelData = "Tháng 1";
+                                break;
+                            }
+                            case "February": {
+                                viewList.get(i).labelData = "Tháng 2";
+                                break;
+                            }
+                            case "March": {
+                                viewList.get(i).labelData = "Tháng 3";
+                                break;
+                            }
+                            case "April": {
+                                viewList.get(i).labelData = "Tháng 4";
+                                break;
+                            }
+                            case "May": {
+                                viewList.get(i).labelData = "Tháng 5";
+                                break;
+                            }
+                            case "June": {
+                                viewList.get(i).labelData = "Tháng 6";
+                                break;
+                            }
+                            case "July": {
+                                viewList.get(i).labelData = "Tháng 7";
+                                break;
+                            }
+                            case "August": {
+                                viewList.get(i).labelData = "Tháng 8";
+                                break;
+                            }
+                            case "September": {
+                                viewList.get(i).labelData = "Tháng 9";
+                                break;
+                            }
+                            case "October": {
+                                viewList.get(i).labelData = "Tháng 10";
+                                break;
+                            }
+                            case "November": {
+                                viewList.get(i).labelData = "Tháng 11";
+                                break;
+                            }
+                            case "December": {
+                                viewList.get(i).labelData = "Tháng 12";
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            else{
+                viewList = new ArrayList<>();
+                String label = images.get(0).getDateTaken();
+                label += '.';
+                for (int i = images.size() - 1; i >= 0; i--) {
+                    String labelCur = images.get(i).getDateTaken();
+                    if (!labelCur.equals(label)) {
+                        label = labelCur;
+                        viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
+                    }
+                    viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
+                }
+                int beg=3;
+                for(int i=0;i<viewList.size();i++) {
+                    if (viewList.get(i).type == RecyclerData.Type.Label) {
+                        switch (viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6)) {
+                            case "January": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 1");
+                                break;
+                            }
+                            case "February": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 2");
+                                break;
+                            }
+                            case "March": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 3");
+                                break;
+                            }
+                            case "April": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 4");
+                                break;
+                            }
+                            case "May": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 5");
+                                break;
+                            }
+                            case "June": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 6");
+                                break;
+                            }
+                            case "July": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 7");
+                                break;
+                            }
+                            case "August": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 8");
+                                break;
+                            }
+                            case "September": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 9");
+                                break;
+                            }
+                            case "October": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 10");
+                                break;
+                            }
+                            case "November": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 11");
+                                break;
+                            }
+                            case "December": {
+                                viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 12");
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
     }

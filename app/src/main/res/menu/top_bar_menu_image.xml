@@ -30,15 +30,9 @@
 
     <item
         android:id="@+id/slideShow"
-        android:icon="@drawable/ic_slideshow"
         android:title="@string/slideshow"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share"
-        android:title="@string/share"
-        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/img_more"
