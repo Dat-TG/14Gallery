@@ -19,11 +19,17 @@ import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 public class ImageFragmentAdapterSearch extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    Calendar calendar;
 
     public void setFilteredList(List<RecyclerData> filteredList) {
         this.imageDataList = filteredList;
@@ -129,7 +135,14 @@ public class ImageFragmentAdapterSearch extends
                     .centerCrop()
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(imageView);
-            textView.setText("Thời gian: " + imageData.getDateTaken());
+
+            File file = new File(imageData.getPath());
+            Date lastModDate = new Date(file.lastModified());
+            calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(lastModDate.getTime());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+            String dateText = formatter.format(calendar.getTime());
+            textView.setText("Thời gian: " + dateText);
 //            File file = new File(imageData.getPath());
 //            String fileName = file.getName();
 //            String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
