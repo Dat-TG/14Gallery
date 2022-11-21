@@ -18,10 +18,7 @@
         android:icon="@drawable/ic_add_image"
         android:title="@string/add_image_title"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/detAlb_rename"
-        android:title="Đổi tên album"
-        />
+
     <item
         android:id="@+id/detAlb_choose"
         android:icon="@drawable/select_all_icon"
@@ -97,4 +94,9 @@
         android:id="@id/detAlb_deleteAlbum"
         android:title="@string/delete_images"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/detAlb_rename"
+        android:title="@string/rename_album"
+        app:showAsAction="ifRoom"
+        />
 </menu>

@@ -292,6 +292,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(7).setVisible(true);
                 menu.getItem(8).setVisible(false);
                 menu.getItem(9).setVisible(true);
+                menu.getItem(10).setVisible(false);
             } else {
                 menu.getItem(0).setVisible(false);
                 menu.getItem(1).setVisible(true);
@@ -299,6 +300,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(4).setVisible(true);
                 menu.getItem(5).setVisible(true);
                 menu.getItem(6).setVisible(false);
+                menu.getItem(10).setVisible(true);
                 menu.getItem(7).setVisible(false);
                 menu.getItem(8).setVisible(true);
                 menu.getItem(2).setVisible(true);
@@ -312,6 +314,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             menu.getItem(4).setVisible(false);
             menu.getItem(5).setVisible(true);
             menu.getItem(6).setVisible(false);
+            menu.getItem(10).setVisible(true);
             menu.getItem(7).setVisible(false);
             menu.getItem(8).setVisible(true);
             menu.getItem(9).setVisible(false);
