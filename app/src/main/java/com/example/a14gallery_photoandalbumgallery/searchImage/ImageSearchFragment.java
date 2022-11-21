@@ -27,8 +27,13 @@ import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 public class ImageSearchFragment extends Fragment implements MenuProvider {
@@ -38,11 +43,14 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     GridLayoutManager gridLayoutManager;
     TextView textNotImageFound;
     private SearchView searchView;
-
     private ArrayList<RecyclerData> viewList = null;
     BiConsumer<Integer, View> onItemClick;
     BiConsumer<Integer, View> onItemLongClick;
     public static ImageFragmentAdapterSearch imageFragmentAdapterSearch;
+    Calendar calendar = null;
+    SimpleDateFormat formatter;
+    String dateText;
+
 
     public ImageSearchFragment() {
 
@@ -131,7 +139,13 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     private void filterList(String text) {
         List<RecyclerData>  filteredList = new ArrayList<>();
         for(RecyclerData recyclerData: viewList){
-            if(recyclerData.imageData.getDateTaken().toLowerCase().contains(text.toLowerCase())){
+            File file = new File(recyclerData.imageData.getPath());
+            Date lastModDate = new Date(file.lastModified());
+            calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(lastModDate.getTime());
+            formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+            dateText = formatter.format(calendar.getTime());
+            if(dateText.toLowerCase().contains(text.toLowerCase())){
                 filteredList.add(recyclerData);
             }
         }
