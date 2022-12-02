@@ -91,7 +91,7 @@
         </menu>
     </item>
     <item
-        android:id="@id/detAlb_deleteAlbum"
+        android:id="@+id/detAlb_deleteImg"
         android:title="@string/delete_images"
         app:showAsAction="ifRoom" />
     <item

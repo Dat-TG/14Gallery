@@ -481,9 +481,10 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.detAlb_deleteAlbum) {
             deleteAlbumAndMoveImages(album);
+            onResume();
             return true;
         }
-        if (menuItem.getItemId() == R.id.delete_images) {
+        if (menuItem.getItemId() == R.id.detAlb_deleteImg) {
             moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
             imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
@@ -869,9 +870,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(
                 this);
         alert.setTitle("Xóa Album");
-        alert.setMessage("Bạn có chắc muốn xóa album này không ?\nTất cả hình ảnh sẽ được chuyển ra thư mục ngoài mà không có bị xóa");
+        alert.setMessage("Bạn có chắc chắn muốn xóa album này không ?");
 
-        alert.setPositiveButton("YES", (dialog, which) -> {
+        alert.setPositiveButton("Xóa", (dialog, which) -> {
             for (Image image : imagesAlbum) {
                 Log.e("src", image.getPath());
                 String src = image.getPath();
@@ -891,6 +892,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Xóa album không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 if (result != null) {
+                    if (isFavorite(src)) {
+                        AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                        AlbumFavoriteData newImg=new AlbumFavoriteData(dest);
+                        AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
+                        AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+                    }
                     //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Xóa album thành công", Toast.LENGTH_SHORT).show();
@@ -901,7 +908,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             finish();
             dialog.dismiss();
         });
-        alert.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        alert.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
         alert.show();
     }
 
