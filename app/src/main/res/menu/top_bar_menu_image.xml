@@ -32,6 +32,10 @@
         android:id="@+id/slideShow"
         android:title="@string/slideshow"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/addFavorite"
+        android:title="Thêm vào Ưa thích"
+        app:showAsAction="ifRoom"/>
 
 
     <item

@@ -52,6 +52,8 @@ import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumA
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
@@ -703,6 +705,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
         binding.imageFragmentRecycleView.setLayoutManager(gridLayoutManager);
     }
 
+    public boolean isFavorite(String imagePath) {
+        AlbumFavoriteData img = AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img==null) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     private void moveToAlbum(String dest) {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
@@ -720,6 +732,12 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
+                if (isFavorite(src)) {
+                    AlbumFavoriteData old=AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(src);
+                    AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                    AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().delete(old);
+                    AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().insert(newImg);
+                }
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();

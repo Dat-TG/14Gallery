@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityAddItemBinding;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.google.android.material.tabs.TabLayout;
@@ -115,6 +117,16 @@ public class AddItemActivity extends AppCompatActivity {
         return false;
     }
 
+    public boolean isFavorite(String imagePath) {
+        AlbumFavoriteData img = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img==null) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     // Move image by path image
     private void moveToAlbum(Context context, List<Image> images, String dest) {
         ArrayList<Image> selectedImages = images.stream()
@@ -124,11 +136,19 @@ public class AddItemActivity extends AppCompatActivity {
         try {
             for (Image image : selectedImages) {
                 String src = image.getPath();
-                Path result;
                 String[] name = src.split("/");
+                Path result;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
-                    if (result != null) count++;
+                    if (result != null) {
+                        count++;
+                        if (isFavorite(src)) {
+                            AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                            AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                            AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
+                            AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+                        }
+                    }
                 }
             }
             Toast.makeText(context, "Đã di chuyển thành công " + count + " ảnh vào album", Toast.LENGTH_SHORT).show();

@@ -1,7 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 
 import static com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
-
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -18,6 +17,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,15 +32,18 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -51,6 +54,7 @@ import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumA
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityFullscreenImageBinding;
@@ -111,6 +115,15 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         binding.btnHide.setOnClickListener(this);
         binding.btnMore.setOnClickListener(this);
         binding.btnHashtag.setOnClickListener(this);
+        binding.btnFav.setOnClickListener(this);
+
+        Button btnFav=(Button)findViewById(R.id.btnFav);
+        Drawable top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
+        boolean isFav=isFavorite(imagePath);
+        if (isFav) {
+            top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
+        }
+        btnFav.setCompoundDrawablesWithIntrinsicBounds(null,top,null,null);
 
         Glide.with(this)
                 .load(imagePath)
@@ -277,6 +290,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         binding.btnEdit.setEnabled(enabled);
         binding.btnMore.setEnabled(enabled);
         binding.btnHashtag.setEnabled(enabled);
+        binding.btnFav.setEnabled(enabled);
     }
 
     @Override
@@ -325,6 +339,24 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             }
 
 
+        }
+
+        //Add to Favorite Button
+        if (view.getId()==R.id.btnFav) {
+            Drawable top;
+            if (!isFavorite(imagePath)) {
+                top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
+                AlbumFavoriteData img=new AlbumFavoriteData(imagePath);
+                AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(img);
+            }
+            else {
+                top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
+                AlbumFavoriteData deleteImg=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+                AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(deleteImg);
+            }
+            Button btnFav=(Button)findViewById(R.id.btnFav);
+            //btnFav.setBackgroundResource(R.drawable.ic_baseline_favorite_24);
+            btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
         }
 
         // Share button
@@ -482,7 +514,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
-
         // Add to album button
         if (menuItem.getItemId() == R.id.btnAddToAlbum) {
             //Show album to choose
@@ -600,6 +631,12 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         if (result != null) {
             ImageGallery.getInstance().update(this);
             AlbumGallery.getInstance().update(this);
+            if (isFavorite(src)) {
+                AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
+                AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+            }
             //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
@@ -609,6 +646,15 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             Snackbar.make(findViewById(R.id.full_screen_image_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {
             Snackbar.make(findViewById(R.id.full_screen_image_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+    public boolean isFavorite(String imagePath) {
+        AlbumFavoriteData img =AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img==null) {
+            return false;
+        }
+        else {
+            return true;
         }
     }
 }
