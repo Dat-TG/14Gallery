@@ -841,20 +841,19 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
             if (result != null) {
                 if (isFavorite(src)) {
-                    AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
-                    AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                    AlbumFavoriteData old = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
                     AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
-                    AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+                    String name2[] = dest.split("/");
+                    if (!Objects.equals(name2[name2.length - 1], AlbumGallery.recycleBinFolderName)) {
+                        AlbumFavoriteData newImg = new AlbumFavoriteData(dest + name[name.length - 1]);
+                        AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+                    }
                 }
-                Log.e("SRC",src);
-                Log.e("DEST",dest+"/"+name[name.length-1]);
-                //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
             name = dest.split("/");
             if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
-
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
             } else {
                 Snackbar.make(findViewById(R.id.detail_album_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
@@ -894,9 +893,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 if (result != null) {
                     if (isFavorite(src)) {
                         AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
-                        AlbumFavoriteData newImg=new AlbumFavoriteData(dest);
                         AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
-                        AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
                     }
                     //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
                 } else {
