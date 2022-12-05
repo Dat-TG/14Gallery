@@ -174,6 +174,7 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.src_setting) {
             Intent intent = new Intent(getContext(), SettingActivity.class);
+            intent.putExtra("Fragment", 3);
             requireActivity().startActivity(intent);
             return true;
         }

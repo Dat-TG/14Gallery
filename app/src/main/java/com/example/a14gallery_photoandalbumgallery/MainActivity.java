@@ -36,25 +36,36 @@ public class MainActivity extends AppCompatActivity {
     NavController navController;
     public static int NightMode;
     SharedPreferences sharedPreferences;
-    int theme;
+    int theme, fragmentCurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
         NightMode = sharedPreferences.getInt("NightModeInt", 0);
         theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        fragmentCurrent = sharedPreferences.getInt("fragCurr", 1);
         if (NightMode != 2) {
-            if (theme != 0) setTheme(theme);
+            if (theme != 0) {
+                setTheme(theme);
+            }
         } else {
             setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
             AppCompatDelegate.setDefaultNightMode(NightMode);
         }
+
         super.onCreate(savedInstanceState);
+
+        if (SettingActivity.flag == 1) {
+            if (fragmentCurrent == 1) replaceFragment(new ImageFragment());
+            else if (fragmentCurrent == 2) replaceFragment(new AlbumFragment());
+            else replaceFragment(new ImageSearchFragment());
+            SettingActivity.flag = 0;
+        } else replaceFragment(new ImageFragment());
+
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
-        replaceFragment(new ImageFragment());
         // Top bar menu
         toolbar = binding.topAppBar;
         setSupportActionBar(toolbar);

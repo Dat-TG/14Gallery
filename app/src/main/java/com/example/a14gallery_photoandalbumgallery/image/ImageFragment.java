@@ -326,6 +326,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         }
         if (menuItem.getItemId() == R.id.img_setting) {   // Click Setting
             Intent intent = new Intent(getContext(), SettingActivity.class);
+            intent.putExtra("Fragment", 1);
             requireActivity().startActivity(intent);
             return true;
         }

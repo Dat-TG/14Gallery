@@ -220,6 +220,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
         if (menuItem.getItemId() == R.id.alb_setting) {
             Intent intent = new Intent(getContext(), SettingActivity.class);
+            intent.putExtra("Fragment", 2);
             requireActivity().startActivity(intent);
             return true;
         }

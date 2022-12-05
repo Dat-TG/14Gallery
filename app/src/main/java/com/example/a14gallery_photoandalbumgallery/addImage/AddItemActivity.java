@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.R;
@@ -44,8 +43,8 @@ public class AddItemActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
     Album album;
-    public static List<Image> selectedAlbum = new ArrayList<>();
-    public static List<String> selectedAlbumName = new ArrayList<>();
+    public static List<Image> selectedImages = new ArrayList<>();
+    public static List<String> selectedImageName = new ArrayList<>();
 
 
     SharedPreferences sharedPreferences;
@@ -95,8 +94,8 @@ public class AddItemActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        selectedAlbumName = new ArrayList<>();
-        selectedAlbum = new ArrayList<>();
+        selectedImageName = new ArrayList<>();
+        selectedImages = new ArrayList<>();
     }
 
     @Override
@@ -113,14 +112,14 @@ public class AddItemActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.add_button) { // Click check to add image
-            String message = "Bạn chắc chắn muốn thêm " + selectedAlbum.size() + " ảnh vào album này ?";
+            String message = "Bạn chắc chắn muốn thêm " + selectedImages.size() + " ảnh vào album này ?";
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     this);
             alert.setTitle("Xác nhận");
             alert.setMessage(message);
             alert.setPositiveButton("YES", (dialog, which) -> {
                 String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/14Gallery/" + album.getName();
-                moveToAlbum(getApplicationContext(), selectedAlbum, dest);
+                moveToAlbum(getApplicationContext(), selectedImages, dest);
                 finish();
                 dialog.dismiss();
 

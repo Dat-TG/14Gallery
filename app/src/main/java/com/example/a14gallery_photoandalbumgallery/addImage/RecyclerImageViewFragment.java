@@ -4,20 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
@@ -28,6 +23,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBind
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class RecyclerImageViewFragment extends Fragment {
@@ -62,7 +58,7 @@ public class RecyclerImageViewFragment extends Fragment {
             return binding.getRoot();
         }
         viewList.forEach(image -> image.imageData.setChecked(false));
-        AddItemActivity.selectedAlbum = new ArrayList<>();
+        AddItemActivity.selectedImages = new ArrayList<>();
 
         binding.imageFragmentRecycleView.setHasFixedSize(true);
         binding.imageFragmentRecycleView.setNestedScrollingEnabled(true);
@@ -73,12 +69,12 @@ public class RecyclerImageViewFragment extends Fragment {
             String selectedImageName = new File(viewList.get(position).imageData.getPath()).getName();
             if (!viewList.get(position).imageData.isChecked()) {
                 viewList.get(position).imageData.setChecked(true);
-                AddItemActivity.selectedAlbum.add(viewList.get(position).imageData);
-                AddItemActivity.selectedAlbumName.add(selectedImageName);
+                AddItemActivity.selectedImages.add(viewList.get(position).imageData);
+                AddItemActivity.selectedImageName.add(selectedImageName);
             } else {
                 viewList.get(position).imageData.setChecked(false);
-                AddItemActivity.selectedAlbum.remove(viewList.get(position).imageData);
-                AddItemActivity.selectedAlbumName.remove(selectedImageName);
+                AddItemActivity.selectedImages.removeIf(image -> Objects.equals(image.getPath(), viewList.get(position).imageData.getPath()));
+                AddItemActivity.selectedImageName.remove(selectedImageName);
             }
             imageFragmentAdapter.notifyItemChanged(position);
         };
@@ -98,10 +94,8 @@ public class RecyclerImageViewFragment extends Fragment {
         if (viewList != null) {
             for (int i = 0; i < viewList.size(); i++) {
                 String nameFile = new File(viewList.get(i).imageData.getPath()).getName();
-                if (AddItemActivity.selectedAlbumName.contains(nameFile)) {
-                    viewList.get(i).imageData.setChecked(true);
-                    imageFragmentAdapter.notifyItemChanged(i);
-                }
+                viewList.get(i).imageData.setChecked(AddItemActivity.selectedImageName.contains(nameFile));
+                imageFragmentAdapter.notifyItemChanged(i);
             }
         }
     }
