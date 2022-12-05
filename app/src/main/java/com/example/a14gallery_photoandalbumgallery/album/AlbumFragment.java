@@ -38,6 +38,7 @@ import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBind
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
+import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -218,7 +219,8 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         }
 
         if (menuItem.getItemId() == R.id.alb_setting) {
-            // Click Setting
+            Intent intent = new Intent(getContext(), SettingActivity.class);
+            requireActivity().startActivity(intent);
             return true;
         }
         return false;

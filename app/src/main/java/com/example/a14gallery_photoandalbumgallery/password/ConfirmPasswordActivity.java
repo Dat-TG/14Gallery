@@ -1,6 +1,8 @@
 package com.example.a14gallery_photoandalbumgallery.password;
 
 
+import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
@@ -22,9 +25,20 @@ public class ConfirmPasswordActivity extends AppCompatActivity {
     PatternLockView mPatternLockView;
     String password;
     TextView confirmPassWord;
+    SharedPreferences sharedPreferences;
+    int theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_password);
 

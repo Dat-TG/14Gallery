@@ -81,4 +81,7 @@
     <string name="no_matching_image">Không tìm thấy ảnh phù hợp</string>
     <string name="no_hashtag_message">Chưa có hashtag nào được thêm</string>
     <string name="rename_album">Đổi tên album</string>
+    <string name="general">Chung</string>
+    <string name="theme">Chủ đề</string>
+    <string name="dark_mode">Ban đêm</string>
 </resources>

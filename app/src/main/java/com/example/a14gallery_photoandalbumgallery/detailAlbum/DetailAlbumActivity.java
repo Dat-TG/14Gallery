@@ -1,8 +1,11 @@
 package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 
+import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -87,9 +91,20 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> cameraResultLauncher;
     Uri imageUri;
+    SharedPreferences sharedPreferences;
+    int theme;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityDetailAlbumBinding.inflate(getLayoutInflater());
 
@@ -215,6 +230,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        if (theme != sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple)) {
+            recreate();
+        }
         super.onResume();
         AlbumGallery.getInstance().update(this);
         nameFolder = getIntent().getStringExtra("NAME");

@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 
+import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
 import static com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
 
 import android.Manifest;
@@ -13,6 +14,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -41,6 +43,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -88,9 +91,20 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     View detailsDialogView;
     ActivityResultLauncher<Intent> activityEditLauncher;
     Uri imageUri;
+    SharedPreferences sharedPreferences;
+    int theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityFullscreenImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

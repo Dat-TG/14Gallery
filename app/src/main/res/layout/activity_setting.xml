@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_bar_setting"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Cài đặt" />
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/general"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:background="#7E7B7B" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/click_change_theme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/theme"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            app:iconSize="24dp"
+            app:iconPadding="0dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginEnd="20dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/all_themes"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:paddingVertical="10dp"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_yellow"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#fbc02d"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_greenDark"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#689f38"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_purple"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="@color/purple_500"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_pink"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#ff80ab"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_blue"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#039be5"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_brown"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#bf360c"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_green"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="#00e676"
+                android:layout_marginEnd="30dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/theme_redDark"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:iconSize="24dp"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                app:backgroundTint="#c51162"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#7E7B7B" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_dark_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode"
+        android:layout_marginEnd="12dp"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"/>
+
+</LinearLayout>

@@ -1,14 +1,18 @@
 package com.example.a14gallery_photoandalbumgallery.addImage;
 
+import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -43,9 +47,22 @@ public class AddItemActivity extends AppCompatActivity {
     public static List<Image> selectedAlbum = new ArrayList<>();
     public static List<String> selectedAlbumName = new ArrayList<>();
 
+
+    SharedPreferences sharedPreferences;
+    int theme;
+
     @SuppressLint("StringFormatInvalid")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityAddItemBinding.inflate(getLayoutInflater());
 

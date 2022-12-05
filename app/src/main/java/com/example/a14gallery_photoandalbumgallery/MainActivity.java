@@ -2,6 +2,7 @@ package com.example.a14gallery_photoandalbumgallery;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -22,6 +24,7 @@ import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
+import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,11 +34,25 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     NavController navController;
+    public static int NightMode;
+    SharedPreferences sharedPreferences;
+    int theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+
         setContentView(binding.getRoot());
         replaceFragment(new ImageFragment());
         // Top bar menu
@@ -52,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new ImageSearchFragment());
             return true;
         });
+    }
+
+    @Override
+    protected void onResume() {
+        if (theme != sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple)) {
+            recreate();
+        }
+        super.onResume();
     }
 
     @Override

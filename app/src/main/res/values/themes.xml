@@ -1,18 +1,141 @@
 <resources>
     <!-- Base application theme. -->
+
     <style name="Theme.14GalleryPhotoAndAlbumGallery" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#c51162</item>
+        <item name="colorPrimaryVariant">#8e0038</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#c51162</item>
+        <item name="colorSecondaryVariant">#8e0038</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.green" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#00e676</item>
+        <item name="colorPrimaryVariant">#00b248</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#00e676</item>
+        <item name="colorSecondaryVariant">#00b248</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.brown" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#bf360c</item>
+        <item name="colorPrimaryVariant">#870000</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#bf360c</item>
+        <item name="colorSecondaryVariant">#870000</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.blue" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#039be5</item>
+        <item name="colorPrimaryVariant">#006db3</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#039be5</item>
+        <item name="colorSecondaryVariant">#006db3</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.pink" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#ff80ab</item>
+        <item name="colorPrimaryVariant">#c94f7c</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#ff80ab</item>
+        <item name="colorSecondaryVariant">#c94f7c</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.purple" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/purple_500</item>
+        <item name="colorSecondaryVariant">@color/purple_700</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.yellow" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#fbc02d</item>
+        <item name="colorPrimaryVariant">#c49000</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#fbc02d</item>
+        <item name="colorSecondaryVariant">#c49000</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.14GalleryPhotoAndAlbumGallery.greenDark" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#689f38</item>
+        <item name="colorPrimaryVariant">#99d066</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#689f38</item>
+        <item name="colorSecondaryVariant">#99d066</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="Theme.14GalleryPhotoAndAlbumGallery.NoActionBar">
@@ -30,5 +153,9 @@
     </style>
     <style name="Text">
         <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.MyApp.Button.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

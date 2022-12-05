@@ -24,7 +24,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_icon_app_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.14GalleryPhotoAndAlbumGallery.NoActionBar"
+        android:theme="@style/Theme.14GalleryPhotoAndAlbumGallery"
         tools:targetApi="31">
         <activity android:name=".detailAlbum.DetailAlbumActivity" />
         <activity android:name=".addImage.AddItemActivity" />
@@ -43,6 +43,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:allowBackup="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,7 +84,10 @@
 
         <activity android:name=".MoveImageToAlbum.DetailAlbumMoveActivity" />
         <activity android:name=".MoveImageToAlbum.ChooseAlbumActivity" />
-
+        <activity
+            android:name=".setting.SettingActivity"
+            android:allowBackup="true"
+            />
     </application>
 
 </manifest>

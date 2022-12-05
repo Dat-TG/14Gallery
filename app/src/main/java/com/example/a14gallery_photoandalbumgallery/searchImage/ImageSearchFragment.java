@@ -26,6 +26,7 @@ import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenIma
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
+import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -172,7 +173,8 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.src_setting) {
-            // TODO: Click setting
+            Intent intent = new Intent(getContext(), SettingActivity.class);
+            requireActivity().startActivity(intent);
             return true;
         }
         return false;
