@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="@string/general"
+            android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="16sp" />
 
         <View
@@ -54,165 +55,177 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="@string/theme"
+            android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="16sp" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/click_change_color"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            style="@style/Widget.MaterialComponents.Button.Icon"
-            app:iconSize="24dp"
-            app:iconPadding="0dp"
+            android:layout_marginEnd="20dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            android:layout_marginEnd="20dp"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/all_themes"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
+        android:orientation="vertical"
         android:paddingVertical="10dp"
-        >
+        android:visibility="gone">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_yellow"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#fbc02d"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_greenDark"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#689f38"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_purple"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="@color/purple_500"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_pink"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#ff80ab"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_blue"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#039be5"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_brown"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#bf360c"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_green"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
+                android:layout_marginEnd="30dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
                 app:backgroundTint="#00e676"
-                android:layout_marginEnd="30dp"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/theme_redDark"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                app:iconSize="24dp"
-                app:iconPadding="0dp"
                 android:insetLeft="0dp"
-                app:backgroundTint="#c51162"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
+                app:backgroundTint="#c51162"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
         </LinearLayout>
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="center"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:background="#7E7B7B" />
 
@@ -220,10 +233,10 @@
         android:id="@+id/switch_dark_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/dark_mode"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="12dp"
         android:padding="10dp"
-        android:textSize="16sp"
-        android:layout_marginStart="16dp"/>
+        android:text="@string/dark_mode"
+        android:textSize="16sp" />
 
 </LinearLayout>

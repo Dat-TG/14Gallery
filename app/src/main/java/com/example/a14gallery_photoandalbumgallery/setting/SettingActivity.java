@@ -60,7 +60,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
         binding.clickChangeTheme.setOnClickListener(this);
         if (isOpen == 1) binding.allThemes.setVisibility(View.VISIBLE);
-         else binding.allThemes.setVisibility(View.GONE);
+        else binding.allThemes.setVisibility(View.GONE);
 
         binding.switchDarkMode.setChecked(NightMode == 2);
 
@@ -77,7 +77,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     flag = 1;
                 }
         );
-
+        binding.clickChangeColor.setOnClickListener(this);
         binding.themeBlue.setOnClickListener(this);
         binding.themeBrown.setOnClickListener(this);
         binding.themeGreen.setOnClickListener(this);
@@ -104,6 +104,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
         switch (v.getId()) {
             case R.id.click_change_theme:
+            case R.id.click_change_color:
                 if (binding.allThemes.getVisibility() == View.VISIBLE) {
                     binding.allThemes.setVisibility(View.GONE);
                     editor.putInt("isOpenColor", 0);
