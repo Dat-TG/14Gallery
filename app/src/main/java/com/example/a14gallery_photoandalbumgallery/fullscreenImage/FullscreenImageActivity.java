@@ -125,6 +125,11 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
         btnFav.setCompoundDrawablesWithIntrinsicBounds(null,top,null,null);
 
+        String[] name=imagePath.split("/");
+        if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+            btnFav.setEnabled(false);
+        }
+
         Glide.with(this)
                 .load(imagePath)
                 .fitCenter()
