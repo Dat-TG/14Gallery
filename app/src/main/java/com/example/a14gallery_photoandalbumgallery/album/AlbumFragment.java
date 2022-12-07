@@ -44,8 +44,10 @@ import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivit
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -99,13 +101,18 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         favoriteAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Album Favorite = getAlbumFavorite();
-                Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
-                Gson gson = new Gson();
-                String imagesObj = gson.toJson(Favorite);
-                intent.putExtra("ALBUM", imagesObj);
-                intent.putExtra("NAME", AlbumGallery.favoriteAlbumFolderName);
-                startActivity(intent);
+                Album Favorite = null;
+                try {
+                    Favorite = getAlbumFavorite();
+                    Intent intent = new Intent(getActivity().getApplicationContext(), DetailAlbumActivity.class);
+                    Gson gson = new Gson();
+                    String imagesObj = gson.toJson(Favorite);
+                    intent.putExtra("ALBUM", imagesObj);
+                    intent.putExtra("NAME", AlbumGallery.favoriteAlbumFolderName);
+                    startActivity(intent);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
         });
@@ -227,7 +234,7 @@ public class AlbumFragment extends Fragment implements MenuProvider {
         return false;
     }
 
-    public Album getAlbumFavorite() {
+    public Album getAlbumFavorite() throws ParseException {
         Album Favorite = new Album();
         Favorite.setName("Ưa thích");
         List<AlbumFavoriteData>FavList= AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getAllFavImg();
@@ -236,6 +243,12 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             img.setPath(FavList.get(i).imagePath);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 img=ImageGallery.getInstance().getImageByPath(getContext(),FavList.get(i).imagePath);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
+                Date d=formatter.parse(img.getDateTaken());
+                SimpleDateFormat Nformatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
+                String datetext=Nformatter.format(d);
+                img.setDateTaken(datetext);
+                Log.e("date",img.getDateTaken());
             }
             Favorite.getAlbumImages().add(img);
         }

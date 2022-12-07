@@ -60,6 +60,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -108,7 +109,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
-                album= getAlbumFavorite();
+                try {
+                    album= getAlbumFavorite();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Log.e("sos",album.getAlbumImages().get(0).getDateTaken());
             } else {
                 Gson gson = new Gson();
                 album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
@@ -228,7 +234,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
-                album = getAlbumFavorite();
+                try {
+                    album = getAlbumFavorite();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             } else if (nameFolder.equals(AlbumGallery.privateAlbumFolderName)) {
                 album = getAlbumPrivate();
             } else {
@@ -1207,7 +1217,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         return result;
     }
 
-    public Album getAlbumFavorite() {
+    public Album getAlbumFavorite() throws ParseException {
         Album Favorite = new Album();
         Favorite.setName("Ưa thích");
         List<AlbumFavoriteData>FavList= AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
@@ -1215,7 +1225,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
             Image img=new Image();
             img.setPath(FavList.get(i).imagePath);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                img= ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+                img=ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
+                Date d=formatter.parse(img.getDateTaken());
+                SimpleDateFormat Nformatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
+                String datetext=Nformatter.format(d);
+                img.setDateTaken(datetext);
+                Log.e("date",img.getDateTaken());
             }
             Favorite.getAlbumImages().add(img);
         }

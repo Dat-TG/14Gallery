@@ -36,8 +36,12 @@ import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumMoveBinding;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 
@@ -73,7 +77,11 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
-                album= getAlbumFavorite();
+                try {
+                    album= getAlbumFavorite();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             } else {
                 Gson gson = new Gson();
                 album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
@@ -167,7 +175,11 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         AlbumGallery.getInstance().update(this);
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
-                album= getAlbumFavorite();
+                try {
+                    album= getAlbumFavorite();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             } else {
                 Gson gson = new Gson();
                 album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
@@ -228,7 +240,7 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         binding.recyclerDetailView.setLayoutManager(gridLayoutManager);
     }
 
-    public Album getAlbumFavorite() {
+    public Album getAlbumFavorite() throws ParseException {
         Album Favorite = new Album();
         Favorite.setName("Ưa thích");
         List<AlbumFavoriteData>FavList= AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
@@ -236,7 +248,13 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
             Image img=new Image();
             img.setPath(FavList.get(i).imagePath);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                img= ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+                img=ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
+                Date d=formatter.parse(img.getDateTaken());
+                SimpleDateFormat Nformatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
+                String datetext=Nformatter.format(d);
+                img.setDateTaken(datetext);
+                Log.e("date",img.getDateTaken());
             }
             Favorite.getAlbumImages().add(img);
         }
