@@ -114,7 +114,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                Log.e("sos",album.getAlbumImages().get(0).getDateTaken());
             } else {
                 Gson gson = new Gson();
                 album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);

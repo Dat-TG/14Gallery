@@ -83,7 +83,7 @@
 
         <activity android:name=".MoveImageToAlbum.DetailAlbumMoveActivity" />
         <activity android:name=".MoveImageToAlbum.ChooseAlbumActivity" />
-
+        <activity android:name=".CombineAlbum.CombineAlbumActivity"/>
     </application>
 
 </manifest>

@@ -17,6 +17,10 @@
             <item
                 android:id="@+id/alb_setting"
                 android:title="@string/setting_title" />
+            <item
+                android:id="@+id/alb_combine"
+                android:title="Gộp album"
+                />
         </menu>
     </item>
 </menu>
