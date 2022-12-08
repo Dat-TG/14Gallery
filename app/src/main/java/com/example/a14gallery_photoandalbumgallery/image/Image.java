@@ -1,7 +1,9 @@
 package com.example.a14gallery_photoandalbumgallery.image;
 
+import android.content.Context;
 import android.net.Uri;
 
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.ImageHashtag;
 
 import java.util.ArrayList;
@@ -88,4 +90,9 @@ public class Image {
         this.resolution = resolution;
     }
 
+    public boolean hasHashtag(Context context, String hashtagName) {
+        AppDatabase appDatabase = AppDatabase.getInstance(context);
+        List<String> hashtags = appDatabase.imageHashtagDao().loadAllHashtagByPaths(new String[]{this.path});
+        return hashtags.contains(hashtagName);
+    }
 }
