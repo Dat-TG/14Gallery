@@ -44,7 +44,7 @@ public class SearchFragment extends Fragment implements MenuProvider {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final FragmentActivity activity = requireActivity();
-        View view = inflater.inflate(R.layout.fragment_album_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
         simpleFrameLayout = view.findViewById(R.id.simpleFrameLayout);
         tabLayout =view.findViewById(R.id.tab_add_image_layout);
         TabLayout.Tab firstTab = tabLayout.newTab();

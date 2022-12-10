@@ -62,7 +62,7 @@ public class AlbumSearchFragment extends Fragment implements MenuProvider {
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
-        View view = inflater.inflate(R.layout.fragment_image_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_album_search, container, false);
         searchRecyclerView = view.findViewById(R.id.searchRecycleView);
         searchView = view.findViewById(R.id.searchView);
         textNotImageFound = view.findViewById(R.id.textNotImageFound);
