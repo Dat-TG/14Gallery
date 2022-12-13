@@ -49,6 +49,7 @@ import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
@@ -61,6 +62,7 @@ import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,10 +103,14 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         int imagePosition = intent.getIntExtra("position", 0);
 
         List<Image> imageSource;
+
         if (albumName != null) {
-            imageSource = AlbumGallery.getInstance().getAlbumByName(this, albumName).getAlbumImages();
-        }
-        else {
+            if (albumName.equals(AlbumGallery.favoriteAlbumFolderNameVn) || albumName.equals(AlbumGallery.privateAlbumFolderNameVn) || albumName.equals(AlbumGallery.recycleBinFolderNameVn)) {
+                Gson gson = new Gson();
+                imageSource = gson.fromJson(getIntent().getStringExtra("album"), Album.class).getAlbumImages();
+            } else
+                imageSource = AlbumGallery.getInstance().getAlbumByName(this, albumName).getAlbumImages();
+        } else {
             imageSource = ImageGallery.getInstance().images;
         }
 

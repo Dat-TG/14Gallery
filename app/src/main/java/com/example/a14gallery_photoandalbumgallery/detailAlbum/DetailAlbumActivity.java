@@ -177,11 +177,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         images.get(viewList.get(position).index).setChecked(false);
 
                     }
-
                     imageFragmentAdapter.notifyItemChanged(position);
                 } else {
                     Intent intent = new Intent(this, FullscreenImageActivity.class);
-                    intent.putExtra("path", viewList.get(position).imageData.getPath());
+                    intent.putExtra("albumName", album.getName());
+                    if (Objects.equals(album.getName(), AlbumGallery.favoriteAlbumFolderNameVn) || Objects.equals(album.getName(), AlbumGallery.privateAlbumFolderNameVn) || Objects.equals(album.getName(), AlbumGallery.recycleBinFolderNameVn)) {
+                        Gson gson = new Gson();
+                        String albumObj = gson.toJson(album);
+                        intent.putExtra("album", albumObj);
+                    } else{
+                        intent.putExtra("position", position - 1);
+                    }
                     this.startActivity(intent);
                 }
             };

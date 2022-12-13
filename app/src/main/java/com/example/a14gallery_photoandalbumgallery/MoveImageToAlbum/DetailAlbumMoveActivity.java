@@ -103,7 +103,8 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
                     imageFragmentAdapter.notifyItemChanged(position);
                 } else {
                     Intent intent = new Intent(this, FullscreenImageActivity.class);
-                    intent.putExtra("path", viewList.get(position).imageData.getPath());
+                    intent.putExtra("albumName", album.getName());
+                    intent.putExtra("position", position - 1);
                     this.startActivity(intent);
                 }
             };

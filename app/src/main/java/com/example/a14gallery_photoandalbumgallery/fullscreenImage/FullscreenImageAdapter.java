@@ -34,7 +34,7 @@ public class FullscreenImageAdapter extends RecyclerView.Adapter<FullscreenImage
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(_context)
-                .load(_images.get(position).uri)
+                .load(_images.get(position).getPath())
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .into(holder.binding.images);
     }
