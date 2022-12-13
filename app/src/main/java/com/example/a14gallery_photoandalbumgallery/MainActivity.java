@@ -23,6 +23,7 @@ import androidx.navigation.NavController;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
+import com.example.a14gallery_photoandalbumgallery.searchAlbum.SearchFragment;
 import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             else if (item.getItemId() == R.id.album_icon)
                 replaceFragment(new AlbumFragment());
             else if (item.getItemId() == R.id.image_search_icon)
-                replaceFragment(new ImageSearchFragment());
+                replaceFragment(new SearchFragment());
             return true;
         });
     }
