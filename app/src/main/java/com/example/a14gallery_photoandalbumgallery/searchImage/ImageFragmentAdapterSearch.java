@@ -29,20 +29,11 @@ import java.util.function.BiConsumer;
 public class ImageFragmentAdapterSearch extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Calendar calendar;
-
-    public void setFilteredList(List<RecyclerData> filteredList) {
-        this.imageDataList = filteredList;
-        notifyDataSetChanged();
-    }
-
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
         public View scrim;
         public CheckBox check;
-        public TextView textDate;
-        public TextView textFilePath;
 
         ImageViewHolder(@NonNull View view,
                         BiConsumer<Integer, View> onItemClick,
@@ -51,13 +42,12 @@ public class ImageFragmentAdapterSearch extends
             imageView = view.findViewById(R.id.image);
             scrim = itemView.findViewById(R.id.pictureItemScrim);
             check = itemView.findViewById(R.id.pictureItemCheckCircle);
-            textDate = itemView.findViewById(R.id.textDate);
-            textFilePath = itemView.findViewById(R.id.textFilePath);
 
             itemView.setOnLongClickListener(view1 -> {
                 onItemLongClick.accept(getAdapterPosition(), view1);
                 return false;
             });
+
             itemView.setOnClickListener(
                     view1 -> onItemClick.accept(getAdapterPosition(), view1));
         }
@@ -82,9 +72,9 @@ public class ImageFragmentAdapterSearch extends
     @NonNull
     private List<RecyclerData> imageDataList;
     @NonNull
-    private final BiConsumer<Integer, View> onItemClick;
+    private BiConsumer<Integer, View> onItemClick;
     @NonNull
-    private final BiConsumer<Integer, View> onItemLongClick;
+    private BiConsumer<Integer, View> onItemLongClick;
 
     private State state = State.Normal;
 
@@ -110,12 +100,11 @@ public class ImageFragmentAdapterSearch extends
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == ITEM_TYPE_IMAGE) {
-            View view = inflater.inflate(R.layout.single_image_view_search, parent, false);
+            View view = inflater.inflate(R.layout.single_image_view, parent, false);
             return new ImageViewHolder(view, onItemClick, onItemLongClick);
         } else {
             return new TimelineViewHolder(inflater.inflate(R.layout.timeline_item, parent, false));
         }
-
     }
 
     @Override
@@ -126,27 +115,12 @@ public class ImageFragmentAdapterSearch extends
         } else {
             final ImageViewHolder imageHolder = (ImageViewHolder) holder;
             ImageView imageView = imageHolder.imageView;
-            TextView textView = imageHolder.textDate;
-//            TextView textFilePath = imageHolder.textFilePath;
             Image imageData = imageDataList.get(position).imageData;
-
             Glide.with(imageView.getContext())
                     .load(imageData.getPath())
                     .centerCrop()
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(imageView);
-
-            File file = new File(imageData.getPath());
-            Date lastModDate = new Date(file.lastModified());
-            calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(lastModDate.getTime());
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-            String dateText = formatter.format(calendar.getTime());
-            textView.setText("Thời gian: " + dateText);
-//            File file = new File(imageData.getPath());
-//            String fileName = file.getName();
-//            String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
-//            textFilePath.setText("Tên: " + fileNameWithoutExtension);
 
             if (state == State.Normal) {
                 imageHolder.scrim.setVisibility(View.GONE);
@@ -164,8 +138,14 @@ public class ImageFragmentAdapterSearch extends
         }
     }
 
-    public void setData(List<RecyclerData> imageDataList) {
+    public void setData(List<RecyclerData> imageDataList,
+                        BiConsumer<Integer, View> onItemClick,
+                        BiConsumer<Integer, View> onItemLongClick) {
         this.imageDataList = imageDataList;
+        notifyDataSetChanged();
+        this.onItemClick = onItemClick;
+        notifyDataSetChanged();
+        this.onItemLongClick = onItemLongClick;
         notifyDataSetChanged();
     }
 
