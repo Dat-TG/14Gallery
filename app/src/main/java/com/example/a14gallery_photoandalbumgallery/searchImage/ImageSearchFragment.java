@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,7 +26,6 @@ import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageSearchBinding;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
-import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
 
-public class ImageSearchFragment extends Fragment  {
+public class ImageSearchFragment extends Fragment implements MenuProvider {
     FragmentImageSearchBinding binding;
     List<Image> images;
     public int typeView = 4;
@@ -100,7 +99,7 @@ public class ImageSearchFragment extends Fragment  {
 
         ArrayAdapter<CharSequence> adapter;
         adapter = ArrayAdapter.createFromResource(activity,
-                R.array.category_search_array , android.R.layout.simple_spinner_item);
+                R.array.category_search_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -108,14 +107,13 @@ public class ImageSearchFragment extends Fragment  {
         binding.spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 1){
+                if (i == 1) {
                     mode = "hashtag";
                     if (viewListHashtag.size() == 0) {
                         viewListHashtag = getViewListHashtag("");
                     }
                     viewList = viewListHashtag;
-                }
-                else {
+                } else {
                     mode = "date";
                     if (viewListDate.size() == 0) {
                         viewListDate = getViewListDate();
@@ -137,13 +135,22 @@ public class ImageSearchFragment extends Fragment  {
         return binding.getRoot();
     }
 
-//    @Override
-//    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-//        menu.clear();
-//        if (!menu.hasVisibleItems()) {
-//            menuInflater.inflate(R.menu.top_bar_menu_search, menu);
-//        }
-//    }
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menu.clear();
+        menuInflater.inflate(R.menu.top_bar_menu_add_image, menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.src_setting) {
+            Intent intent = new Intent(getContext(), SettingActivity.class);
+            intent.putExtra("Fragment", 3);
+            requireActivity().startActivity(intent);
+            return true;
+        }
+        return false;
+    }
 
     private void setOnClick(FragmentActivity activity, ArrayList<RecyclerData> viewList) {
         onItemClick = (position, view1) -> {
@@ -173,68 +180,52 @@ public class ImageSearchFragment extends Fragment  {
     }
 
     private void filterList(String newText) {
-        if (!newText.equals("")){
-            ArrayList<RecyclerData>  filteredList = new ArrayList<>();
-            if (mode.equals("date")){
-                for (RecyclerData recyclerData: viewList) {
+        if (!newText.equals("")) {
+            ArrayList<RecyclerData> filteredList = new ArrayList<>();
+            if (mode.equals("date")) {
+                for (RecyclerData recyclerData : viewList) {
                     File file = new File(recyclerData.imageData.getPath());
                     Date lastModDate = new Date(file.lastModified());
                     calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(lastModDate.getTime());
                     formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
                     dateText = formatter.format(calendar.getTime());
-                    if(dateText.toLowerCase().contains(newText.toLowerCase())){
+                    if (dateText.toLowerCase().contains(newText.toLowerCase())) {
                         filteredList.add(recyclerData);
                     }
                 }
                 viewList = filteredList;
-            }
-            else {
+            } else {
                 viewList = getViewListHashtag(newText);
 
             }
 
 
-            if(viewList.isEmpty()){
+            if (viewList.isEmpty()) {
                 binding.textNotImageFound.setVisibility(TextView.VISIBLE);
                 binding.textNotImageFound.setText(R.string.no_matching_image);
-            }
-            else{
+            } else {
                 binding.textNotImageFound.setVisibility(TextView.INVISIBLE);
             }
 
             setOnClick(activity, viewList);
-            imageFragmentAdapterSearch = new ImageFragmentAdapterSearch( viewList, onItemClick, onItemLongClick);
+            imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList, onItemClick, onItemLongClick);
             imageFragmentAdapterSearch.setState(ImageFragmentAdapterSearch.State.Normal);
             binding.searchRecycleView.setAdapter(imageFragmentAdapterSearch);
-        }
-        else {
+        } else {
             if (mode.equals("date")) {
                 viewList = viewListDate;
-            }
-            else {
+            } else {
                 viewList = viewListHashtag;
             }
             binding.textNotImageFound.setVisibility(TextView.INVISIBLE);
             setOnClick(activity, viewList);
-            imageFragmentAdapterSearch = new ImageFragmentAdapterSearch( viewList, onItemClick, onItemLongClick);
+            imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList, onItemClick, onItemLongClick);
             imageFragmentAdapterSearch.setState(ImageFragmentAdapterSearch.State.Normal);
             binding.searchRecycleView.setAdapter(imageFragmentAdapterSearch);
         }
     }
 
-
-//
-//    @Override
-//    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-//        if (menuItem.getItemId() == R.id.src_setting) {
-//            Intent intent = new Intent(getContext(), SettingActivity.class);
-//            intent.putExtra("Fragment", 3);
-//            requireActivity().startActivity(intent);
-//            return true;
-//        }
-//        return false;
-//    }
 
     private void toViewList() {
         if (images.size() > 0) {
@@ -275,15 +266,15 @@ public class ImageSearchFragment extends Fragment  {
         return null;
     }
 
-    private ArrayList<String> getAllListHashtag(){
+    private ArrayList<String> getAllListHashtag() {
         ArrayList<String> listAllHashtag = new ArrayList<>();
         for (int k = 0; k < images.size(); k++) {
             List<String> listHashtag = images.get(k).getListHashtag(getContext());
             String label = "";
-            if (listHashtag.size() > 0){
-                for (int i = 0; i < listHashtag.size(); i++){
+            if (listHashtag.size() > 0) {
+                for (int i = 0; i < listHashtag.size(); i++) {
                     label = listHashtag.get(i);
-                    if(!listAllHashtag.contains(label)) {
+                    if (!listAllHashtag.contains(label)) {
                         listAllHashtag.add(label);
                     }
                 }
@@ -292,7 +283,7 @@ public class ImageSearchFragment extends Fragment  {
         return listAllHashtag;
     }
 
-    private ArrayList<String> getListHashtagContains(ArrayList<String> listAllHashtag, String textSearch){
+    private ArrayList<String> getListHashtagContains(ArrayList<String> listAllHashtag, String textSearch) {
         ArrayList<String> listHashtag = new ArrayList<>();
         for (int k = 0; k < listAllHashtag.size(); k++) {
             if (listAllHashtag.get(k).contains(textSearch)) {
@@ -317,7 +308,7 @@ public class ImageSearchFragment extends Fragment  {
                 for (int i = 0; i < images.size(); i++) {
                     List<String> listHashtag = images.get(i).getListHashtag(getContext());
                     count = count + k;
-                    if( listHashtag.contains(ListHashtagContains.get(k)) ){
+                    if (listHashtag.contains(ListHashtagContains.get(k))) {
                         viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), count));
                     }
                 }
@@ -326,7 +317,6 @@ public class ImageSearchFragment extends Fragment  {
         }
         return null;
     }
-
 
 
 //    private ArrayList<RecyclerData> getViewListNormal() {

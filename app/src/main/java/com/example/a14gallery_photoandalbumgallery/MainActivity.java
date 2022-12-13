@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         if (SettingActivity.flag == 1) {
             if (fragmentCurrent == 1) replaceFragment(new ImageFragment());
             else if (fragmentCurrent == 2) replaceFragment(new AlbumFragment());
-            else replaceFragment(new ImageSearchFragment());
+            else replaceFragment(new SearchFragment());
             SettingActivity.flag = 0;
         } else replaceFragment(new ImageFragment());
 

@@ -1,6 +1,7 @@
 package com.example.a14gallery_photoandalbumgallery.searchAlbum;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import androidx.lifecycle.Lifecycle;
 
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
+import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 import com.google.android.material.tabs.TabLayout;
 
 public class SearchFragment extends Fragment implements MenuProvider {
@@ -49,9 +51,9 @@ public class SearchFragment extends Fragment implements MenuProvider {
         tabLayout =view.findViewById(R.id.tab_add_image_layout);
         TabLayout.Tab firstTab = tabLayout.newTab();
         firstTab.setText("Ảnh"); // set the Text for the first Tab
-// first tab
+
         tabLayout.addTab(firstTab); // add  the tab at in the TabLayout
-// Create a new Tab named "Second"
+
         TabLayout.Tab secondTab = tabLayout.newTab();
         secondTab.setText("Album"); // set the Text for the second Tab
         tabLayout.addTab(secondTab);
@@ -108,7 +110,9 @@ public class SearchFragment extends Fragment implements MenuProvider {
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.src_setting) {
-            // TODO: Click setting
+            Intent intent = new Intent(getContext(), SettingActivity.class);
+            intent.putExtra("Fragment", 3);
+            requireActivity().startActivity(intent);
             return true;
         }
         return false;
