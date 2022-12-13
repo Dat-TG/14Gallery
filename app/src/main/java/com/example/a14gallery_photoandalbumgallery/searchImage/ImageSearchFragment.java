@@ -165,8 +165,8 @@ public class ImageSearchFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapterSearch.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("path", viewList.get(position).imageData.getPath());
-                requireContext().startActivity(intent);
+                intent.putExtra("position", position - 1);
+                getContext().startActivity(intent);
             }
         };
 

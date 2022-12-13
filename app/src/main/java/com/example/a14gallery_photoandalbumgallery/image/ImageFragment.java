@@ -1,11 +1,11 @@
 package com.example.a14gallery_photoandalbumgallery.image;
 
 
-
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.app.Activity;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,8 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -43,11 +41,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
+
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
+
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
+
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -123,7 +125,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("path", viewList.get(position).imageData.getPath());
+                intent.putExtra("position", position-1);
                 requireContext().startActivity(intent);
             }
         };
@@ -153,7 +155,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                         ContentValues values = new ContentValues();
                         values.put(MediaStore.Images.Media.TITLE, "New Picture");
                         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                        imageUri = getActivity().getApplicationContext().getContentResolver().insert(
+                        imageUri = requireActivity().getApplicationContext().getContentResolver().insert(
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -164,30 +166,24 @@ public class ImageFragment extends Fragment implements MenuProvider {
                     }
                 });
         //
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                    LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
-                    loadAsyncTask.execute();
-                }
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
+                loadAsyncTask.execute();
             }
         });
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        Log.e("result code image frag", Integer.toString(result.getResultCode()));
-                        if (result.getResultCode() == 123) {
-                            Intent data = result.getData();
-                            String dest = data.getStringExtra("DEST");
-                            Log.e("ImageFragment", dest);
-                            moveToAlbum(dest);
-                        }
-                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                result -> {
+                    Log.e("result code image frag", Integer.toString(result.getResultCode()));
+                    if (result.getResultCode() == 123) {
+                        Intent data = result.getData();
+                        String dest = data.getStringExtra("DEST");
+                        Log.e("ImageFragment", dest);
+                        moveToAlbum(dest);
                     }
+                    imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                    imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
                 });
         return binding.getRoot();
     }
@@ -394,11 +390,11 @@ public class ImageFragment extends Fragment implements MenuProvider {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
-            label = label.substring(beg, label.length());
+            label = label.substring(beg);
             label += '.';
             for (int i = 0; i < images.size(); i++) {
                 String labelCur = images.get(i).getDateTaken();
-                labelCur = labelCur.substring(beg, labelCur.length());
+                labelCur = labelCur.substring(beg);
                 if (!labelCur.equals(label)) {
                     label = labelCur;
                     viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -544,11 +540,11 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 int beg = 3;
                 viewList = new ArrayList<>();
                 String label = images.get(0).getDateTaken();
-                label = label.substring(beg, label.length());
+                label = label.substring(beg);
                 label += '.';
                 for (int i = images.size() - 1; i >= 0; i--) {
                     String labelCur = images.get(i).getDateTaken();
-                    labelCur = labelCur.substring(beg, labelCur.length());
+                    labelCur = labelCur.substring(beg);
                     if (!labelCur.equals(label)) {
                         label = labelCur;
                         viewList.add(new RecyclerData(RecyclerData.Type.Label, label, images.get(i), i));
@@ -704,21 +700,21 @@ public class ImageFragment extends Fragment implements MenuProvider {
             Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
-            String name[] = src.split("/");
+            String[] name = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
-                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        String name[] = dest.split("/");
+        String[] name = dest.split("/");
         if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
             Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {

@@ -36,7 +36,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     public void setData(List<Image> listImages) {
         _listImages = listImages;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public void setOnLongClickListener(OnItemLongClickListener listeners) {

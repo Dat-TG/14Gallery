@@ -46,12 +46,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.image.hashtag.Hashtag;
@@ -64,6 +65,7 @@ import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +85,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     ActivityFullscreenImageBinding binding;
     DialogHashtagBinding dialogHashtagBinding;
     DialogDetailsBinding dialogDetailsBinding;
-    String imagePath;
     boolean isWritePermissionGranted = false;
     ActivityResultLauncher<String[]> permissionResultLauncher;
     MaterialAlertDialogBuilder materialAlertDialogBuilder;
@@ -93,6 +94,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     Uri imageUri;
     SharedPreferences sharedPreferences;
     int theme;
+    ViewPager2 viewPager2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,28 +111,37 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         binding = ActivityFullscreenImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Get image's position send from image fragment
         Intent intent = getIntent();
-        imagePath = intent.getExtras().getString("path");
+        String albumName = intent.getStringExtra("albumName");
+        int imagePosition = intent.getIntExtra("position", 0);
+
+        List<Image> imageSource;
+
+        if (albumName != null) {
+            if (albumName.equals(AlbumGallery.favoriteAlbumFolderNameVn) || albumName.equals(AlbumGallery.privateAlbumFolderNameVn) || albumName.equals(AlbumGallery.recycleBinFolderNameVn)) {
+                Gson gson = new Gson();
+                imageSource = gson.fromJson(getIntent().getStringExtra("album"), Album.class).getAlbumImages();
+            } else
+                imageSource = AlbumGallery.getInstance().getAlbumByName(this, albumName).getAlbumImages();
+        } else {
+            imageSource = ImageGallery.getInstance().images;
+        }
+
+        // Initialize viewpager2
+        viewPager2 = binding.imageViewPager;
+        FullscreenImageAdapter fullscreenImageAdapter = new FullscreenImageAdapter(this, imageSource);
+        viewPager2.setAdapter(fullscreenImageAdapter);
+        viewPager2.setCurrentItem(imagePosition, false);
+        registerCallbackForViewPager2();
 
         // Set on click for back navigator
         binding.topAppBar.setNavigationOnClickListener(v -> finish());
         binding.topAppBar.setElevation(3);
         binding.bottomAppBar.setElevation(3);
-        // Set on click for image
-        binding.imageView.setOnClickListener(this);
-        // Set on click for buttons
-        binding.btnShare.setOnClickListener(this);
-        binding.btnEdit.setOnClickListener(this);
-        binding.btnDelete.setOnClickListener(this);
-        binding.btnHide.setOnClickListener(this);
-        binding.btnMore.setOnClickListener(this);
-        binding.btnHashtag.setOnClickListener(this);
-
-        Glide.with(this)
-                .load(imagePath)
-                .fitCenter()
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .into(binding.imageView);
+        // Set on click for viewpager
+        binding.imageViewPager.setOnClickListener(this);
+        setOnClickListenerForToolbarButtons();
 
         permissionResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
             if (result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null) {
@@ -161,6 +172,42 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                     }
                 });
 
+    }
+
+    private void setOnClickListenerForToolbarButtons() {
+        // Set on click for buttons
+        binding.btnShare.setOnClickListener(this);
+        binding.btnEdit.setOnClickListener(this);
+        binding.btnDelete.setOnClickListener(this);
+        binding.btnHide.setOnClickListener(this);
+        binding.btnMore.setOnClickListener(this);
+        binding.btnHashtag.setOnClickListener(this);
+    }
+
+    // Because image's path updates every time we swipe to a new image
+    // so we need a method to get the path instead of storing it as a variable
+    private String getImagePath() {
+        int currentPosition = viewPager2.getCurrentItem();
+        return ImageGallery.getInstance().images.get(currentPosition).getPath();
+    }
+
+    private void registerCallbackForViewPager2() {
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     public long getFilePathToMediaID(String path, Context context) {
@@ -207,7 +254,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
 
         Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                getFilePathToMediaID(imagePath, this));
+                getFilePathToMediaID(getImagePath(), this));
         List<Uri> uriList = new ArrayList<>();
         uriList.add(uri);
 
@@ -225,9 +272,9 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
     /* Launch hashtag dialog */
     private void launchHashtagDialog() {
-        List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[]{imagePath});
+        List<String> hashtagList = AppDatabase.getInstance(this).imageHashtagDao().loadAllHashtagByPaths(new String[]{getImagePath()});
         String[] dataset = hashtagList.toArray(new String[0]);
-        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(imagePath, dataset, dialogHashtagBinding.txtNumberOfHashtag);
+        HashtagDialogListAdapter dialogListAdapter = new HashtagDialogListAdapter(getImagePath(), dataset, dialogHashtagBinding.txtNumberOfHashtag);
         dialogHashtagBinding.listAddedHashtag.setLayoutManager(new LinearLayoutManager(this));
 
         // Hide hashtag recyclerview when typing
@@ -267,13 +314,12 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 if (foundHashtag == null) {
                     appDatabase.hashtagDao().insertAll(new Hashtag(newHashtag));
                     int newId = appDatabase.hashtagDao().findByName(newHashtag).id;
-                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, newId));
+                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(getImagePath(), newId));
                 } else {
-                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(imagePath, foundHashtag.id));
+                    appDatabase.imageHashtagDao().insertAll(new ImageHashtag(getImagePath(), foundHashtag.id));
                 }
                 dialogHashtagBinding.editTextHashtag.setText("");
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Hashtag không được để trống", Toast.LENGTH_SHORT).show();
             }
         });
@@ -284,6 +330,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 .show();
     }
 
+    /* Enable or disable all buttons */
     private void setButtonsEnabled(boolean enabled) {
         binding.btnShare.setEnabled(enabled);
         binding.btnHide.setEnabled(enabled);
@@ -296,7 +343,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View view) {
         // Click on image
-        if (view.getId() == R.id.imageView) {
+        if (view.getId() == R.id.imageViewPager) {
             if (binding.topBarLayout.getVisibility() == View.VISIBLE) {
                 binding.topBarLayout.animate()
                         .alpha(0f)
@@ -337,22 +384,20 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                             }
                         });
             }
-
-
         }
 
         // Share button
         if (view.getId() == R.id.btnShare) {
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(imagePath));
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(getImagePath()));
             shareIntent.setType("image/jpeg");
             startActivity(Intent.createChooser(shareIntent, null));
         }
 
         //  Edit button
         if (view.getId() == R.id.btnEdit) {
-            imageUri = Uri.fromFile(new File(imagePath));
+            imageUri = Uri.fromFile(new File(getImagePath()));
             // Set data
             Intent editIntent = new Intent(FullscreenImageActivity.this, DsPhotoEditorActivity.class);
             editIntent.setData(imageUri);
@@ -378,7 +423,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         if (view.getId() == R.id.btnHide) {
             Intent intent = new Intent(getApplicationContext(), InputPasswordActivity.class);
             intent.putExtra("message", "AddPrivate");
-            intent.putExtra("imagePath", imagePath);
+            intent.putExtra("imagePath", getImagePath());
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
@@ -407,7 +452,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     public boolean onMenuItemClick(MenuItem menuItem) {
         // Rename button
         if (menuItem.getItemId() == R.id.btnRename) {
-            File file = new File(imagePath);
+            File file = new File(getImagePath());
             String fileName = file.getName();
             String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
 
@@ -435,7 +480,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                         // With extension
                         String newFileName = newFileNameWithoutExt + finalExtension;
 
-                        String newPath = imagePath.replace(fileName, newFileName);
+                        String newPath = getImagePath().replace(fileName, newFileName);
                         Toast.makeText(this, newPath, Toast.LENGTH_SHORT).show();
                         editText.setText(newFileNameWithoutExt);
                         File newFile = new File(newPath);
@@ -454,7 +499,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                             cursor.moveToPosition(0);
                             if (cursor.getCount() != 0) {
                                 ContentValues values = new ContentValues();
-                                long id = getFilePathToMediaID(imagePath, this);
+                                long id = getFilePathToMediaID(getImagePath(), this);
                                 values.put(MediaStore.MediaColumns.IS_PENDING, true);
                                 getContentResolver().update(ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                         id), values, null);
@@ -467,7 +512,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                                         id), values, null);
                             }
                             cursor.close();
-                            imagePath = newPath;
+                            ImageGallery.getInstance().images.get(viewPager2.getCurrentItem()).setPath(newPath);
                         }
                     })
                     .setNeutralButton("HỦY", (dialogInterface, i) -> {/* Cancel */});
@@ -496,7 +541,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
-
         // Add to album button
         if (menuItem.getItemId() == R.id.btnAddToAlbum) {
             //Show album to choose
@@ -505,10 +549,10 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             return true;
         }
 
-        // Details button
+        // View details button
         if (menuItem.getItemId() == R.id.btnDetails) {
             // Query image to get data
-            Image image = ImageGallery.getInstance().getImageByPath(this, imagePath);
+            Image image = ImageGallery.getInstance().getImageByPath(this, getImagePath());
             if (image == null) {
                 Toast.makeText(this, "NULL when query image", Toast.LENGTH_SHORT).show();
                 return true;
@@ -519,9 +563,9 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             detailsDialogView = dialogDetailsBinding.getRoot();
 
             // Set data to view
-            File file = new File(imagePath);
+            File file = new File(getImagePath());
             dialogDetailsBinding.txtFileName.setText(file.getName());
-            dialogDetailsBinding.txtFilePath.setText(imagePath);
+            dialogDetailsBinding.txtFilePath.setText(getImagePath());
             dialogDetailsBinding.txtTakenOn.setText(image.getDateTaken());
             String fileSizeString = humanReadableByteCountBin(file.length())
                     + "  " + image.getResolution();
@@ -538,7 +582,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Set image as wallpaper
         if (menuItem.getItemId() == R.id.btnHomeWallpaper) {
-            File image = new File(imagePath);
+            File image = new File(getImagePath());
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             Bitmap bitmap = BitmapFactory.decodeFile(image.getPath(), bmOptions);
             DisplayMetrics metrics = new DisplayMetrics();
@@ -560,7 +604,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Set image as lockscreen wallpaper
         if (menuItem.getItemId() == R.id.btnLockWallpaper) {
-            File image = new File(imagePath);
+            File image = new File(getImagePath());
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             Bitmap bitmap = BitmapFactory.decodeFile(image.getPath(), bmOptions);
             DisplayMetrics metrics = new DisplayMetrics();
@@ -578,9 +622,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 e.printStackTrace();
             }
             return true;
-
         }
-
         return false;
     }
 
@@ -602,7 +644,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
     private void moveToAlbum(String dest) {
         Path result = null;
-        String src = imagePath;
+        String src = getImagePath();
         String[] name = src.split("/");
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

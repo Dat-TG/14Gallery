@@ -2,18 +2,17 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/full_screen_image_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fullscreenImage.FullscreenImageActivity"
-    android:id="@+id/full_screen_image_layout">
+    tools:context=".fullscreenImage.FullscreenImageActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/imageViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        tools:ignore="ContentDescription" />
+        android:orientation="horizontal"
+        tools:context=".fullscreenImage.FullscreenImageActivity" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/topBarLayout"
@@ -56,7 +55,7 @@
                     android:drawableTop="@drawable/ic_outline_share_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Chia sẻ"/>
+                    android:tooltipText="Chia sẻ" />
 
                 <Button
                     android:id="@+id/btnHide"
@@ -68,7 +67,7 @@
                     android:drawableTop="@drawable/ic_outline_hide_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Di chuyển vào Riêng tư"/>
+                    android:tooltipText="Di chuyển vào Riêng tư" />
 
                 <Button
                     android:id="@+id/btnEdit"
@@ -80,7 +79,7 @@
                     android:drawableTop="@drawable/ic_outline_edit_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Chỉnh sửa ảnh"/>
+                    android:tooltipText="Chỉnh sửa ảnh" />
 
                 <Button
                     android:id="@+id/btnDelete"
@@ -92,7 +91,8 @@
                     android:drawableTop="@drawable/ic_outline_delete_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Xóa ảnh"/>
+                    android:tooltipText="Xóa ảnh" />
+
                 <Button
                     android:id="@+id/btnHashtag"
                     style="?android:attr/buttonBarButtonStyle"
@@ -103,7 +103,7 @@
                     android:drawableTop="@drawable/ic_hashtag_24"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Hashtag"/>
+                    android:tooltipText="Hashtag" />
 
                 <Button
                     android:id="@+id/btnMore"
@@ -115,7 +115,7 @@
                     android:drawableTop="@drawable/ic_menu_24dp"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:tooltipText="Thêm"/>
+                    android:tooltipText="Thêm" />
 
             </LinearLayout>
         </com.google.android.material.appbar.MaterialToolbar>

@@ -30,6 +30,10 @@ public class AlbumGallery {
     public static final String privateAlbumFolderName = "PrivateAlbum";
     public static final String recycleBinFolderName = "RecycleBin";
 
+    public static final String favoriteAlbumFolderNameVn = "Ưa thích";
+    public static final String privateAlbumFolderNameVn = "Riêng tư";
+    public static final String recycleBinFolderNameVn = "Thùng rác";
+
     public List<Album> albums;
 
     public static AlbumGallery getInstance() {
