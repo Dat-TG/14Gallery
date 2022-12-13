@@ -97,11 +97,20 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Get image's position send from image fragment
         Intent intent = getIntent();
+        String albumName = intent.getStringExtra("albumName");
         int imagePosition = intent.getIntExtra("position", 0);
+
+        List<Image> imageSource;
+        if (albumName != null) {
+            imageSource = AlbumGallery.getInstance().getAlbumByName(this, albumName).getAlbumImages();
+        }
+        else {
+            imageSource = ImageGallery.getInstance().images;
+        }
 
         // Initialize viewpager2
         viewPager2 = binding.imageViewPager;
-        FullscreenImageAdapter fullscreenImageAdapter = new FullscreenImageAdapter(this, ImageGallery.getInstance().images);
+        FullscreenImageAdapter fullscreenImageAdapter = new FullscreenImageAdapter(this, imageSource);
         viewPager2.setAdapter(fullscreenImageAdapter);
         viewPager2.setCurrentItem(imagePosition, false);
         registerCallbackForViewPager2();
