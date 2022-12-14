@@ -28,6 +28,7 @@
         android:title="@string/create_gif"
         app:showAsAction="ifRoom" />
 
+
     <item
         android:id="@+id/slideShow"
         android:title="@string/slideshow"
@@ -44,7 +45,6 @@
             <item
                 android:id="@+id/img_choose"
                 android:title="@string/choose_title" />
-
             <item
                 android:id="@+id/img_grid"
                 android:title="@string/grid_columns">
@@ -89,7 +89,10 @@
                 android:id="@+id/img_setting"
                 android:title="@string/setting_title" />
         </menu>
-
     </item>
-
+    <item
+        android:id="@+id/create_PDF"
+        android:title="@string/create_pdf"
+        android:icon="@drawable/ic_round_picture_as_pdf_24"
+        app:showAsAction="ifRoom" />
 </menu>

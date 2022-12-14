@@ -4,11 +4,17 @@ package com.example.a14gallery_photoandalbumgallery.image;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -38,10 +44,12 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.util.FileUtil;
 
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 
+import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 
@@ -52,18 +60,27 @@ import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -125,7 +142,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("position", position-1);
+                intent.putExtra("position", position - 1);
                 requireContext().startActivity(intent);
             }
         };
@@ -201,6 +218,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(3).setVisible(true);
             menu.getItem(4).setVisible(true);
             menu.getItem(5).setVisible(true);
+            menu.getItem(7).setVisible(true);
         } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
@@ -209,6 +227,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
             menu.getItem(5).setVisible(false);
+            menu.getItem(7).setVisible(true);
         }
     }
 
@@ -361,6 +380,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
         if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
+        }
+        if (menuItem.getItemId() == R.id.create_PDF) {
+            createPDF("abc", images);
         }
         return false;
     }
@@ -855,5 +877,97 @@ public class ImageFragment extends Fragment implements MenuProvider {
             requireActivity().invalidateOptionsMenu();
         });
         alert.show();
+    }
+
+    public void createPDF(String nameFile, List<Image> images) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle("Tạo PDF");
+        alert.setMessage("Tên file PDF");
+        final EditText input = new EditText(getContext()); // Set an EditText view to get user input
+        alert.setView(input);
+        alert.setPositiveButton("Export", (dialog, whichButton) -> {
+            String fileName = input.getText().toString();
+            new CreatePdfTask(getContext(), images, fileName).execute();
+        });
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {/* Canceled.*/});
+        alert.show();
+
+    }
+
+    public class CreatePdfTask extends AsyncTask<Void, Integer, Void> {
+        Context context;
+        List<Image> files;
+        String nameFile;
+        ProgressDialog progressDialog;
+        String directoryPath = android.os.Environment.getExternalStorageDirectory().toString();
+        String dest = directoryPath + "/14Gallery_PDF/";
+
+        public CreatePdfTask(Context context2, List<Image> arrayList, String name) {
+            context = context2;
+            files = arrayList;
+            nameFile = name;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Please wait...");
+            progressDialog.setMessage("Creating pdf...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setMax(100);
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... Void) {
+            try {
+                Document document = new Document();
+
+                File file = new File(dest);
+                if (!file.exists())
+                    file.mkdirs();
+                PdfWriter.getInstance(document, new FileOutputStream(dest + nameFile + ".pdf"));
+                document.open();
+                for (int i = 0; i < images.size(); i++) {
+                    Bitmap bmp = BitmapFactory.decodeFile(images.get(i).getPath());
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    com.itextpdf.text.Image image = com.itextpdf.text.Image.getInstance(stream.toByteArray());
+                    float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
+                            - document.rightMargin() - 0) / image.getWidth()) * 100; // 0 means you have no indentation. If you have any, change it.
+                    image.scalePercent(scaler);
+                    image.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER | com.itextpdf.text.Image.ALIGN_TOP);
+                    document.add(image);
+                    publishProgress(i);
+                }
+                document.close();
+            } catch (DocumentException | IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            this.progressDialog.setProgress(((values[0] + 1) * 100) / images.size());
+            StringBuilder sb = new StringBuilder();
+            sb.append("Processing images (");
+            sb.append(values[0] + 1);
+            sb.append("/");
+            sb.append(this.files.size());
+            sb.append(")");
+            progressDialog.setTitle(sb.toString());
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+            Toast.makeText(context, "Tạo thành công:" + dest + nameFile + ".pdf", Toast.LENGTH_SHORT).show();
+        }
     }
 }
