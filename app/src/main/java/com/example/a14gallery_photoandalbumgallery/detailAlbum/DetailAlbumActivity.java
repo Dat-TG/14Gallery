@@ -38,11 +38,14 @@ import android.widget.Toast;
 
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
@@ -117,9 +120,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         nameFolder = getIntent().getStringExtra("NAME");
-        if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName)) {
-            Gson gson = new Gson();
-            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+        if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
+            if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
+                album= getAlbumFavorite();
+            } else {
+                Gson gson = new Gson();
+                album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            }
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
@@ -826,6 +833,16 @@ public class DetailAlbumActivity extends AppCompatActivity {
         binding.recyclerDetailView.setLayoutManager(gridLayoutManager);
     }
 
+    public boolean isFavorite(String imagePath) {
+        AlbumFavoriteData img = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img==null) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     private void moveToAlbum(String dest) {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
@@ -844,6 +861,14 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
 
             if (result != null) {
+                if (isFavorite(src)) {
+                    AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                    AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                    AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
+                    AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
+                }
+                Log.e("SRC",src);
+                Log.e("DEST",dest+"/"+name[name.length-1]);
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
@@ -902,70 +927,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private Album getAlbumFavorite() {
-        Date lastModDate;
-        Album Favorite = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
-        File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName + '/';
-        folderPath = folderPath + "%";
-        Favorite.setName("Ưa thích");
-        String[] projection = new String[]{
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATE_TAKEN
-        };
-        String[] selectionArgs = new String[]{folderPath};
-        String selection = MediaStore.Images.Media.DATA + " like ? ";
-        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
-        Cursor cursor = getContentResolver().query(images, projection, selection, selectionArgs, orderBy + " DESC");
-        if (cursor != null && cursor.getCount() > 0) {
-            if (cursor.moveToFirst()) {
-                String bucketName;
-                String data;
-                String imageId;
-                long dateTaken;
-                int bucketNameColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
-                int imageUriColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.DATA);
-
-                int imageIdColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media._ID);
-
-                int dateTakenColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.DATE_TAKEN);
-                do {
-                    Calendar myCal = Calendar.getInstance();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
-                    // Get the field values
-                    bucketName = cursor.getString(bucketNameColumn);
-                    data = cursor.getString(imageUriColumn);
-                    imageId = cursor.getString(imageIdColumn);
-//                    dateTaken = cursor.getLong(dateTakenColumn);
-//                    myCal.setTimeInMillis(dateTaken);
-//                    String dateText = formatter.format(myCal.getTime());
-                    File file = new File(data);
-                    lastModDate = new Date(file.lastModified());
-                    myCal.setTimeInMillis(lastModDate.getTime());
-                    String dateText = formatter.format(myCal.getTime());
-
-                    Image image = new Image();
-                    image.setAlbumName(bucketName);
-                    image.setPath(data);
-                    image.setId(Integer.parseInt(imageId));
-                    image.setDateTaken(dateText);
-//                            image.setUri(contentUri);
-                    Favorite.getAlbumImages().add(image);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-        return Favorite;
-    }
 
     private Album getAlbumPrivate() {
         Date lastModDate;
@@ -1032,6 +993,21 @@ public class DetailAlbumActivity extends AppCompatActivity {
             cursor.close();
         }
         return Private;
+    }
+
+    public Album getAlbumFavorite() {
+        Album Favorite = new Album();
+        Favorite.setName("Ưa thích");
+        List<AlbumFavoriteData>FavList= AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
+        for (int i=0;i<FavList.size();i++) {
+            Image img=new Image();
+            img.setPath(FavList.get(i).imagePath);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                img= ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+            }
+            Favorite.getAlbumImages().add(img);
+        }
+        return Favorite;
     }
 
     private Album getRecycleBin() {

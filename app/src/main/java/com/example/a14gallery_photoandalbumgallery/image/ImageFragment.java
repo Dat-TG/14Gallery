@@ -126,6 +126,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
                 intent.putExtra("position", position-1);
+                intent.putExtra("path", viewList.get(position).imageData.getPath());
+                Log.e("imagePath",viewList.get(position).imageData.getPath());
                 requireContext().startActivity(intent);
             }
         };

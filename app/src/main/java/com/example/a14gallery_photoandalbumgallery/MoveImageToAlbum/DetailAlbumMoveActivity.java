@@ -19,12 +19,15 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.andrognito.patternlockview.utils.PatternLockUtils;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumMoveBinding;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
@@ -68,8 +71,12 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
 
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
-            Gson gson = new Gson();
-            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
+                album= getAlbumFavorite();
+            } else {
+                Gson gson = new Gson();
+                album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            }
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
@@ -159,8 +166,12 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
         super.onResume();
         AlbumGallery.getInstance().update(this);
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
-            Gson gson = new Gson();
-            album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
+                album= getAlbumFavorite();
+            } else {
+                Gson gson = new Gson();
+                album = gson.fromJson(getIntent().getStringExtra("ALBUM"), Album.class);
+            }
         } else {
             AlbumGallery.getInstance().update(this);
             album = AlbumGallery.getInstance().getAlbumByName(this, nameFolder);
@@ -215,6 +226,20 @@ public class DetailAlbumMoveActivity extends AppCompatActivity {
             }
         });
         binding.recyclerDetailView.setLayoutManager(gridLayoutManager);
+    }
+    public Album getAlbumFavorite() {
+        Album Favorite = new Album();
+        Favorite.setName("Ưa thích");
+        List<AlbumFavoriteData>FavList= AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
+        for (int i=0;i<FavList.size();i++) {
+            Image img=new Image();
+            img.setPath(FavList.get(i).imagePath);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                img= ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+            }
+            Favorite.getAlbumImages().add(img);
+        }
+        return Favorite;
     }
 
 }

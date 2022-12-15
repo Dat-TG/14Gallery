@@ -46,6 +46,18 @@
                 android:layout_height="match_parent">
 
                 <Button
+                    android:id="@+id/btnFav"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:contentDescription="Add Favorite"
+                    android:drawableTop="@drawable/ic_baseline_favorite_border_24"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:tooltipText="Ưa thích"/>
+
+                <Button
                     android:id="@+id/btnShare"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"

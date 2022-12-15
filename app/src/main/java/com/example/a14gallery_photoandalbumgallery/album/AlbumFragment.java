@@ -32,10 +32,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.password.CreatePasswordActivity;
 import com.example.a14gallery_photoandalbumgallery.password.InputPasswordActivity;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
@@ -229,59 +232,15 @@ public class AlbumFragment extends Fragment implements MenuProvider {
 
     private Album getAlbumFavorite() {
         Album Favorite = new Album();
-        File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName);
-        File[] content = folder.listFiles();
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.favoriteAlbumFolderName + '/';
-        folderPath = folderPath + "%";
         Favorite.setName("Ưa thích");
-        String[] projection = new String[]{
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATE_TAKEN
-        };
-        String[] selectionArgs = new String[]{folderPath};
-        String selection = MediaStore.Images.Media.DATA + " like ? ";
-        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = getActivity().getContentResolver().query(images, projection, selection, selectionArgs, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            if (cursor.moveToFirst()) {
-                String bucketName;
-                String data;
-                String imageId;
-                long dateTaken;
-                int bucketNameColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-
-                int imageUriColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.DATA);
-
-                int imageIdColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media._ID);
-
-                int dateTakenColumn = cursor.getColumnIndex(
-                        MediaStore.Images.Media.DATE_TAKEN);
-                do {
-                    Calendar myCal = Calendar.getInstance();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
-                    // Get the field values
-                    bucketName = cursor.getString(bucketNameColumn);
-                    data = cursor.getString(imageUriColumn);
-                    imageId = cursor.getString(imageIdColumn);
-                    dateTaken = cursor.getLong(dateTakenColumn);
-                    myCal.setTimeInMillis(dateTaken);
-                    String dateText = formatter.format(myCal.getTime());
-
-                    Image image = new Image();
-                    image.setAlbumName(bucketName);
-                    image.setPath(data);
-                    image.setId(Integer.parseInt(imageId));
-                    image.setDateTaken(dateText);
-//                            image.setUri(contentUri);
-                    Favorite.getAlbumImages().add(image);
-                } while (cursor.moveToNext());
+        List<AlbumFavoriteData>FavList= AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getAllFavImg();
+        for (int i=0;i<FavList.size();i++) {
+            Image img=new Image();
+            img.setPath(FavList.get(i).imagePath);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                img= ImageGallery.getInstance().getImageByPath(getContext(),FavList.get(i).imagePath);
             }
-            cursor.close();
+            Favorite.getAlbumImages().add(img);
         }
         return Favorite;
     }
