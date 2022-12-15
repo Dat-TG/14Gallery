@@ -120,7 +120,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         String albumName = intent.getExtras().getString("albumName");
         int imagePosition = intent.getIntExtra("position", 0);
         imagePath = intent.getExtras().getString("path");
-        Log.e("imagePath",imagePath);
 
         List<Image> imageSource;
 
