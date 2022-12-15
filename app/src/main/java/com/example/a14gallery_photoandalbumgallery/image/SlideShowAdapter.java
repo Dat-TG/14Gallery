@@ -7,7 +7,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.a14gallery_photoandalbumgallery.R;
-import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.smarteist.autoimageslider.SliderViewAdapter;
 import java.util.List;
 

@@ -778,7 +778,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 return;
             }
-// Keep adding frame here
         }
         try {
             writer.finishWrite(os);
@@ -787,7 +786,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
             Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
             return;
         }
-// And you are done!!!
         Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -893,8 +891,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
             String fileName = input.getText().toString();
             new CreatePdfTask(context, images, fileName).execute();
         });
-        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {
-        });
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {});
         alert.show();
     }
 
@@ -904,7 +901,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         String nameFile;
         ProgressDialog progressDialog;
         String directoryPath = android.os.Environment.getExternalStorageDirectory().toString();
-        String dest = directoryPath + "/14Gallery_PDF/";
+        String dest = directoryPath + AlbumGallery.pdfFolder;
 
         public CreatePdfTask(Context context2, List<Image> arrayList, String name) {
             context = context2;
@@ -958,7 +955,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             this.progressDialog.setProgress(((values[0] + 1) * 100) / imageList.size());
-            String sb = "Processing images (" + (values[0] + 1) + "/" + this.imageList.size() + ")";
+            String sb = "Processing (" + (values[0] + 1) + "/" + this.imageList.size() + ")";
             progressDialog.setTitle(sb);
         }
 

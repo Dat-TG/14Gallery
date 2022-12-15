@@ -11,7 +11,6 @@ public class Album {
     private String name;
     private String coverUri;
     private List<Image> albumImages = new ArrayList<>();
-    private List<Album> albumChildren = new ArrayList<>();
     private String albumCover = "";
     private String path = "";
 
@@ -49,14 +48,6 @@ public class Album {
 
     public void setAlbumImages(List<Image> albumImages) {
         this.albumImages = albumImages;
-    }
-
-    public List<Album> getAlbumChildren() {
-        return albumChildren;
-    }
-
-    public void setAlbumChildren(List<Album> albumChildren) {
-        this.albumChildren = albumChildren;
     }
 
     public String getAlbumCover() {
