@@ -130,6 +130,10 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
         }
         btnFav.setCompoundDrawablesWithIntrinsicBounds(null,top,null,null);
+        String[] name=imagePath.split("/");
+        if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+            btnFav.setEnabled(false);
+        }
 
         if (albumName != null) {
             if (albumName.equals(AlbumGallery.favoriteAlbumFolderNameVn) || albumName.equals(AlbumGallery.privateAlbumFolderNameVn) || albumName.equals(AlbumGallery.recycleBinFolderNameVn)) {
