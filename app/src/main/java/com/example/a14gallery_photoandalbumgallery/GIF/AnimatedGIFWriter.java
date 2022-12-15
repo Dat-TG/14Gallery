@@ -1510,8 +1510,8 @@ public class AnimatedGIFWriter {
 
         // The basic entry stored in ProbingHashTable
         private static class HashEntry<V> {
-            int key;         // key
-            V value;       // value
+            int key;         // the key
+            V value;       // the value
             boolean isActive;  // false if deleted
 
             @SuppressWarnings("unused")
