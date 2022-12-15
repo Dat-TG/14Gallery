@@ -43,6 +43,8 @@ import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
+import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 
 import com.example.a14gallery_photoandalbumgallery.R;
@@ -125,9 +127,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("position", position-1);
+                intent.putExtra("position", position - 1);
                 intent.putExtra("path", viewList.get(position).imageData.getPath());
-                Log.e("imagePath",viewList.get(position).imageData.getPath());
+                Log.e("imagePath", viewList.get(position).imageData.getPath());
                 requireContext().startActivity(intent);
             }
         };
@@ -694,6 +696,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
         binding.imageFragmentRecycleView.setLayoutManager(gridLayoutManager);
     }
 
+    public boolean isFavorite(String imagePath) {
+        AlbumFavoriteData img = AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void moveToAlbum(String dest) {
         ArrayList<Image> selectedImages = images.stream()
                 .filter(Image::isChecked)
@@ -702,21 +713,31 @@ public class ImageFragment extends Fragment implements MenuProvider {
             Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
-            String[] name = src.split("/");
+            String name[] = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
-                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
+                if (isFavorite(src)) {
+                    AlbumFavoriteData old = AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(src);
+                    AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().delete(old);
+                    String name2[] = dest.split("/");
+                    Log.e("hello",dest+"-----"+name[name.length-1]+"--"+name2[name2.length-1]);
+                    if (!Objects.equals(name2[name2.length - 1], AlbumGallery.recycleBinFolderName)) {
+                        AlbumFavoriteData newImg = new AlbumFavoriteData(dest + name[name.length - 1]);
+                        AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().insert(newImg);
+                    }
+                }
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        String[] name = dest.split("/");
+        String name[] = dest.split("/");
         if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
             Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {

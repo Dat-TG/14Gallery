@@ -161,7 +161,7 @@ public class AddItemActivity extends AppCompatActivity {
                         count++;
                         if (isFavorite(src)) {
                             AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
-                            AlbumFavoriteData newImg=new AlbumFavoriteData(dest + "/" + name[name.length - 1]);
+                            AlbumFavoriteData newImg=new AlbumFavoriteData(dest + name[name.length - 1]);
                             AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
                             AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
                         }
