@@ -69,6 +69,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.nio.file.Files;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
@@ -150,7 +151,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK ) {
                     String imagePath = getPathFromURI(imageUri);
                     Log.e("src", imagePath);
                     Path resultPath = null;
@@ -172,8 +173,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     }
 
                 }
+                else {
+                    Log.e("ACTION_IMAGE_CAPTURE", "fail");
+                    getApplicationContext().getContentResolver().delete(imageUri, null,null);
+                }
             }
         });
+
 
         int size = album.getAlbumImages().size();
 
