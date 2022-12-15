@@ -158,15 +158,15 @@ public class ImageFragment extends Fragment implements MenuProvider {
                     if (isGranted) {
                         // Permission is granted. Continue the action or workflow in your
                         // app.
-                        ContentValues values = new ContentValues();
-                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                        imageUri = getActivity().getApplicationContext().getContentResolver().insert(
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//                        ContentValues values = new ContentValues();
+//                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+//                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+//                        imageUri = getActivity().getApplicationContext().getContentResolver().insert(
+//                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//                        activityResultLauncher.launch(intent);
-                        startActivity(intent);
+                        activityResultLauncher.launch(intent);
+//                        startActivity(intent);
                     } else {
                         Toast.makeText(getContext(), "There is no app that support this action", Toast.LENGTH_SHORT).show();
                     }
@@ -175,9 +175,21 @@ public class ImageFragment extends Fragment implements MenuProvider {
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                    LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
-                    loadAsyncTask.execute();
+                if ( result.getResultCode() == getActivity().RESULT_OK ) {
+//                    LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
+//                    loadAsyncTask.execute();
+                    //&& result.getData() != null
+                    Log.e("Chup anh", "a");
+                    imageUri = result.getData().getData();
+                    Log.e("Chup anh", imageUri.toString());
+
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+
+                    getActivity().getApplicationContext().getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
                 }
             }
         });

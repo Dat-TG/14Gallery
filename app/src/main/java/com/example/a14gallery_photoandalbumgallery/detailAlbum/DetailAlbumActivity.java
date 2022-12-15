@@ -160,7 +160,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     // D/Path Album: Gallery14Edit và /storage/emulated/0/Pictures/Gallery14Edit/NameFolder: Gallery14Edit
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            resultPath = Files.move(Paths.get(src), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                            resultPath = Files.move(Paths.get(src), Paths.get( album.getPath() + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                         }
                     } catch (IOException e) {
                         Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();

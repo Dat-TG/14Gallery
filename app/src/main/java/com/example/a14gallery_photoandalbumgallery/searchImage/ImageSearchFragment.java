@@ -144,6 +144,22 @@ public class ImageSearchFragment extends Fragment  {
 //            menuInflater.inflate(R.menu.top_bar_menu_search, menu);
 //        }
 //    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        ImageGallery.getInstance().update(getActivity());
+        images = ImageGallery.listOfImages(requireContext());
+        if (!mode.equals("date")){
+            {
+                viewListHashtag = getViewListHashtag("");
+                viewList = viewListHashtag;
+            }
+            setOnClick(activity, viewList);
+            imageFragmentAdapterSearch = new ImageFragmentAdapterSearch(viewList, onItemClick, onItemLongClick);
+            imageFragmentAdapterSearch.setState(ImageFragmentAdapterSearch.State.Normal);
+            binding.searchRecycleView.setAdapter(imageFragmentAdapterSearch);
+        }
+    }
 
     private void setOnClick(FragmentActivity activity, ArrayList<RecyclerData> viewList) {
         onItemClick = (position, view1) -> {
@@ -257,7 +273,7 @@ public class ImageSearchFragment extends Fragment  {
 
     private ArrayList<RecyclerData> getViewListDate() {
         if (images.size() > 0) {
-            viewList = new ArrayList<>();
+            ArrayList<RecyclerData> viewList = new ArrayList<>();
             File file = new File(images.get(0).getPath());
             String label = getDateTaken(file, "dd/MM/yyyy");
             label += '.';
