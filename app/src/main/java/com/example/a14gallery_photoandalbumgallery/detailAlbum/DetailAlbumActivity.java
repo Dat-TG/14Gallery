@@ -306,10 +306,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return false;
         }
         getMenuInflater().inflate(R.menu.top_bar_menu_detail_album, menu);
-        if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName)) {
-            MenuItem item = menu.findItem(R.id.move_images);
-            item.setTitle("Khôi phục");
-        }
         int size = album.getAlbumImages().size();
 
         if (size != 0) {
@@ -350,6 +346,28 @@ public class DetailAlbumActivity extends AppCompatActivity {
             menu.getItem(7).setVisible(false);
             menu.getItem(8).setVisible(true);
             menu.getItem(9).setVisible(false);
+        }
+        if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName)) {
+            MenuItem item = menu.findItem(R.id.move_images);
+            item.setTitle("Khôi phục");
+        }
+        if (Objects.equals(nameFolder, AlbumGallery.privateAlbumFolderName) || Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName) || Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName)) {
+            MenuItem item=menu.findItem(R.id.detAlb_coverAlbum);
+            item.setVisible(false);
+            item=menu.findItem(R.id.detAlb_deleteAlbum);
+            item.setVisible(false);
+            item=menu.findItem(R.id.detAlb_rename);
+            item.setVisible(false);
+            item=menu.findItem(R.id.detAlb_add_image);
+            item.setVisible(false);
+        }
+        if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName) || Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName) || Objects.equals(nameFolder, AlbumGallery.privateAlbumFolderName)) {
+            MenuItem item=menu.findItem(R.id.detAlb_camera);
+            item.setVisible(false);
+        }
+        if (Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName)) {
+            MenuItem item=menu.findItem(R.id.move_images);
+            item.setVisible(false);
         }
         return true;
     }
