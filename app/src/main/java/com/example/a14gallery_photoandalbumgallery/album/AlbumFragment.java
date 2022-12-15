@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
+import com.example.a14gallery_photoandalbumgallery.CombineAlbum.CombineAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
@@ -232,6 +233,11 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             Intent intent = new Intent(getContext(), SettingActivity.class);
             intent.putExtra("Fragment", 2);
             requireActivity().startActivity(intent);
+            return true;
+        }
+        if (menuItem.getItemId()==R.id.alb_combine) {
+            Intent intent=new Intent(getContext(), CombineAlbumActivity.class);
+            startActivity(intent);
             return true;
         }
         return false;

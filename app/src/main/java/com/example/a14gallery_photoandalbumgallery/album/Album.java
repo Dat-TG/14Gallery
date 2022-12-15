@@ -14,6 +14,7 @@ public class Album {
     private List<Album> albumChildren = new ArrayList<>();
     private String albumCover = "";
     private String path = "";
+    private boolean isSelected=false;
 
     public int getId() {
         return id;
@@ -69,5 +70,13 @@ public class Album {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 }

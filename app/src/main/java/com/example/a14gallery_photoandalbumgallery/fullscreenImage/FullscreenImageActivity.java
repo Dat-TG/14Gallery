@@ -698,12 +698,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             if (isFavorite(src)) {
                 AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
-                String name2[] = dest.split("/");
-                Log.e("hello",name2[name2.length-1]);
-                if (!Objects.equals(name2[name2.length - 1], AlbumGallery.recycleBinFolderName)) {
-                    AlbumFavoriteData newImg = new AlbumFavoriteData(dest + name[name.length - 1]);
-                    AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(newImg);
-                }
             }
             //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
         } else {
