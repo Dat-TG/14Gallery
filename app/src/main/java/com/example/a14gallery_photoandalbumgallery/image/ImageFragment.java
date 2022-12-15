@@ -2,6 +2,7 @@ package com.example.a14gallery_photoandalbumgallery.image;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -11,10 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -44,12 +41,10 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.util.FileUtil;
 
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 
-import com.example.a14gallery_photoandalbumgallery.album.AlbumFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 
@@ -62,7 +57,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
@@ -71,16 +65,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -216,18 +206,18 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(6).setVisible(true);
             menu.getItem(2).setVisible(true);
             menu.getItem(3).setVisible(true);
+            menu.getItem(7).setVisible(true);
             menu.getItem(4).setVisible(true);
             menu.getItem(5).setVisible(true);
-            menu.getItem(7).setVisible(true);
         } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
             menu.getItem(6).setVisible(true);
+            menu.getItem(7).setVisible(true);
             menu.getItem(2).setVisible(false);
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
             menu.getItem(5).setVisible(false);
-            menu.getItem(7).setVisible(true);
         }
     }
 
@@ -382,7 +372,20 @@ public class ImageFragment extends Fragment implements MenuProvider {
             inputGIF();
         }
         if (menuItem.getItemId() == R.id.create_PDF) {
-            createPDF("abc", images);
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                ArrayList<Image> selectedImages = images.stream()
+                        .filter(Image::isChecked)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                createPDF(getContext(), selectedImages);
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+                onResume();
+                activity.invalidateOptionsMenu();
+            } else {
+                createPDF(getContext(), images);
+            }
         }
         return false;
     }
@@ -788,6 +791,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
         Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
     }
 
+    @SuppressLint("SetTextI18n")
     public void inputGIF() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert.setTitle("Tạo ảnh GIF");
@@ -879,24 +883,24 @@ public class ImageFragment extends Fragment implements MenuProvider {
         alert.show();
     }
 
-    public void createPDF(String nameFile, List<Image> images) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+    public static void createPDF(Context context, List<Image> images) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle("Tạo PDF");
         alert.setMessage("Tên file PDF");
-        final EditText input = new EditText(getContext()); // Set an EditText view to get user input
+        final EditText input = new EditText(context);
         alert.setView(input);
         alert.setPositiveButton("Export", (dialog, whichButton) -> {
             String fileName = input.getText().toString();
-            new CreatePdfTask(getContext(), images, fileName).execute();
+            new CreatePdfTask(context, images, fileName).execute();
         });
-        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {/* Canceled.*/});
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {
+        });
         alert.show();
-
     }
 
-    public class CreatePdfTask extends AsyncTask<Void, Integer, Void> {
+    public static class CreatePdfTask extends AsyncTask<Void, Integer, Void> {
         Context context;
-        List<Image> files;
+        List<Image> imageList;
         String nameFile;
         ProgressDialog progressDialog;
         String directoryPath = android.os.Environment.getExternalStorageDirectory().toString();
@@ -904,7 +908,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
         public CreatePdfTask(Context context2, List<Image> arrayList, String name) {
             context = context2;
-            files = arrayList;
+            imageList = arrayList;
             nameFile = name;
         }
 
@@ -912,8 +916,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog = new ProgressDialog(context);
-            progressDialog.setTitle("Please wait...");
-            progressDialog.setMessage("Creating pdf...");
+            progressDialog.setTitle("Vui lòng chờ đợi một chút...");
+            progressDialog.setMessage("Đang tạo file " + nameFile + ".pdf...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setIndeterminate(false);
             progressDialog.setMax(100);
@@ -931,8 +935,8 @@ public class ImageFragment extends Fragment implements MenuProvider {
                     file.mkdirs();
                 PdfWriter.getInstance(document, new FileOutputStream(dest + nameFile + ".pdf"));
                 document.open();
-                for (int i = 0; i < images.size(); i++) {
-                    Bitmap bmp = BitmapFactory.decodeFile(images.get(i).getPath());
+                for (int i = 0; i < imageList.size(); i++) {
+                    Bitmap bmp = BitmapFactory.decodeFile(imageList.get(i).getPath());
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     com.itextpdf.text.Image image = com.itextpdf.text.Image.getInstance(stream.toByteArray());
@@ -953,14 +957,9 @@ public class ImageFragment extends Fragment implements MenuProvider {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            this.progressDialog.setProgress(((values[0] + 1) * 100) / images.size());
-            StringBuilder sb = new StringBuilder();
-            sb.append("Processing images (");
-            sb.append(values[0] + 1);
-            sb.append("/");
-            sb.append(this.files.size());
-            sb.append(")");
-            progressDialog.setTitle(sb.toString());
+            this.progressDialog.setProgress(((values[0] + 1) * 100) / imageList.size());
+            String sb = "Processing images (" + (values[0] + 1) + "/" + this.imageList.size() + ")";
+            progressDialog.setTitle(sb);
         }
 
         @Override

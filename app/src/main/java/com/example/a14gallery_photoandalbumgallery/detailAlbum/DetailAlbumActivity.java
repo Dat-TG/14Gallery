@@ -40,6 +40,7 @@ import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
+import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
@@ -154,13 +155,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     String imagePath = getPathFromURI(imageUri);
                     Log.e("src", imagePath);
                     Path resultPath = null;
-                    String src = imagePath;
-                    String name[] = src.split("/");
+                    String[] name = imagePath.split("/");
                     // Log.d("Path Album ", album.getName() + " và " + album.getPath() + " NameFolder: " + nameFolder);
                     // D/Path Album: Gallery14Edit và /storage/emulated/0/Pictures/Gallery14Edit/NameFolder: Gallery14Edit
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            resultPath = Files.move(Paths.get(src), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                            resultPath = Files.move(Paths.get(imagePath), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                         }
                     } catch (IOException e) {
                         Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -316,6 +316,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(8).setVisible(false);
                 menu.getItem(9).setVisible(true);
                 menu.getItem(10).setVisible(false);
+                menu.getItem(11).setVisible(true);
             } else {
                 menu.getItem(0).setVisible(false);
                 menu.getItem(1).setVisible(true);
@@ -328,6 +329,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(8).setVisible(true);
                 menu.getItem(2).setVisible(true);
                 menu.getItem(9).setVisible(false);
+                menu.getItem(11).setVisible(true);
             }
         } else {
             menu.getItem(0).setVisible(false);
@@ -341,6 +343,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             menu.getItem(7).setVisible(false);
             menu.getItem(8).setVisible(true);
             menu.getItem(9).setVisible(false);
+            menu.getItem(11).setVisible(false);
         }
         return true;
     }
@@ -514,6 +517,18 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
+        }
+        if (menuItem.getItemId() == R.id.create_PDF) {
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                ArrayList<Image> selectedImages = images.stream()
+                        .filter(Image::isChecked)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                ImageFragment.createPDF(this, selectedImages);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                invalidateOptionsMenu();
+            } else {
+                ImageFragment.createPDF(this, images);
+            }
         }
         return false;
     }

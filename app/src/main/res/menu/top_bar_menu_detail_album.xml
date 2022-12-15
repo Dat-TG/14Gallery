@@ -36,10 +36,12 @@
         android:id="@+id/create_GIF"
         android:title="@string/create_gif"
         app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/move_images"
         android:title="@string/di_chuy_n"
         app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/detAlb_more"
         android:contentDescription="@string/icon_menu_description"
@@ -99,4 +101,9 @@
         android:title="@string/rename_album"
         app:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/create_PDF"
+        android:title="@string/create_pdf"
+        android:icon="@drawable/ic_round_picture_as_pdf_24"
+        app:showAsAction="ifRoom" />
 </menu>
