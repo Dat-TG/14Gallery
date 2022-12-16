@@ -131,7 +131,7 @@ public class AlbumSearchFragment extends Fragment implements MenuProvider {
 //            }
 //        });
 
-        GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(),1, GridLayoutManager.VERTICAL,false);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(),3);
         searchRecyclerView.setLayoutManager(mLayoutManager);
     }
 
