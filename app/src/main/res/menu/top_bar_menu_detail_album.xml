@@ -88,7 +88,7 @@
                 android:id="@+id/slideShow"
                 android:title="@string/slideshow" />
             <item
-                android:id="@+id/detAlb_setting"
+                android:id="@+id/setting"
                 android:title="@string/setting_title" />
         </menu>
     </item>

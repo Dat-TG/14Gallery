@@ -1,7 +1,10 @@
 package com.example.a14gallery_photoandalbumgallery.CombineAlbum;
 
+import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
+
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,8 +54,20 @@ public class CombineAlbumActivity extends AppCompatActivity {
     List<Album> albums;
     public static ActivityResultLauncher<Intent> activityMoveLauncher;
 
+    SharedPreferences sharedPreferences;
+    int theme;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
+        NightMode = sharedPreferences.getInt("NightModeInt", 0);
+        theme = sharedPreferences.getInt("Theme", R.style.Theme_14GalleryPhotoAndAlbumGallery_purple);
+        if (NightMode != 2) {
+            if (theme != 0) setTheme(theme);
+        } else {
+            setTheme(R.style.Theme_14GalleryPhotoAndAlbumGallery);
+            AppCompatDelegate.setDefaultNightMode(NightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityCombineAlbumBinding.inflate(getLayoutInflater());
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);

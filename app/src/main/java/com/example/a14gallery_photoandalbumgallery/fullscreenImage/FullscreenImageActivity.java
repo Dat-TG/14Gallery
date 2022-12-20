@@ -123,14 +123,14 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         List<Image> imageSource;
 
-        Button btnFav=(Button)findViewById(R.id.btnFav);
-        Drawable top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
-        boolean isFav=isFavorite(imagePath);
+        Button btnFav = (Button) findViewById(R.id.btnFav);
+        Drawable top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
+        boolean isFav = isFavorite(imagePath);
         if (isFav) {
-            top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
+            top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
         }
-        btnFav.setCompoundDrawablesWithIntrinsicBounds(null,top,null,null);
-        String[] name=imagePath.split("/");
+        btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+        String[] name = imagePath.split("/");
         if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
             btnFav.setEnabled(false);
         }
@@ -349,7 +349,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     }
 
 
-
     /* Enable or disable all buttons */
     private void setButtonsEnabled(boolean enabled) {
         binding.btnShare.setEnabled(enabled);
@@ -408,19 +407,18 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         }
 
         //Add to Favorite Button
-        if (view.getId()==R.id.btnFav) {
+        if (view.getId() == R.id.btnFav) {
             Drawable top;
             if (!isFavorite(imagePath)) {
                 top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
-                AlbumFavoriteData img=new AlbumFavoriteData(imagePath);
+                AlbumFavoriteData img = new AlbumFavoriteData(imagePath);
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(img);
-            }
-            else {
-                top=ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
-                AlbumFavoriteData deleteImg=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+            } else {
+                top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
+                AlbumFavoriteData deleteImg = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(deleteImg);
             }
-            Button btnFav=(Button)findViewById(R.id.btnFav);
+            Button btnFav = (Button) findViewById(R.id.btnFav);
             //btnFav.setBackgroundResource(R.drawable.ic_baseline_favorite_24);
             btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
         }
@@ -696,7 +694,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             ImageGallery.getInstance().update(this);
             AlbumGallery.getInstance().update(this);
             if (isFavorite(src)) {
-                AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                AlbumFavoriteData old = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
             }
             //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
@@ -710,12 +708,12 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             Snackbar.make(findViewById(R.id.full_screen_image_layout), "Di chuyển ảnh thành công", Snackbar.LENGTH_SHORT).show();
         }
     }
+
     public boolean isFavorite(String imagePath) {
-        AlbumFavoriteData img =AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
-        if (img==null) {
+        AlbumFavoriteData img = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+        if (img == null) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }

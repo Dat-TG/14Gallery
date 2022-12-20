@@ -42,7 +42,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
         super.onCreate(savedInstanceState);
         editor = sharedPreferences.edit();
-        fragmentCurrent = getIntent().getIntExtra("Fragment", 1);
+        fragmentCurrent = getIntent().getIntExtra("Fragment", -1);
         editor.putInt("fragCurr", fragmentCurrent);
 
         binding = ActivitySettingBinding.inflate(getLayoutInflater());

@@ -49,7 +49,7 @@ public class HashtagDialogListAdapter extends RecyclerView.Adapter<HashtagDialog
 
     @Override
     public void onBindViewHolder(@NonNull HashtagDialogListAdapter.ViewHolder holder, int position) {
-        String hashtagName = (position + 1) + " " + hashtags.get(position);
+        String hashtagName = hashtags.get(position);
         holder.binding.txtHashtagName.setText(hashtagName);
         holder.binding.btnClear.setOnClickListener(v -> {
             Hashtag deletingHashtag = AppDatabase.getInstance(v.getContext()).hashtagDao().findByName(hashtags.get(position));

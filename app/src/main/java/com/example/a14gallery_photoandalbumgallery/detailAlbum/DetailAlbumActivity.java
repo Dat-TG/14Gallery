@@ -52,6 +52,7 @@ import com.example.a14gallery_photoandalbumgallery.album.Album;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
+import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
@@ -535,10 +536,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
             }
             return true;
         }
-        if (menuItem.getItemId() == R.id.detAlb_setting) {
-            // Click Setting
-            return true;
-        }
         if (menuItem.getItemId() == R.id.detAlb_deleteAlbum) {
             deleteAlbumAndMoveImages(album);
             onResume();
@@ -560,6 +557,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
         if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
+            return true;
         }
         if (menuItem.getItemId() == R.id.create_PDF) {
             if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
@@ -572,6 +570,12 @@ public class DetailAlbumActivity extends AppCompatActivity {
             } else {
                 ImageFragment.createPDF(this, images);
             }
+            return true;
+        }
+        if (menuItem.getItemId() == R.id.setting) {   // Click Setting
+            Intent intent = new Intent(this, SettingActivity.class);
+            startActivity(intent);
+            return true;
         }
         return false;
     }
