@@ -10,6 +10,8 @@ import android.content.ContentValues;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -30,6 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -38,6 +42,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -166,21 +171,29 @@ public class ImageFragment extends Fragment implements MenuProvider {
                         ContentValues values = new ContentValues();
                         values.put(MediaStore.Images.Media.TITLE, "New Picture");
                         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                        imageUri = requireActivity().getApplicationContext().getContentResolver().insert(
+                        imageUri = requireContext().getContentResolver().insert(
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//                        activityResultLauncher.launch(intent);
-                        startActivity(intent);
+                        activityResultLauncher.launch(intent);
                     } else {
                         Toast.makeText(getContext(), "There is no app that support this action", Toast.LENGTH_SHORT).show();
                     }
                 });
         //
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                LoadAsyncTask loadAsyncTask = new LoadAsyncTask();
-                loadAsyncTask.execute();
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if ( result.getResultCode() == getActivity().RESULT_OK ) {
+                    Log.e("ACTION_IMAGE_CAPTURE", "success");
+                }
+                else{
+                    Log.e("ACTION_IMAGE_CAPTURE", "fail");
+                    requireContext().getContentResolver().delete(imageUri, null,null);
+                }
             }
         });
         activityMoveLauncher = registerForActivityResult(
@@ -902,6 +915,18 @@ public class ImageFragment extends Fragment implements MenuProvider {
             requireActivity().invalidateOptionsMenu();
         });
         alert.show();
+
+    }
+
+    private String getPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(requireContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
     public static void createPDF(Context context, List<Image> images) {

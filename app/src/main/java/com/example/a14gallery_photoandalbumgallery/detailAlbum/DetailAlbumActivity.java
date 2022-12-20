@@ -74,6 +74,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.nio.file.Files;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
@@ -125,7 +126,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
                 try {
-                    album= getAlbumFavorite();
+                    album = getAlbumFavorite();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -163,16 +164,18 @@ public class DetailAlbumActivity extends AppCompatActivity {
         cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK) {
                     String imagePath = getPathFromURI(imageUri);
                     Log.e("src", imagePath);
                     Path resultPath = null;
-                    String[] name = imagePath.split("/");
+                    String src = imagePath;
+                    String name[] = src.split("/");
                     // Log.d("Path Album ", album.getName() + " và " + album.getPath() + " NameFolder: " + nameFolder);
                     // D/Path Album: Gallery14Edit và /storage/emulated/0/Pictures/Gallery14Edit/NameFolder: Gallery14Edit
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            resultPath = Files.move(Paths.get(imagePath), Paths.get( album.getPath()  + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+                            resultPath = Files.move(Paths.get(src), Paths.get(album.getPath() + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
+
                         }
                     } catch (IOException e) {
                         Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -183,9 +186,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
                     }
 
+                } else {
+                    Log.e("ACTION_IMAGE_CAPTURE", "fail");
+                    getApplicationContext().getContentResolver().delete(imageUri, null, null);
                 }
             }
         });
+
 
         int size = album.getAlbumImages().size();
 
@@ -213,7 +220,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         String albumObj = gson.toJson(album);
                         intent.putExtra("album", albumObj);
                     }
-                        intent.putExtra("position", position - 1);
+                    intent.putExtra("position", position - 1);
                     intent.putExtra("path", viewList.get(position).imageData.getPath());
                     Log.e("imagePath", viewList.get(position).imageData.getPath());
                     this.startActivity(intent);
@@ -258,7 +265,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         if (nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
                 try {
-                    album= getAlbumFavorite();
+                    album = getAlbumFavorite();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -364,21 +371,21 @@ public class DetailAlbumActivity extends AppCompatActivity {
             item.setTitle("Khôi phục");
         }
         if (Objects.equals(nameFolder, AlbumGallery.privateAlbumFolderName) || Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName) || Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName)) {
-            MenuItem item=menu.findItem(R.id.detAlb_coverAlbum);
+            MenuItem item = menu.findItem(R.id.detAlb_coverAlbum);
             item.setVisible(false);
-            item=menu.findItem(R.id.detAlb_deleteAlbum);
+            item = menu.findItem(R.id.detAlb_deleteAlbum);
             item.setVisible(false);
-            item=menu.findItem(R.id.detAlb_rename);
+            item = menu.findItem(R.id.detAlb_rename);
             item.setVisible(false);
-            item=menu.findItem(R.id.detAlb_add_image);
+            item = menu.findItem(R.id.detAlb_add_image);
             item.setVisible(false);
         }
         if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName) || Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName) || Objects.equals(nameFolder, AlbumGallery.privateAlbumFolderName)) {
-            MenuItem item=menu.findItem(R.id.detAlb_camera);
+            MenuItem item = menu.findItem(R.id.detAlb_camera);
             item.setVisible(false);
         }
         if (Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName)) {
-            MenuItem item=menu.findItem(R.id.move_images);
+            MenuItem item = menu.findItem(R.id.move_images);
             item.setVisible(false);
         }
         return true;
@@ -400,7 +407,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-        if (menuItem.getItemId()==R.id.detAlb_rename) {//Rename album
+        if (menuItem.getItemId() == R.id.detAlb_rename) {//Rename album
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle("Đổi tên album");
             LinearLayout layout = new LinearLayout(this);
@@ -419,18 +426,17 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     return;
                 }
                 File sourceFile = new File(album.getPath());
-                String name[]=album.getPath().split("/");
-                String dest="";
-                for (int i=0;i<name.length-1;i++) {
+                String name[] = album.getPath().split("/");
+                String dest = "";
+                for (int i = 0; i < name.length - 1; i++) {
                     dest += name[i] + "/";
                 }
-                dest+=nameAlb;
+                dest += nameAlb;
                 File destFile = new File(dest);
                 if (sourceFile.renameTo(destFile)) {
                     Snackbar.make(findViewById(R.id.detail_album_layout), "Đổi tên album thành công", Snackbar.LENGTH_SHORT).show();
                     binding.appBarDetail.setTitle(nameAlb);
-                }
-                else {
+                } else {
                     Snackbar.make(findViewById(R.id.detail_album_layout), "Đổi tên album không thành công", Snackbar.LENGTH_SHORT).show();
                 }
                 AlbumGallery.getInstance().update(this);
@@ -514,7 +520,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = true;
-                upToDown=true;
+                upToDown = true;
             }
             return true;
         }
@@ -525,7 +531,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 imageFragmentAdapter.setData(viewList);
                 binding.recyclerDetailView.setAdapter(imageFragmentAdapter);
                 sortByDate = false;
-                upToDown=true;
+                upToDown = true;
             }
             return true;
         }
@@ -587,8 +593,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
-        for(int i=0;i<viewList.size();i++){
-            if(viewList.get(i).type==RecyclerData.Type.Label){
+        for (int i = 0; i < viewList.size(); i++) {
+            if (viewList.get(i).type == RecyclerData.Type.Label) {
                 switch (viewList.get(i).labelData) {
                     case "January": {
                         viewList.get(i).labelData = "Tháng 1";
@@ -645,7 +651,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
     }
 
-    private void toViewList(List<Image>images) {
+    private void toViewList(List<Image> images) {
         if (images.size() > 0) {
             viewList = new ArrayList<>();
             String label = images.get(0).getDateTaken();
@@ -659,56 +665,56 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
             }
         }
-        int beg=3;
-        for(int i=0;i<viewList.size();i++){
-            if(viewList.get(i).type==RecyclerData.Type.Label){
-                switch (viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6)) {
+        int beg = 3;
+        for (int i = 0; i < viewList.size(); i++) {
+            if (viewList.get(i).type == RecyclerData.Type.Label) {
+                switch (viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6)) {
                     case "January": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 1");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 1");
                         break;
                     }
                     case "February": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 2");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 2");
                         break;
                     }
                     case "March": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 3");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 3");
                         break;
                     }
                     case "April": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 4");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 4");
                         break;
                     }
                     case "May": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 5");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 5");
                         break;
                     }
                     case "June": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 6");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 6");
                         break;
                     }
                     case "July": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 7");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 7");
                         break;
                     }
                     case "August": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 8");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 8");
                         break;
                     }
                     case "September": {
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 9");
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 9");
                         break;
                     }
-                    case "October":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 10");
+                    case "October": {
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 10");
                         break;
                     }
-                    case "November":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 11");
+                    case "November": {
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 11");
                         break;
                     }
-                    case "December":{
-                        viewList.get(i).labelData=viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg,viewList.get(i).labelData.length()-6),"Tháng 12");
+                    case "December": {
+                        viewList.get(i).labelData = viewList.get(i).labelData.replace(viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6), "Tháng 12");
                         break;
                     }
                     default:
@@ -721,13 +727,13 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     private void setDownToUp() {
         if (images.size() > 0) {
-            if(!upToDown && !sortByDate){
+            if (!upToDown && !sortByDate) {
                 int beg = 3;
                 viewList = new ArrayList<>();
                 String label = images.get(0).getDateTaken();
                 label = label.substring(beg, label.length() - 6);
                 label += '.';
-                for (int i = images.size()-1; i >=0; i--) {
+                for (int i = images.size() - 1; i >= 0; i--) {
                     String labelCur = images.get(i).getDateTaken();
                     labelCur = labelCur.substring(beg, labelCur.length() - 6);
                     if (!labelCur.equals(label)) {
@@ -736,7 +742,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     }
                     viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
                 }
-                for(int i=0;i<viewList.size();i++) {
+                for (int i = 0; i < viewList.size(); i++) {
                     if (viewList.get(i).type == RecyclerData.Type.Label) {
                         switch (viewList.get(i).labelData) {
                             case "January": {
@@ -792,8 +798,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }
-            else{
+            } else {
                 viewList = new ArrayList<>();
                 String label = images.get(0).getDateTaken();
                 label += '.';
@@ -805,8 +810,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     }
                     viewList.add(new RecyclerData(RecyclerData.Type.Image, "", images.get(i), i));
                 }
-                int beg=3;
-                for(int i=0;i<viewList.size();i++) {
+                int beg = 3;
+                for (int i = 0; i < viewList.size(); i++) {
                     if (viewList.get(i).type == RecyclerData.Type.Label) {
                         switch (viewList.get(i).labelData.substring(beg, viewList.get(i).labelData.length() - 6)) {
                             case "January": {
@@ -880,10 +885,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
     public boolean isFavorite(String imagePath) {
         AlbumFavoriteData img = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
-        if (img==null) {
+        if (img == null) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -959,7 +963,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 }
                 if (result != null) {
                     if (isFavorite(src)) {
-                        AlbumFavoriteData old=AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
+                        AlbumFavoriteData old = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(src);
                         AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(old);
                     }
                     //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
@@ -1047,18 +1051,18 @@ public class DetailAlbumActivity extends AppCompatActivity {
     public Album getAlbumFavorite() throws ParseException {
         Album Favorite = new Album();
         Favorite.setName("Ưa thích");
-        List<AlbumFavoriteData>FavList= AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
-        for (int i=0;i<FavList.size();i++) {
-            Image img=new Image();
+        List<AlbumFavoriteData> FavList = AppDatabase.getInstance(this).albumFavoriteDataDAO().getAllFavImg();
+        for (int i = 0; i < FavList.size(); i++) {
+            Image img = new Image();
             img.setPath(FavList.get(i).imagePath);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                img=ImageGallery.getInstance().getImageByPath(this,FavList.get(i).imagePath);
+                img = ImageGallery.getInstance().getImageByPath(this, FavList.get(i).imagePath);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
-                Date d=formatter.parse(img.getDateTaken());
+                Date d = formatter.parse(img.getDateTaken());
                 SimpleDateFormat Nformatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.UK);
-                String datetext=Nformatter.format(d);
+                String datetext = Nformatter.format(d);
                 img.setDateTaken(datetext);
-                Log.e("date",img.getDateTaken());
+                Log.e("date", img.getDateTaken());
             }
             Favorite.getAlbumImages().add(img);
         }
@@ -1267,7 +1271,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
     }
 
     private String getPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+        String[] proj = {MediaStore.Images.Media.DATA};
         CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
         Cursor cursor = loader.loadInBackground();
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
