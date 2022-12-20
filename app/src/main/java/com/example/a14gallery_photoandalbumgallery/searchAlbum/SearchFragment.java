@@ -38,7 +38,6 @@ public class SearchFragment extends Fragment implements MenuProvider {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create a new Tab named "First"
-
     }
 
     @SuppressLint("MissingInflatedId")

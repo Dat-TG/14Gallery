@@ -2,7 +2,6 @@ package com.example.a14gallery_photoandalbumgallery.albumCover;
 
 import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -26,7 +25,6 @@ import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumCover.AlbumData;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
-import com.example.a14gallery_photoandalbumgallery.detailAlbum.DetailAlbumActivity;
 
 import java.util.ArrayList;
 import java.util.List;

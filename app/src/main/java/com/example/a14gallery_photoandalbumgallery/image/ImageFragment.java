@@ -2,10 +2,13 @@ package com.example.a14gallery_photoandalbumgallery.image;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,7 +57,11 @@ import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -203,12 +210,14 @@ public class ImageFragment extends Fragment implements MenuProvider {
             menu.getItem(6).setVisible(true);
             menu.getItem(2).setVisible(true);
             menu.getItem(3).setVisible(true);
+            menu.getItem(7).setVisible(true);
             menu.getItem(4).setVisible(true);
             menu.getItem(5).setVisible(true);
         } else {
             menu.getItem(0).setVisible(false);
             menu.getItem(1).setVisible(true);
             menu.getItem(6).setVisible(true);
+            menu.getItem(7).setVisible(true);
             menu.getItem(2).setVisible(false);
             menu.getItem(3).setVisible(false);
             menu.getItem(4).setVisible(false);
@@ -365,6 +374,22 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
         if (menuItem.getItemId() == R.id.create_GIF) {
             inputGIF();
+        }
+        if (menuItem.getItemId() == R.id.create_PDF) {
+            if (imageFragmentAdapter.getState() == ImageFragmentAdapter.State.MultipleSelect) {
+                ArrayList<Image> selectedImages = images.stream()
+                        .filter(Image::isChecked)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                createPDF(getContext(), selectedImages);
+                imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                imageFragmentAdapter.setData(viewList);
+                binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+                onResume();
+                activity.invalidateOptionsMenu();
+            } else {
+                createPDF(getContext(), images);
+            }
         }
         return false;
     }
@@ -776,7 +801,6 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
                 return;
             }
-// Keep adding frame here
         }
         try {
             writer.finishWrite(os);
@@ -785,10 +809,10 @@ public class ImageFragment extends Fragment implements MenuProvider {
             Snackbar.make(requireView(), "Tạo ảnh GIF không thành công", Snackbar.LENGTH_SHORT).show();
             return;
         }
-// And you are done!!!
         Snackbar.make(requireView(), "Tạo ảnh GIF thành công", Snackbar.LENGTH_SHORT).show();
     }
 
+    @SuppressLint("SetTextI18n")
     public void inputGIF() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert.setTitle("Tạo ảnh GIF");
@@ -878,5 +902,91 @@ public class ImageFragment extends Fragment implements MenuProvider {
             requireActivity().invalidateOptionsMenu();
         });
         alert.show();
+    }
+
+    public static void createPDF(Context context, List<Image> images) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        alert.setTitle("Tạo PDF");
+        alert.setMessage("Tên file PDF");
+        final EditText input = new EditText(context);
+        alert.setView(input);
+        alert.setPositiveButton("Export", (dialog, whichButton) -> {
+            String fileName = input.getText().toString();
+            new CreatePdfTask(context, images, fileName).execute();
+        });
+        alert.setNegativeButton("Hủy", (dialog, whichButton) -> {});
+        alert.show();
+    }
+
+    public static class CreatePdfTask extends AsyncTask<Void, Integer, Void> {
+        Context context;
+        List<Image> imageList;
+        String nameFile;
+        ProgressDialog progressDialog;
+        String directoryPath = android.os.Environment.getExternalStorageDirectory().toString();
+        String dest = directoryPath + AlbumGallery.pdfFolder;
+
+        public CreatePdfTask(Context context2, List<Image> arrayList, String name) {
+            context = context2;
+            imageList = arrayList;
+            nameFile = name;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Vui lòng chờ đợi một chút...");
+            progressDialog.setMessage("Đang tạo file " + nameFile + ".pdf...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setMax(100);
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... Void) {
+            try {
+                Document document = new Document();
+
+                File file = new File(dest);
+                if (!file.exists())
+                    file.mkdirs();
+                PdfWriter.getInstance(document, new FileOutputStream(dest + nameFile + ".pdf"));
+                document.open();
+                for (int i = 0; i < imageList.size(); i++) {
+                    Bitmap bmp = BitmapFactory.decodeFile(imageList.get(i).getPath());
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    com.itextpdf.text.Image image = com.itextpdf.text.Image.getInstance(stream.toByteArray());
+                    float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
+                            - document.rightMargin() - 0) / image.getWidth()) * 100; // 0 means you have no indentation. If you have any, change it.
+                    image.scalePercent(scaler);
+                    image.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER | com.itextpdf.text.Image.ALIGN_TOP);
+                    document.add(image);
+                    publishProgress(i);
+                }
+                document.close();
+            } catch (DocumentException | IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            this.progressDialog.setProgress(((values[0] + 1) * 100) / imageList.size());
+            String sb = "Processing (" + (values[0] + 1) + "/" + this.imageList.size() + ")";
+            progressDialog.setTitle(sb);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+            Toast.makeText(context, "Tạo thành công:" + dest + nameFile + ".pdf", Toast.LENGTH_SHORT).show();
+        }
     }
 }

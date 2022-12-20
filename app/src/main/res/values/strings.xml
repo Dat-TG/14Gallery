@@ -84,6 +84,7 @@
     <string name="general">Chung</string>
     <string name="theme">Chủ đề</string>
     <string name="dark_mode">Ban đêm</string>
+    <string name="create_pdf">Tạo PDF</string>
     <string-array name="category_search_array">
         <item>Ngày</item>
         <item>Hashtag</item>

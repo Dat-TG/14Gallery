@@ -28,12 +28,17 @@
         android:title="@string/create_gif"
         app:showAsAction="ifRoom" />
 
+
     <item
         android:id="@+id/slideShow"
         android:title="@string/slideshow"
         app:showAsAction="ifRoom" />
 
-
+    <item
+        android:id="@+id/create_PDF"
+        android:title="@string/create_pdf"
+        android:icon="@drawable/ic_round_picture_as_pdf_24"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/img_more"
         android:contentDescription="@string/icon_menu_description"
@@ -41,10 +46,10 @@
         android:title="@string/more_title"
         app:showAsAction="ifRoom">
         <menu>
+
             <item
                 android:id="@+id/img_choose"
                 android:title="@string/choose_title" />
-
             <item
                 android:id="@+id/img_grid"
                 android:title="@string/grid_columns">
@@ -89,7 +94,6 @@
                 android:id="@+id/img_setting"
                 android:title="@string/setting_title" />
         </menu>
-
     </item>
 
 </menu>

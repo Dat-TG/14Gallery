@@ -24,7 +24,6 @@ import com.example.a14gallery_photoandalbumgallery.album.AlbumFragment;
 import com.example.a14gallery_photoandalbumgallery.databinding.ActivityMainBinding;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.searchAlbum.SearchFragment;
-import com.example.a14gallery_photoandalbumgallery.searchImage.ImageSearchFragment;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 
 

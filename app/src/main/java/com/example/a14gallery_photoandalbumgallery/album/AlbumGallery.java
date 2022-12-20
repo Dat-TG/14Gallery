@@ -29,6 +29,7 @@ public class AlbumGallery {
     public static final String favoriteAlbumFolderName = "FavoriteAlbum";
     public static final String privateAlbumFolderName = "PrivateAlbum";
     public static final String recycleBinFolderName = "RecycleBin";
+    public static final String pdfFolder = "/14Gallery_PDF/";
 
     public static final String favoriteAlbumFolderNameVn = "Ưa thích";
     public static final String privateAlbumFolderNameVn = "Riêng tư";

@@ -4,7 +4,6 @@ package com.example.a14gallery_photoandalbumgallery.setting;
 import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
