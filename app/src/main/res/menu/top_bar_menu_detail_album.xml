@@ -45,9 +45,14 @@
     <item
         android:id="@+id/detAlb_more"
         android:contentDescription="@string/icon_menu_description"
+        android:icon="@drawable/ic_menu_24dp"
         android:title="@string/more_title"
         app:showAsAction="ifRoom">
         <menu>
+            <item
+                android:id="@+id/create_PDF"
+                android:title="@string/create_pdf"
+                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/detAlb_grid"
                 android:title="@string/grid_columns">
@@ -101,9 +106,5 @@
         android:title="@string/rename_album"
         app:showAsAction="ifRoom"
         />
-    <item
-        android:id="@+id/create_PDF"
-        android:title="@string/create_pdf"
-        android:icon="@drawable/ic_round_picture_as_pdf_24"
-        app:showAsAction="ifRoom" />
+
 </menu>

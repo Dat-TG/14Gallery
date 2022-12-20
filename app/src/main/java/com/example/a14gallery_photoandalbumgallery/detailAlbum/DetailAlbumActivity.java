@@ -335,10 +335,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(5).setVisible(false);
                 menu.getItem(6).setVisible(true);
                 menu.getItem(7).setVisible(true);
-                menu.getItem(8).setVisible(false);
                 menu.getItem(9).setVisible(true);
                 menu.getItem(10).setVisible(false);
-                menu.getItem(11).setVisible(true);
+                menu.getItem(8).setVisible(false);
             } else {
                 menu.getItem(0).setVisible(false);
                 menu.getItem(1).setVisible(true);
@@ -348,10 +347,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 menu.getItem(6).setVisible(false);
                 menu.getItem(10).setVisible(true);
                 menu.getItem(7).setVisible(false);
-                menu.getItem(8).setVisible(true);
                 menu.getItem(2).setVisible(true);
                 menu.getItem(9).setVisible(false);
-                menu.getItem(11).setVisible(true);
+                menu.getItem(8).setVisible(true);
             }
         } else {
             menu.getItem(0).setVisible(false);
@@ -363,9 +361,8 @@ public class DetailAlbumActivity extends AppCompatActivity {
             menu.getItem(6).setVisible(false);
             menu.getItem(10).setVisible(true);
             menu.getItem(7).setVisible(false);
-            menu.getItem(8).setVisible(true);
             menu.getItem(9).setVisible(false);
-            menu.getItem(11).setVisible(false);
+            menu.getItem(8).setVisible(true);
         }
         if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName)) {
             MenuItem item = menu.findItem(R.id.move_images);
@@ -380,9 +377,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             item.setVisible(false);
             item = menu.findItem(R.id.detAlb_add_image);
             item.setVisible(false);
-        }
-        if (Objects.equals(nameFolder, AlbumGallery.recycleBinFolderName) || Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName) || Objects.equals(nameFolder, AlbumGallery.privateAlbumFolderName)) {
-            MenuItem item = menu.findItem(R.id.detAlb_camera);
+            item = menu.findItem(R.id.detAlb_camera);
             item.setVisible(false);
         }
         if (Objects.equals(nameFolder, AlbumGallery.favoriteAlbumFolderName)) {
