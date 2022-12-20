@@ -83,8 +83,8 @@ public class AlbumFragmentAdapterSearch extends RecyclerView.Adapter<RecyclerVie
                     .into(albumHolder.imageView);
         }
 
-        albumHolder.textDate.setText("Album "+albumTitle);
-        albumHolder.textFilePath.setText("Tổng số ảnh: "+String.format("%s", albumsCount));
+        albumHolder.textDate.setText(albumTitle);
+        albumHolder.textFilePath.setText(String.format("%s", albumsCount));
         albumHolder.imageView.setOnClickListener(view -> {
             Intent intent = new Intent(_context, DetailAlbumActivity.class);
             intent.putExtra("NAME", albumPos.getName());
