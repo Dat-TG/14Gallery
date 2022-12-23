@@ -7,10 +7,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,8 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -49,17 +45,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
-
+import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
-import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
-
-import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.databinding.FragmentImageBinding;
-
+import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.itextpdf.text.Document;
@@ -139,7 +131,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("position", position - 1);
+                intent.putExtra("position", images.indexOf(viewList.get(position).imageData));
                 intent.putExtra("path", viewList.get(position).imageData.getPath());
                 Log.e("imagePath", viewList.get(position).imageData.getPath());
                 requireContext().startActivity(intent);
@@ -184,18 +176,16 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if ( result.getResultCode() == getActivity().RESULT_OK ) {
-                    Log.e("ACTION_IMAGE_CAPTURE", "success");
-                }
-                else{
-                    Log.e("ACTION_IMAGE_CAPTURE", "fail");
-                    requireContext().getContentResolver().delete(imageUri, null,null);
-                }
-            }
-        });
+                result -> {
+                    getActivity();
+                    if ( result.getResultCode() == Activity.RESULT_OK) {
+                        Log.e("ACTION_IMAGE_CAPTURE", "success");
+                    }
+                    else{
+                        Log.e("ACTION_IMAGE_CAPTURE", "fail");
+                        requireContext().getContentResolver().delete(imageUri, null,null);
+                    }
+                });
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -736,11 +726,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
 
     public boolean isFavorite(String imagePath) {
         AlbumFavoriteData img = AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(imagePath);
-        if (img == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return img != null;
     }
 
     private void moveToAlbum(String dest) {
@@ -751,19 +737,19 @@ public class ImageFragment extends Fragment implements MenuProvider {
             Log.e("src", image.getPath());
             Path result = null;
             String src = image.getPath();
-            String name[] = src.split("/");
+            String[] name = src.split("/");
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     result = Files.move(Paths.get(src), Paths.get(dest + "/" + name[name.length - 1]), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
-                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             if (result != null) {
                 if (isFavorite(src)) {
                     AlbumFavoriteData old = AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().getFavImgByPath(src);
                     AppDatabase.getInstance(getContext()).albumFavoriteDataDAO().delete(old);
-                    String name2[] = dest.split("/");
+                    String[] name2 = dest.split("/");
                     Log.e("hello",dest+"-----"+name[name.length-1]+"--"+name2[name2.length-1]);
                     if (!Objects.equals(name2[name2.length - 1], AlbumGallery.recycleBinFolderName)) {
                         AlbumFavoriteData newImg = new AlbumFavoriteData(dest + name[name.length - 1]);
@@ -772,10 +758,10 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 }
                 //Toast.makeText(getActivity().getApplicationContext(), "Đã di chuyển ảnh thành công", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity().getApplicationContext(), "Di chuyển ảnh không thành công", Toast.LENGTH_SHORT).show();
             }
         }
-        String name[] = dest.split("/");
+        String[] name = dest.split("/");
         if (Objects.equals(name[name.length - 1], AlbumGallery.recycleBinFolderName)) {
             Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
         } else {

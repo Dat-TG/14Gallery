@@ -93,7 +93,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     MaterialAlertDialogBuilder materialAlertDialogBuilder;
     View hashtagDialogView;
     View detailsDialogView;
-    ActivityResultLauncher<Intent> activityEditLauncher;
     Uri imageUri;
     SharedPreferences sharedPreferences;
     int theme;
@@ -123,7 +122,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         List<Image> imageSource;
 
-        Button btnFav = (Button) findViewById(R.id.btnFav);
+        Button btnFav = findViewById(R.id.btnFav);
         Drawable top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
         boolean isFav = isFavorite(imagePath);
         if (isFav) {
@@ -166,16 +165,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             }
         });
 
-//        activityEditLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-//            @Override
-//            public void onActivityResult(ActivityResult result) {
-//                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-////                      ImageGallery.getInstance().update(getApplicationContext());
-////                    ImageFragment.LoadAsyncTask loadAsyncTask = new ImageFragment.LoadAsyncTask();
-////                    loadAsyncTask.execute();
-//                }
-//            }
-//        });
         activityMoveLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -418,7 +407,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 AlbumFavoriteData deleteImg = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(deleteImg);
             }
-            Button btnFav = (Button) findViewById(R.id.btnFav);
+            Button btnFav = findViewById(R.id.btnFav);
             //btnFav.setBackgroundResource(R.drawable.ic_baseline_favorite_24);
             btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
         }
@@ -660,6 +649,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             }
             return true;
         }
+
         return false;
     }
 
@@ -711,10 +701,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
     public boolean isFavorite(String imagePath) {
         AlbumFavoriteData img = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
-        if (img == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return img != null;
     }
 }

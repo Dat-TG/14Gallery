@@ -12,6 +12,16 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -25,33 +35,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
+import com.example.a14gallery_photoandalbumgallery.R;
+import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
+import com.example.a14gallery_photoandalbumgallery.album.Album;
+import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
+import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
 import com.example.a14gallery_photoandalbumgallery.database.albumFavorite.AlbumFavoriteData;
+import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.fullscreenImage.FullscreenImageActivity;
 import com.example.a14gallery_photoandalbumgallery.image.Image;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragment;
 import com.example.a14gallery_photoandalbumgallery.image.ImageFragmentAdapter;
-import com.example.a14gallery_photoandalbumgallery.R;
-import com.example.a14gallery_photoandalbumgallery.addImage.AddItemActivity;
 import com.example.a14gallery_photoandalbumgallery.image.ImageGallery;
 import com.example.a14gallery_photoandalbumgallery.image.RecyclerData;
-import com.example.a14gallery_photoandalbumgallery.album.Album;
-import com.example.a14gallery_photoandalbumgallery.album.AlbumGallery;
-import com.example.a14gallery_photoandalbumgallery.albumCover.AlbumCoverActivity;
-import com.example.a14gallery_photoandalbumgallery.databinding.ActivityDetailAlbumBinding;
 import com.example.a14gallery_photoandalbumgallery.setting.SettingActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -75,7 +74,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import java.nio.file.Files;
 
 
 public class DetailAlbumActivity extends AppCompatActivity {
@@ -221,7 +219,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         String albumObj = gson.toJson(album);
                         intent.putExtra("album", albumObj);
                     }
-                    intent.putExtra("position", position - 1);
+                    intent.putExtra("position", images.indexOf(viewList.get(position).imageData));
                     intent.putExtra("path", viewList.get(position).imageData.getPath());
                     Log.e("imagePath", viewList.get(position).imageData.getPath());
                     this.startActivity(intent);
