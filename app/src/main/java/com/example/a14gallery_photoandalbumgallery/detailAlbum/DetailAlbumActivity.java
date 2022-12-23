@@ -223,6 +223,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     }
                     intent.putExtra("position", position - 1);
                     intent.putExtra("path", viewList.get(position).imageData.getPath());
+                    Log.e("position selected ", position.toString());
                     Log.e("imagePath", viewList.get(position).imageData.getPath());
                     this.startActivity(intent);
                 }

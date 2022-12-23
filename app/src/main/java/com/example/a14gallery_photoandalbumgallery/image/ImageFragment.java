@@ -139,7 +139,7 @@ public class ImageFragment extends Fragment implements MenuProvider {
                 imageFragmentAdapter.notifyItemChanged(position);
             } else {
                 Intent intent = new Intent(getContext(), FullscreenImageActivity.class);
-                intent.putExtra("position", position - 1);
+                intent.putExtra("position", images.indexOf(viewList.get(position).imageData));
                 intent.putExtra("path", viewList.get(position).imageData.getPath());
                 Log.e("imagePath", viewList.get(position).imageData.getPath());
                 requireContext().startActivity(intent);
