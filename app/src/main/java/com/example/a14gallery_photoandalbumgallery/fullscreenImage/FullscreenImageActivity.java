@@ -126,18 +126,6 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         List<Image> imageSource;
 
-        Button btnFav = findViewById(R.id.btnFav);
-        Drawable top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
-        boolean isFav = isFavorite(imagePath);
-        if (isFav) {
-            top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
-        }
-        btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
-        String[] name = imagePath.split("/");
-        if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
-            btnFav.setEnabled(false);
-        }
-
         if (albumName != null) {
             if (albumName.equals(AlbumGallery.favoriteAlbumFolderNameVn) || albumName.equals(AlbumGallery.privateAlbumFolderNameVn) || albumName.equals(AlbumGallery.recycleBinFolderNameVn)) {
                 Gson gson = new Gson();
@@ -154,6 +142,18 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         viewPager2.setAdapter(fullscreenImageAdapter);
         viewPager2.setCurrentItem(imagePosition, false);
         registerCallbackForViewPager2();
+
+        Button btnFav = findViewById(R.id.btnFav);
+        Drawable top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
+        boolean isFav = isFavorite(getImagePath());
+        if (isFav) {
+            top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
+        }
+        btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+        String[] name = getImagePath().split("/");
+        if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+            btnFav.setEnabled(false);
+        }
 
         // Set on click for back navigator
         binding.topAppBar.setNavigationOnClickListener(v -> finish());
@@ -207,16 +207,49 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                Button btnFav = findViewById(R.id.btnFav);
+                Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
+                boolean isFav = isFavorite(getImagePath());
+                if (isFav) {
+                    top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_24);
+                }
+                btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+                String[] name = getImagePath().split("/");
+                if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+                    btnFav.setEnabled(false);
+                }
             }
 
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                Button btnFav = findViewById(R.id.btnFav);
+                Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
+                boolean isFav = isFavorite(getImagePath());
+                if (isFav) {
+                    top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_24);
+                }
+                btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+                String[] name = getImagePath().split("/");
+                if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+                    btnFav.setEnabled(false);
+                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
+                Button btnFav = findViewById(R.id.btnFav);
+                Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
+                boolean isFav = isFavorite(getImagePath());
+                if (isFav) {
+                    top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_24);
+                }
+                btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+                String[] name = getImagePath().split("/");
+                if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
+                    btnFav.setEnabled(false);
+                }
             }
         });
     }
@@ -402,13 +435,13 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
         //Add to Favorite Button
         if (view.getId() == R.id.btnFav) {
             Drawable top;
-            if (!isFavorite(imagePath)) {
+            if (!isFavorite(getImagePath())) {
                 top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
-                AlbumFavoriteData img = new AlbumFavoriteData(imagePath);
+                AlbumFavoriteData img = new AlbumFavoriteData(getImagePath());
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().insert(img);
             } else {
                 top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
-                AlbumFavoriteData deleteImg = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(imagePath);
+                AlbumFavoriteData deleteImg = AppDatabase.getInstance(this).albumFavoriteDataDAO().getFavImgByPath(getImagePath());
                 AppDatabase.getInstance(this).albumFavoriteDataDAO().delete(deleteImg);
             }
             Button btnFav = findViewById(R.id.btnFav);
