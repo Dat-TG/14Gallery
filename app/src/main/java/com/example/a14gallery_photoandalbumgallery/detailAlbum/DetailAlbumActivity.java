@@ -3,6 +3,8 @@ package com.example.a14gallery_photoandalbumgallery.detailAlbum;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -104,6 +106,9 @@ public class DetailAlbumActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     int theme;
 
+    ActivityResultLauncher<String> requestPermissionLauncher;
+    ActivityResultLauncher<Intent> activityResultLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
@@ -163,6 +168,36 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
                         invalidateOptionsMenu();
                         onResume();
+                    }
+                });
+
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        // Permission is granted. Continue the action or workflow in your
+                        // app.
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                        imageUri = this.getContentResolver().insert(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                        activityResultLauncher.launch(intent);
+                    } else {
+                        Toast.makeText(this, "There is no app that support this action", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    getApplicationContext();
+                    if ( result.getResultCode() == Activity.RESULT_OK) {
+                        Log.e("ACTION_IMAGE_CAPTURE", "success");
+                    }
+                    else{
+                        Log.e("ACTION_IMAGE_CAPTURE", "fail");
+                        this.getContentResolver().delete(imageUri, null,null);
                     }
                 });
 
@@ -470,14 +505,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_camera) { // Click Camera
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "New Picture");
-            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-            imageUri = getApplicationContext().getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            cameraResultLauncher.launch(intent);
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             return true;
         }
         if (menuItem.getItemId() == R.id.detAlb_choose) {
