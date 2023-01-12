@@ -248,6 +248,27 @@ public class AlbumFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId()==R.id.alb_combine) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("PERMISSION NEEDED");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
+                        Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                        startActivityForResult(intent, 501);
+                    });
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img = new ImageView(getContext());
+                    Glide.with(this).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + this.getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
+                    alert.show();
+                    return false;
+                }
+            }
             Intent intent=new Intent(getContext(), CombineAlbumActivity.class);
             startActivity(intent);
             return true;
