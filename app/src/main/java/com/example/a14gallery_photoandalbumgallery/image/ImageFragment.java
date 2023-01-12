@@ -1,11 +1,14 @@
 package com.example.a14gallery_photoandalbumgallery.image;
 
 
+import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +47,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.GIF.AnimatedGIFWriter;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
@@ -335,6 +341,27 @@ public class ImageFragment extends Fragment implements MenuProvider {
             return true;
         }
         if (menuItem.getItemId() == R.id.delete_images) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("PERMISSION NEEDED");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
+                        Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                        startActivityForResult(intent, 501);
+                    });
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img = new ImageView(getContext());
+                    Glide.with(getContext()).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + getContext().getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
+                    alert.show();
+                    return false;
+                }
+            }
             moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
             toViewList();
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
@@ -345,6 +372,27 @@ public class ImageFragment extends Fragment implements MenuProvider {
             activity.invalidateOptionsMenu();
         }
         if (menuItem.getItemId() == R.id.move_images) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("PERMISSION NEEDED");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
+                        Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                        startActivityForResult(intent, 501);
+                    });
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img = new ImageView(getContext());
+                    Glide.with(getContext()).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + getContext().getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
+                    alert.show();
+                    return false;
+                }
+            }
             //Show album to choose
             Intent intent = new Intent(getActivity(), ChooseAlbumActivity.class);
             activityMoveLauncher.launch(intent);

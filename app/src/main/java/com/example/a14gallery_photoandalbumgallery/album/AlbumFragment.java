@@ -3,6 +3,7 @@ package com.example.a14gallery_photoandalbumgallery.album;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.CombineAlbum.CombineAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.database.AppDatabase;
@@ -186,12 +191,19 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                 if (!Environment.isExternalStorageManager()) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     alert.setTitle("PERMISSION NEEDED");
-                    alert.setMessage("This app need mange your storage to be able to create album folder");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
                     alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
                         Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                         startActivityForResult(intent, APP_STORAGE_ACCESS_REQUEST_CODE);
                     });
                     alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img=new ImageView(getContext());
+                    Glide.with(getContext()).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + getContext().getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + getContext().getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
                     alert.show();
                 } else {
                     //Tạo Dialog tạo Album mới

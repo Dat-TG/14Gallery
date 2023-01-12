@@ -1,5 +1,6 @@
 package com.example.a14gallery_photoandalbumgallery.fullscreenImage;
 
+import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
 import static com.example.a14gallery_photoandalbumgallery.MainActivity.NightMode;
 import static com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity.activityMoveLauncher;
 
@@ -37,6 +38,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -50,8 +52,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
+import com.example.a14gallery_photoandalbumgallery.BuildConfig;
 import com.example.a14gallery_photoandalbumgallery.MoveImageToAlbum.ChooseAlbumActivity;
 import com.example.a14gallery_photoandalbumgallery.R;
 import com.example.a14gallery_photoandalbumgallery.album.Album;
@@ -456,8 +460,32 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         //  Delete button
         if (view.getId() == R.id.btnDelete) {
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
-            finish();
+            boolean ok=true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(this);
+                    alert.setTitle("PERMISSION NEEDED");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
+                        Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                        startActivityForResult(intent, 501);
+                    });
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img = new ImageView(this);
+                    Glide.with(this).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + this.getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
+                    alert.show();
+                    ok=false;
+                }
+            }
+            if (ok) {
+                moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
+                finish();
+            }
         }
 
         //  More button
@@ -478,6 +506,27 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     public boolean onMenuItemClick(MenuItem menuItem) {
         // Rename button
         if (menuItem.getItemId() == R.id.btnRename) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(this);
+                    alert.setTitle("PERMISSION NEEDED");
+                    alert.setMessage("This app need you allow to mange your storage to be able to create, or modify images and albums");
+                    alert.setPositiveButton("ALLOW", (dialog, whichButton) -> { // Set an EditText view to get user input
+                        Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                        startActivityForResult(intent, 501);
+                    });
+                    alert.setNegativeButton("DENY", (dialog, whichButton) -> {/* Canceled.*/});
+                    ImageView img = new ImageView(this);
+                    Glide.with(this).asGif().load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                            + "://" + this.getResources().getResourcePackageName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceTypeName(R.drawable.instruction_manage)
+                            + '/' + this.getResources().getResourceEntryName(R.drawable.instruction_manage))).into(img);
+                    img.setImageResource(R.drawable.instruction_manage);
+                    alert.setView(img);
+                    alert.show();
+                    return false;
+                }
+            }
             File file = new File(getImagePath());
             String fileName = file.getName();
             String fileNameWithoutExtension = fileName.replaceFirst("[.][^.]+$", "");
