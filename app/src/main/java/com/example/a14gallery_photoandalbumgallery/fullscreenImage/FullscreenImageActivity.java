@@ -102,6 +102,8 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     int theme;
     ViewPager2 viewPager2;
     String imagePath;
+    String albumName;
+    List<Image> imageSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,11 +122,10 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         // Get image's position send from image fragment
         Intent intent = getIntent();
-        String albumName = intent.getExtras().getString("albumName");
+        albumName = intent.getExtras().getString("albumName");
         int imagePosition = intent.getIntExtra("position", 0);
         imagePath = intent.getExtras().getString("path");
 
-        List<Image> imageSource;
 
         if (albumName != null) {
             if (albumName.equals(AlbumGallery.favoriteAlbumFolderNameVn) || albumName.equals(AlbumGallery.privateAlbumFolderNameVn) || albumName.equals(AlbumGallery.recycleBinFolderNameVn)) {
@@ -145,15 +146,16 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
 
         Button btnFav = findViewById(R.id.btnFav);
         Drawable top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_border_24);
-        boolean isFav = isFavorite(getImagePath());
+        boolean isFav = isFavorite(imagePath);
         if (isFav) {
             top = ContextCompat.getDrawable(this, R.drawable.ic_baseline_favorite_24);
         }
         btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
-        String[] name = getImagePath().split("/");
+        String[] name = imagePath.split("/");
         if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
             btnFav.setEnabled(false);
         }
+        Log.e("imgFav",imagePath+" *** "+isFav);
 
         // Set on click for back navigator
         binding.topAppBar.setNavigationOnClickListener(v -> finish());
@@ -199,7 +201,7 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
     // so we need a method to get the path instead of storing it as a variable
     private String getImagePath() {
         int currentPosition = viewPager2.getCurrentItem();
-        return ImageGallery.getInstance().images.get(currentPosition).getPath();
+        return imageSource.get(currentPosition).getPath();
     }
 
     private void registerCallbackForViewPager2() {
@@ -207,21 +209,11 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                Button btnFav = findViewById(R.id.btnFav);
-                Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
-                boolean isFav = isFavorite(getImagePath());
-                if (isFav) {
-                    top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_24);
-                }
-                btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
-                String[] name = getImagePath().split("/");
-                if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
-                    btnFav.setEnabled(false);
-                }
             }
 
             @Override
             public void onPageSelected(int position) {
+                Log.e("position",Integer.toString(position));
                 super.onPageSelected(position);
                 Button btnFav = findViewById(R.id.btnFav);
                 Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
@@ -234,22 +226,13 @@ public class FullscreenImageActivity extends AppCompatActivity implements View.O
                 if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
                     btnFav.setEnabled(false);
                 }
+                Log.e("onPageSelected",getImagePath()+" *** "+isFav);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                Button btnFav = findViewById(R.id.btnFav);
-                Drawable top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_border_24);
-                boolean isFav = isFavorite(getImagePath());
-                if (isFav) {
-                    top = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_baseline_favorite_24);
-                }
-                btnFav.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
-                String[] name = getImagePath().split("/");
-                if (Objects.equals(name[name.length - 2], AlbumGallery.recycleBinFolderName)) {
-                    btnFav.setEnabled(false);
-                }
+
             }
         });
     }

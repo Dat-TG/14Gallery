@@ -128,6 +128,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
 
         nameFolder = getIntent().getStringExtra("NAME");
         if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName) || nameFolder.equals(AlbumGallery.privateAlbumFolderName) || nameFolder.equals(AlbumGallery.recycleBinFolderName)) {
+            AlbumGallery.getInstance().update(this);
             if (nameFolder.equals(AlbumGallery.favoriteAlbumFolderName)) {
                 try {
                     album = getAlbumFavorite();
@@ -1142,6 +1143,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
         for (int i = 0; i < FavList.size(); i++) {
             Image img = new Image();
             img.setPath(FavList.get(i).imagePath);
+            Log.e("FavAlbum",img.getPath());
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 img = ImageGallery.getInstance().getImageByPath(this, FavList.get(i).imagePath);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy\nEEEE HH:mm", Locale.UK);
