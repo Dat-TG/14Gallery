@@ -179,11 +179,11 @@ public class DetailAlbumActivity extends AppCompatActivity {
                         ContentValues values = new ContentValues();
                         values.put(MediaStore.Images.Media.TITLE, "New Picture");
                         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                        imageUri = this.getContentResolver().insert(
+                        imageUri = getApplicationContext().getContentResolver().insert(
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        activityResultLauncher.launch(intent);
+                        cameraResultLauncher.launch(intent);
                     } else {
                         Toast.makeText(this, "There is no app that support this action", Toast.LENGTH_SHORT).show();
                     }
