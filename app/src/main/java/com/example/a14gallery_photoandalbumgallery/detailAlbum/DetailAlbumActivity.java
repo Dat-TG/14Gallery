@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -67,6 +68,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -632,6 +635,62 @@ public class DetailAlbumActivity extends AppCompatActivity {
                     alert.show();
                     return false;
                 }
+            }
+            if (Objects.equals(album.getName(), AlbumGallery.recycleBinFolderNameVn)) {
+                ArrayList<Image> selectedImages = images.stream()
+                        .filter(Image::isChecked)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle("Xác nhận");
+                builder.setMessage("Bạn có chắc chắn muốn xóa vĩnh viễn "+selectedImages.size()+" ảnh đã chọn?");
+
+                builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        for (Image image : selectedImages) {
+                            Charset charset = StandardCharsets.UTF_8;
+                            String content = null;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                try {
+                                    content = new String(Files.readAllBytes(Paths.get(image.getPath())), charset);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            content = content.replaceAll("\\*", "0");
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                try {
+                                    Files.write(Paths.get(image.getPath()), content.getBytes(charset));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            File del=new File(image.getPath());
+                            del.delete();
+                        }
+                        imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                        imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                        onResume();
+                        dialog.dismiss();
+                        Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+                    }
+                });
+
+                builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
             }
             moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
             imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
