@@ -692,10 +692,38 @@ public class DetailAlbumActivity extends AppCompatActivity {
                 alert.show();
                 return true;
             }
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
-            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-            onResume();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            ArrayList<Image> selectedImages = images.stream()
+                    .filter(Image::isChecked)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            builder.setTitle("Xác nhận");
+            builder.setMessage("Xóa "+selectedImages.size()+" ảnh đã chọn?");
+
+            builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing but close the dialog
+                    moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
+                    imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                    imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                    onResume();
+                    dialog.dismiss();
+                    Snackbar.make(findViewById(R.id.detail_album_layout), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    // Do nothing
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
             return true;
         }
         if (menuItem.getItemId() == R.id.move_images) {
