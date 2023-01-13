@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -362,14 +363,43 @@ public class ImageFragment extends Fragment implements MenuProvider {
                     return false;
                 }
             }
-            moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
-            toViewList();
-            imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
-            imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
-            imageFragmentAdapter.setData(viewList);
-            binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
-            onResume();
-            activity.invalidateOptionsMenu();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            ArrayList<Image> selectedImages = images.stream()
+                    .filter(Image::isChecked)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            builder.setTitle("Xác nhận");
+            builder.setMessage("Xóa "+selectedImages.size()+" ảnh đã chọn?");
+
+            builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing but close the dialog
+                    moveToAlbum(Environment.getExternalStorageDirectory().getAbsolutePath() + AlbumGallery.rootFolder + AlbumGallery.recycleBinFolderName);
+                    toViewList();
+                    imageFragmentAdapter.setState(ImageFragmentAdapter.State.Normal);
+                    imageFragmentAdapter.notifyItemRangeChanged(0, imageFragmentAdapter.getItemCount());
+                    imageFragmentAdapter.setData(viewList);
+                    binding.imageFragmentRecycleView.setAdapter(imageFragmentAdapter);
+                    onResume();
+                    activity.invalidateOptionsMenu();
+                    dialog.dismiss();
+                    Snackbar.make(requireView(), "Xóa ảnh thành công", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    // Do nothing
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+            return true;
         }
         if (menuItem.getItemId() == R.id.move_images) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
