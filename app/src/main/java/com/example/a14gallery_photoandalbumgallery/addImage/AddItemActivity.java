@@ -168,9 +168,9 @@ public class AddItemActivity extends AppCompatActivity {
                     }
                 }
             }
-            Toast.makeText(context, "Đã di chuyển thành công " + count + " ảnh vào album", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Đã di chuyển thành công", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(context, "Có lỗi xảy ra!! Chỉ di chuyển thành công " + count + "/" + selectedImages.size() + " ảnh vào album", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Có lỗi xảy ra!!", Toast.LENGTH_SHORT).show();
         }
     }
 }

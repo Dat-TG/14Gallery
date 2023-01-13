@@ -225,16 +225,16 @@ public class AlbumFragment extends Fragment implements MenuProvider {
                             } else {
                                 Log.e("RES", "Failed");
                             }
-                            Toast.makeText(getActivity(), "Successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Tạo thành công", Toast.LENGTH_SHORT).show();
                             AlbumGallery.getInstance().update(getContext());
                             albums = AlbumGallery.getInstance().albums;
                             adapter = new AlbumFragmentAdapter(getContext(), albums);
                             binding.albumFragmentRecycleView.setAdapter(adapter);
                         } else {
-                            Toast.makeText(getActivity(), "Folder Already Exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Tên album đã tồn tại", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    alert.setNegativeButton("Cancel", (dialog, whichButton) -> {/* Canceled.*/});
+                    alert.setNegativeButton("Hủy", (dialog, whichButton) -> {/* Canceled.*/});
                     alert.show();
                 }
             }

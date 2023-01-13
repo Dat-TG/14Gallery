@@ -325,7 +325,7 @@ public class DetailAlbumActivity extends AppCompatActivity {
             binding.recyclerDetailView.setVisibility(View.GONE);
             return;
         }
-        Log.e("album này là", album.getName() + " và " + album.getPath());
+
         if (album.getAlbumImages().size() != 0) {
             binding.recyclerDetailView.setVisibility(View.VISIBLE);
 //            binding.recyclerDetailView.setHasFixedSize(false);
@@ -340,7 +340,6 @@ public class DetailAlbumActivity extends AppCompatActivity {
         }
 
         images = album.getAlbumImages();
-        Log.e("heh", Integer.toString(images.size()));
         if (images != null && images.size() > 0) {
             //images = album.getAlbumImages();
             toViewList(images);
